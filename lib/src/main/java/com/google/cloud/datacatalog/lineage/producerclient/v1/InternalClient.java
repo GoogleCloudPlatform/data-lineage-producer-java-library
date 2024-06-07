@@ -180,7 +180,7 @@ final class InternalClient implements AsyncLineageClient {
     F result = call.get();
     ApiFutures.addCallback(
         result,
-        new ApiFutureCallback<>() {
+        new ApiFutureCallback<T>() {
           @Override
           public void onFailure(Throwable exception) {
             if (GrpcHelper.getReason(exception).equals("SERVICE_DISABLED")) {
