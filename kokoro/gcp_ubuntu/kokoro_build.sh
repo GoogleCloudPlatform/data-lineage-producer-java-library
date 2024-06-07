@@ -17,8 +17,9 @@
 # Fail on any error
 set -e
 
-sudo update-java-alternatives --set java-1.11.0-openjdk-amd64
-JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+unset JAVA_TOOL_OPTIONS
+sudo update-java-alternatives -s /usr/lib/jvm/java-1.8.0-openjdk-amd64
+export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
 
 cd "${KOKORO_ARTIFACTS_DIR}/git/data-lineage-producer-java-library"
 ./tests.sh

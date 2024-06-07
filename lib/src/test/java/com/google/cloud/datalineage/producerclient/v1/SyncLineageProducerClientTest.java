@@ -63,7 +63,10 @@ public class SyncLineageProducerClientTest {
     ProcessOpenLineageRunEventResponse response =
         ProcessOpenLineageRunEventResponse.newBuilder().build();
     when(basicLineageClient.processOpenLineageRunEventCallable())
-        .thenReturn(new UnaryCallableFake<>(r -> response));
+        .thenReturn(
+            new UnaryCallableFake<
+                ProcessOpenLineageRunEventRequest, ProcessOpenLineageRunEventResponse>(
+                r -> response));
 
     ProcessOpenLineageRunEventResponse gotResponse = client.processOpenLineageRunEvent(request);
 
@@ -119,7 +122,8 @@ public class SyncLineageProducerClientTest {
   private void returnServiceDisabledFromMocker() {
     when(basicLineageClient.processOpenLineageRunEventCallable())
         .thenReturn(
-            new UnaryCallable<>() {
+            new UnaryCallable<
+                ProcessOpenLineageRunEventRequest, ProcessOpenLineageRunEventResponse>() {
               @Override
               public ApiFuture<ProcessOpenLineageRunEventResponse> futureCall(
                   ProcessOpenLineageRunEventRequest request, ApiCallContext context) {
