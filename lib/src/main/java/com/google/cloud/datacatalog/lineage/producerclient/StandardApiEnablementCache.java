@@ -28,11 +28,11 @@ import java.time.LocalDateTime;
  */
 public class StandardApiEnablementCache implements ApiEnablementCache {
   private final Cache<String, LocalDateTime> projectToLockEndTime;
-  private final Duration markServiceAsDisabledTime;
+  private final Duration defaultCacheDisabledStatusTime;
   private final Clock clock;
 
   StandardApiEnablementCache(ApiEnablementCacheOptions options) {
-    markServiceAsDisabledTime = options.getMarkServiceAsDisabledTime();
+    defaultCacheDisabledStatusTime = options.getMarkServiceAsDisabledTime();
     clock = options.getClock();
 
     projectToLockEndTime = CacheBuilder.newBuilder().maximumSize(options.getCacheSize()).build();
@@ -44,7 +44,7 @@ public class StandardApiEnablementCache implements ApiEnablementCache {
    * @see StandardApiEnablementCache#markServiceAsDisabled(String, Duration)
    */
   public synchronized void markServiceAsDisabled(String project) {
-    markServiceAsDisabled(project, markServiceAsDisabledTime);
+    markServiceAsDisabled(project, defaultCacheDisabledStatusTime);
   }
 
   /**
