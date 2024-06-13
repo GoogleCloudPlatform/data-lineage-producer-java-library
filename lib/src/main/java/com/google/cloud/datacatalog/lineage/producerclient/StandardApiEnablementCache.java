@@ -32,7 +32,7 @@ public class StandardApiEnablementCache implements ApiEnablementCache {
   private final Clock clock;
 
   StandardApiEnablementCache(ApiEnablementCacheOptions options) {
-    defaultCacheDisabledStatusTime = options.getMarkServiceAsDisabledTime();
+    defaultCacheDisabledStatusTime = options.getDefaultCacheDisabledStatusTime();
     clock = options.getClock();
 
     projectToLockEndTime = CacheBuilder.newBuilder().maximumSize(options.getCacheSize()).build();

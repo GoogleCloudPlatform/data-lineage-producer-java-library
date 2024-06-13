@@ -61,8 +61,9 @@ public class LineageBaseSettings extends LineageSettings {
   /**
    * * Builder for LineageBaseSettings.
    *
-   * <p>Lets setting all properties of LineageSettings and ApiEnablementCacheSettings. Can be created
-   * by ApiEnablementCacheSettings.newBuilder method. To create settings object, use build method.
+   * <p>Lets setting all properties of LineageSettings and ApiEnablementCacheSettings. Can be
+   * created by ApiEnablementCacheSettings.newBuilder method. To create settings object, use build
+   * method.
    */
   public static class Builder extends LineageSettings.Builder {
 

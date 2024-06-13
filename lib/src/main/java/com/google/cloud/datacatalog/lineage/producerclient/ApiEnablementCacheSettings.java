@@ -19,16 +19,19 @@ public final class ApiEnablementCacheSettings {
 
   /** Disables connection cache feature. */
   public static ApiEnablementCacheSettings getDisabledInstance() {
-    return new ApiEnablementCacheSettings(false, false, ApiEnablementCacheOptions.getDefaultInstance());
+    return new ApiEnablementCacheSettings(
+        false, false, ApiEnablementCacheOptions.getDefaultInstance());
   }
 
   /** Uses common instance. If there is no such instance, creates one with default settings. */
   public static ApiEnablementCacheSettings getCommonInstance() {
-    return new ApiEnablementCacheSettings(true, true, ApiEnablementCacheOptions.getDefaultInstance());
+    return new ApiEnablementCacheSettings(
+        true, true, ApiEnablementCacheOptions.getDefaultInstance());
   }
 
   /** Uses common instance. If there is no such instance, creates one using provided settings. */
-  public static ApiEnablementCacheSettings getCommonInstance(ApiEnablementCacheOptions fallbackSettings) {
+  public static ApiEnablementCacheSettings getCommonInstance(
+      ApiEnablementCacheOptions fallbackSettings) {
     if (fallbackSettings == null) {
       throw new IllegalArgumentException("defaultSettings cannot be null");
     }
@@ -37,11 +40,13 @@ public final class ApiEnablementCacheSettings {
 
   /** Uses stand-alone instance with default settings. */
   public static ApiEnablementCacheSettings getStandAloneInstance() {
-    return new ApiEnablementCacheSettings(true, false, ApiEnablementCacheOptions.getDefaultInstance());
+    return new ApiEnablementCacheSettings(
+        true, false, ApiEnablementCacheOptions.getDefaultInstance());
   }
 
   /** Uses stand-alone instance with provided settings. */
-  public static ApiEnablementCacheSettings getStandAloneInstance(ApiEnablementCacheOptions settings) {
+  public static ApiEnablementCacheSettings getStandAloneInstance(
+      ApiEnablementCacheOptions settings) {
     if (settings == null) {
       throw new IllegalArgumentException("settings cannot be null");
     }

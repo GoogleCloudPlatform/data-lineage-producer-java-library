@@ -26,12 +26,12 @@ public class ApiEnablementCacheOptions {
   protected static final int DEFAULT_SIZE = 1000;
   protected static final Clock DEFAULT_CLOCK = Clock.systemDefaultZone();
 
-  private final Duration markServiceAsDisabledTime;
+  private final Duration defaultCacheDisabledStatusTime;
   private final int cacheSize;
   private final Clock clock;
 
   protected ApiEnablementCacheOptions(ApiEnablementCacheOptions.Builder settingsBuilder) {
-    markServiceAsDisabledTime = settingsBuilder.markServiceAsDisabledTime;
+    defaultCacheDisabledStatusTime = settingsBuilder.defaultCacheDisabledStatusTime;
     cacheSize = settingsBuilder.cacheSize;
     clock = settingsBuilder.clock;
   }
@@ -44,8 +44,8 @@ public class ApiEnablementCacheOptions {
     return ApiEnablementCacheOptions.Builder.createDefault().build();
   }
 
-  public Duration getMarkServiceAsDisabledTime() {
-    return markServiceAsDisabledTime;
+  public Duration getDefaultCacheDisabledStatusTime() {
+    return defaultCacheDisabledStatusTime;
   }
 
   public int getCacheSize() {
@@ -67,32 +67,33 @@ public class ApiEnablementCacheOptions {
    * ApiEnablementCacheOptions.newBuilder method. To create settings object, use build method.
    */
   public static class Builder {
-    protected Duration markServiceAsDisabledTime;
+    protected Duration defaultCacheDisabledStatusTime;
     protected int cacheSize;
     protected Clock clock;
 
     protected Builder(ApiEnablementCacheOptions settings) {
-      markServiceAsDisabledTime = settings.markServiceAsDisabledTime;
+      defaultCacheDisabledStatusTime = settings.defaultCacheDisabledStatusTime;
       cacheSize = settings.cacheSize;
       clock = settings.clock;
     }
 
-    protected Builder(Duration markServiceAsDisabledTime, int cacheSize, Clock clock) {
-      this.markServiceAsDisabledTime = markServiceAsDisabledTime;
+    protected Builder(Duration defaultCacheDisabledStatusTime, int cacheSize, Clock clock) {
+      this.defaultCacheDisabledStatusTime = defaultCacheDisabledStatusTime;
       this.cacheSize = cacheSize;
       this.clock = clock;
     }
 
     private static ApiEnablementCacheOptions.Builder createDefault() {
-      return new ApiEnablementCacheOptions.Builder(DEFAULT_DISABLED_TIME, DEFAULT_SIZE, DEFAULT_CLOCK);
+      return new ApiEnablementCacheOptions.Builder(
+          DEFAULT_DISABLED_TIME, DEFAULT_SIZE, DEFAULT_CLOCK);
     }
 
-    public ApiEnablementCacheOptions.Builder setMarkServiceAsDisabledTime(
-        Duration markServiceAsDisabledTime) {
-      if (markServiceAsDisabledTime.isNegative()) {
+    public ApiEnablementCacheOptions.Builder setDefaultCacheDisabledStatusTime(
+        Duration defaultCacheDisabledStatusTime) {
+      if (defaultCacheDisabledStatusTime.isNegative()) {
         throw new IllegalArgumentException("Duration cannot be negative");
       }
-      this.markServiceAsDisabledTime = markServiceAsDisabledTime;
+      this.defaultCacheDisabledStatusTime = defaultCacheDisabledStatusTime;
       return this;
     }
 

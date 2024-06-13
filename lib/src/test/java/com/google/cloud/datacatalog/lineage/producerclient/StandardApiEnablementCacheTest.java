@@ -38,7 +38,8 @@ public class StandardApiEnablementCacheTest {
   public void init() {
     clock = Mockito.mock(Clock.class);
     standardApiEnablementCache =
-        new StandardApiEnablementCache(ApiEnablementCacheOptions.newBuilder().setClock(clock).build());
+        new StandardApiEnablementCache(
+            ApiEnablementCacheOptions.newBuilder().setClock(clock).build());
     setupTime(BASE_DATE);
   }
 
@@ -101,7 +102,7 @@ public class StandardApiEnablementCacheTest {
     int limit = 5;
     ApiEnablementCacheOptions options =
         ApiEnablementCacheOptions.newBuilder()
-            .setMarkServiceAsDisabledTime(Duration.ofMinutes(5))
+            .setDefaultCacheDisabledStatusTime(Duration.ofMinutes(5))
             .setClock(clock)
             .setCacheSize(limit)
             .build();
