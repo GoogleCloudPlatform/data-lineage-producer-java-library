@@ -26,19 +26,19 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.Mockito;
 
-/** * Test suite for StandardConnectionCache */
+/** * Test suite for StandardApiEnablementCache */
 @RunWith(JUnit4.class)
-public class StandardConnectionCacheTest {
+public class StandardApiEnablementCacheTest {
   private static final LocalDateTime BASE_DATE = LocalDateTime.of(1989, 1, 13, 0, 0);
 
-  private StandardConnectionCache standardConnectionCache;
+  private StandardApiEnablementCache standardApiEnablementCache;
   private Clock clock;
 
   @Before
   public void init() {
     clock = Mockito.mock(Clock.class);
-    standardConnectionCache =
-        new StandardConnectionCache(ConnectionCacheOptions.newBuilder().setClock(clock).build());
+    standardApiEnablementCache =
+        new StandardApiEnablementCache(ApiEnablementCacheOptions.newBuilder().setClock(clock).build());
     setupTime(BASE_DATE);
   }
 
@@ -50,9 +50,9 @@ public class StandardConnectionCacheTest {
     Duration project1DurationExpired = Duration.ofMillis(10);
     Duration project2DurationExpired = Duration.ofHours(12);
     Duration project3DurationExpired = Duration.ofDays(10);
-    standardConnectionCache.markServiceAsDisabled(projectId1, project1DurationExpired);
-    standardConnectionCache.markServiceAsDisabled(projectId2, project2DurationExpired);
-    standardConnectionCache.markServiceAsDisabled(projectId3, project3DurationExpired);
+    standardApiEnablementCache.markServiceAsDisabled(projectId1, project1DurationExpired);
+    standardApiEnablementCache.markServiceAsDisabled(projectId2, project2DurationExpired);
+    standardApiEnablementCache.markServiceAsDisabled(projectId3, project3DurationExpired);
 
     assertNoStateChange(projectId1, BASE_DATE, true);
     assertNoStateChange(projectId2, BASE_DATE, true);
@@ -74,7 +74,7 @@ public class StandardConnectionCacheTest {
   @Test
   public void defaultsTimeOfServerDisabilityTo5Minutes() {
     String projectId = "[project]";
-    standardConnectionCache.markServiceAsDisabled(projectId);
+    standardApiEnablementCache.markServiceAsDisabled(projectId);
 
     assertServiceEnablingTime(projectId, BASE_DATE.plus(Duration.ofMinutes(5)));
   }
@@ -86,12 +86,12 @@ public class StandardConnectionCacheTest {
     Duration shorterDurationExpired = Duration.ofMinutes(3);
 
     setupTime(BASE_DATE);
-    standardConnectionCache.markServiceAsDisabled(projectId, longerDurationExpired);
+    standardApiEnablementCache.markServiceAsDisabled(projectId, longerDurationExpired);
     assertServiceEnablingTime(projectId, BASE_DATE.plus(longerDurationExpired));
     assertNoStateChange(projectId, BASE_DATE.plus(shorterDurationExpired), true);
 
     setupTime(BASE_DATE);
-    standardConnectionCache.markServiceAsDisabled(projectId, shorterDurationExpired);
+    standardApiEnablementCache.markServiceAsDisabled(projectId, shorterDurationExpired);
     assertNoStateChange(projectId, BASE_DATE.plus(longerDurationExpired), false);
     assertServiceEnablingTime(projectId, BASE_DATE.plus(shorterDurationExpired));
   }
@@ -99,22 +99,22 @@ public class StandardConnectionCacheTest {
   @Test
   public void cachesLimitedNumberOfProjectsAndAllowsToSetALimit() {
     int limit = 5;
-    ConnectionCacheOptions options =
-        ConnectionCacheOptions.newBuilder()
+    ApiEnablementCacheOptions options =
+        ApiEnablementCacheOptions.newBuilder()
             .setMarkServiceAsDisabledTime(Duration.ofMinutes(5))
             .setClock(clock)
             .setCacheSize(limit)
             .build();
-    standardConnectionCache = new StandardConnectionCache(options);
+    standardApiEnablementCache = new StandardApiEnablementCache(options);
 
     for (int i = 0; i < limit + 1; i++) {
-      standardConnectionCache.markServiceAsDisabled("[project" + i + "]");
+      standardApiEnablementCache.markServiceAsDisabled("[project" + i + "]");
     }
 
     int presentProjects = 0;
     for (int i = 0; i < limit + 1; i++) {
       presentProjects +=
-          standardConnectionCache.isServiceMarkedAsDisabled("[project" + i + "]") ? 1 : 0;
+          standardApiEnablementCache.isServiceMarkedAsDisabled("[project" + i + "]") ? 1 : 0;
     }
     Assert.assertTrue(presentProjects <= limit);
   }
@@ -128,21 +128,21 @@ public class StandardConnectionCacheTest {
 
   private void assertServiceEnablingTime(String projectId, LocalDateTime changeTime) {
     setupTime(changeTime);
-    boolean result = standardConnectionCache.isServiceMarkedAsDisabled(projectId);
+    boolean result = standardApiEnablementCache.isServiceMarkedAsDisabled(projectId);
     Assert.assertTrue(result);
 
     setupTime(changeTime.plus(Duration.ofMillis(1)));
-    result = standardConnectionCache.isServiceMarkedAsDisabled(projectId);
+    result = standardApiEnablementCache.isServiceMarkedAsDisabled(projectId);
     Assert.assertFalse(result);
   }
 
   private void assertNoStateChange(String projectId, LocalDateTime changeTime, boolean state) {
     setupTime(changeTime);
-    boolean result = standardConnectionCache.isServiceMarkedAsDisabled(projectId);
+    boolean result = standardApiEnablementCache.isServiceMarkedAsDisabled(projectId);
     Assert.assertEquals(result, state);
 
     setupTime(changeTime.plus(Duration.ofMillis(1)));
-    result = standardConnectionCache.isServiceMarkedAsDisabled(projectId);
+    result = standardApiEnablementCache.isServiceMarkedAsDisabled(projectId);
     Assert.assertEquals(result, state);
   }
 }

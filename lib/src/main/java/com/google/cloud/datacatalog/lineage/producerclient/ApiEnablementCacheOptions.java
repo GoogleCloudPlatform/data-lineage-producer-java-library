@@ -18,10 +18,10 @@ import java.time.Clock;
 import java.time.Duration;
 
 /**
- * Provides an immutable object for ConnectionCache initialization. ConnectionCacheOptions object
+ * Provides an immutable object for ConnectionCache initialization. ApiEnablementCacheOptions object
  * can be created via Builder.
  */
-public class ConnectionCacheOptions {
+public class ApiEnablementCacheOptions {
   protected static final Duration DEFAULT_DISABLED_TIME = Duration.ofMinutes(5);
   protected static final int DEFAULT_SIZE = 1000;
   protected static final Clock DEFAULT_CLOCK = Clock.systemDefaultZone();
@@ -30,18 +30,18 @@ public class ConnectionCacheOptions {
   private final int cacheSize;
   private final Clock clock;
 
-  protected ConnectionCacheOptions(ConnectionCacheOptions.Builder settingsBuilder) {
+  protected ApiEnablementCacheOptions(ApiEnablementCacheOptions.Builder settingsBuilder) {
     markServiceAsDisabledTime = settingsBuilder.markServiceAsDisabledTime;
     cacheSize = settingsBuilder.cacheSize;
     clock = settingsBuilder.clock;
   }
 
-  public static ConnectionCacheOptions.Builder newBuilder() {
-    return ConnectionCacheOptions.Builder.createDefault();
+  public static ApiEnablementCacheOptions.Builder newBuilder() {
+    return ApiEnablementCacheOptions.Builder.createDefault();
   }
 
-  public static ConnectionCacheOptions getDefaultInstance() {
-    return ConnectionCacheOptions.Builder.createDefault().build();
+  public static ApiEnablementCacheOptions getDefaultInstance() {
+    return ApiEnablementCacheOptions.Builder.createDefault().build();
   }
 
   public Duration getMarkServiceAsDisabledTime() {
@@ -56,22 +56,22 @@ public class ConnectionCacheOptions {
     return clock;
   }
 
-  public ConnectionCacheOptions.Builder toBuilder() {
-    return new ConnectionCacheOptions.Builder(this);
+  public ApiEnablementCacheOptions.Builder toBuilder() {
+    return new ApiEnablementCacheOptions.Builder(this);
   }
 
   /**
-   * * Builder for ConnectionCacheSettings.
+   * * Builder for ApiEnablementCacheSettings.
    *
    * <p>Lets setting `markServiceAsDisabledTime`, `cacheSize`, and `clock`. Can be created by
-   * ConnectionCacheOptions.newBuilder method. To create settings object, use build method.
+   * ApiEnablementCacheOptions.newBuilder method. To create settings object, use build method.
    */
   public static class Builder {
     protected Duration markServiceAsDisabledTime;
     protected int cacheSize;
     protected Clock clock;
 
-    protected Builder(ConnectionCacheOptions settings) {
+    protected Builder(ApiEnablementCacheOptions settings) {
       markServiceAsDisabledTime = settings.markServiceAsDisabledTime;
       cacheSize = settings.cacheSize;
       clock = settings.clock;
@@ -83,11 +83,11 @@ public class ConnectionCacheOptions {
       this.clock = clock;
     }
 
-    private static ConnectionCacheOptions.Builder createDefault() {
-      return new ConnectionCacheOptions.Builder(DEFAULT_DISABLED_TIME, DEFAULT_SIZE, DEFAULT_CLOCK);
+    private static ApiEnablementCacheOptions.Builder createDefault() {
+      return new ApiEnablementCacheOptions.Builder(DEFAULT_DISABLED_TIME, DEFAULT_SIZE, DEFAULT_CLOCK);
     }
 
-    public ConnectionCacheOptions.Builder setMarkServiceAsDisabledTime(
+    public ApiEnablementCacheOptions.Builder setMarkServiceAsDisabledTime(
         Duration markServiceAsDisabledTime) {
       if (markServiceAsDisabledTime.isNegative()) {
         throw new IllegalArgumentException("Duration cannot be negative");
@@ -96,7 +96,7 @@ public class ConnectionCacheOptions {
       return this;
     }
 
-    public ConnectionCacheOptions.Builder setCacheSize(int cacheSize) {
+    public ApiEnablementCacheOptions.Builder setCacheSize(int cacheSize) {
       if (cacheSize < 0) {
         throw new IllegalArgumentException("Limit cannot be negative");
       }
@@ -104,13 +104,13 @@ public class ConnectionCacheOptions {
       return this;
     }
 
-    public ConnectionCacheOptions.Builder setClock(Clock clock) {
+    public ApiEnablementCacheOptions.Builder setClock(Clock clock) {
       this.clock = clock;
       return this;
     }
 
-    public ConnectionCacheOptions build() {
-      return new ConnectionCacheOptions(this);
+    public ApiEnablementCacheOptions build() {
+      return new ApiEnablementCacheOptions(this);
     }
   }
 }

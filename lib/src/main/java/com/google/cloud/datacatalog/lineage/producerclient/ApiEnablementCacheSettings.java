@@ -15,45 +15,45 @@
 package com.google.cloud.datacatalog.lineage.producerclient;
 
 /** Provides an immutable object for storing connection cache settings. */
-public final class ConnectionCacheSettings {
+public final class ApiEnablementCacheSettings {
 
   /** Disables connection cache feature. */
-  public static ConnectionCacheSettings getDisabledInstance() {
-    return new ConnectionCacheSettings(false, false, ConnectionCacheOptions.getDefaultInstance());
+  public static ApiEnablementCacheSettings getDisabledInstance() {
+    return new ApiEnablementCacheSettings(false, false, ApiEnablementCacheOptions.getDefaultInstance());
   }
 
   /** Uses common instance. If there is no such instance, creates one with default settings. */
-  public static ConnectionCacheSettings getCommonInstance() {
-    return new ConnectionCacheSettings(true, true, ConnectionCacheOptions.getDefaultInstance());
+  public static ApiEnablementCacheSettings getCommonInstance() {
+    return new ApiEnablementCacheSettings(true, true, ApiEnablementCacheOptions.getDefaultInstance());
   }
 
   /** Uses common instance. If there is no such instance, creates one using provided settings. */
-  public static ConnectionCacheSettings getCommonInstance(ConnectionCacheOptions fallbackSettings) {
+  public static ApiEnablementCacheSettings getCommonInstance(ApiEnablementCacheOptions fallbackSettings) {
     if (fallbackSettings == null) {
       throw new IllegalArgumentException("defaultSettings cannot be null");
     }
-    return new ConnectionCacheSettings(true, true, fallbackSettings);
+    return new ApiEnablementCacheSettings(true, true, fallbackSettings);
   }
 
   /** Uses stand-alone instance with default settings. */
-  public static ConnectionCacheSettings getStandAloneInstance() {
-    return new ConnectionCacheSettings(true, false, ConnectionCacheOptions.getDefaultInstance());
+  public static ApiEnablementCacheSettings getStandAloneInstance() {
+    return new ApiEnablementCacheSettings(true, false, ApiEnablementCacheOptions.getDefaultInstance());
   }
 
   /** Uses stand-alone instance with provided settings. */
-  public static ConnectionCacheSettings getStandAloneInstance(ConnectionCacheOptions settings) {
+  public static ApiEnablementCacheSettings getStandAloneInstance(ApiEnablementCacheOptions settings) {
     if (settings == null) {
       throw new IllegalArgumentException("settings cannot be null");
     }
-    return new ConnectionCacheSettings(true, false, settings);
+    return new ApiEnablementCacheSettings(true, false, settings);
   }
 
   private final boolean enabled;
   private final boolean useCommonInstance;
-  private final ConnectionCacheOptions options;
+  private final ApiEnablementCacheOptions options;
 
-  private ConnectionCacheSettings(
-      boolean enabled, boolean useCommonInstance, ConnectionCacheOptions options) {
+  private ApiEnablementCacheSettings(
+      boolean enabled, boolean useCommonInstance, ApiEnablementCacheOptions options) {
     this.enabled = enabled;
     this.useCommonInstance = useCommonInstance;
     this.options = options;
@@ -67,7 +67,7 @@ public final class ConnectionCacheSettings {
     return useCommonInstance;
   }
 
-  public ConnectionCacheOptions getOptions() {
+  public ApiEnablementCacheOptions getOptions() {
     return options;
   }
 }

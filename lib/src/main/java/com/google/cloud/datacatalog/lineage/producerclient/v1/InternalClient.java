@@ -21,8 +21,8 @@ import com.google.api.gax.longrunning.OperationFuture;
 import com.google.api.gax.rpc.ApiExceptionFactory;
 import com.google.api.gax.rpc.PermissionDeniedException;
 import com.google.api.gax.rpc.StatusCode.Code;
-import com.google.cloud.datacatalog.lineage.producerclient.ConnectionCache;
-import com.google.cloud.datacatalog.lineage.producerclient.ConnectionCacheFactory;
+import com.google.cloud.datacatalog.lineage.producerclient.ApiEnablementCache;
+import com.google.cloud.datacatalog.lineage.producerclient.ApiEnablementCacheFactory;
 import com.google.cloud.datacatalog.lineage.producerclient.helpers.GrpcHelper;
 import com.google.cloud.datacatalog.lineage.producerclient.helpers.NamesHelper;
 import com.google.cloud.datacatalog.lineage.v1.DeleteLineageEventRequest;
@@ -65,10 +65,10 @@ final class InternalClient implements AsyncLineageClient {
   }
 
   private final BasicLineageClient client;
-  private final ConnectionCache connectionCache;
+  private final ApiEnablementCache apiEnablementCache;
 
   private InternalClient(LineageBaseSettings settings, BasicLineageClient basicLineageClient) {
-    connectionCache = ConnectionCacheFactory.get(settings.getConnectionCacheSettings());
+    apiEnablementCache = ApiEnablementCacheFactory.get(settings.getConnectionCacheSettings());
     client = basicLineageClient;
   }
 
@@ -167,7 +167,7 @@ final class InternalClient implements AsyncLineageClient {
    */
   private <F extends ApiFuture<T>, T> F handleCall(Supplier<F> call, String resourceName) {
     String projectName = NamesHelper.getProjectNameWithLocationFromResourceName(resourceName);
-    if (connectionCache.isServiceMarkedAsDisabled(projectName)) {
+    if (apiEnablementCache.isServiceMarkedAsDisabled(projectName)) {
       throw ApiExceptionFactory.createException(
           "Data Lineage API is disabled in project "
               + projectName
@@ -184,7 +184,7 @@ final class InternalClient implements AsyncLineageClient {
           @Override
           public void onFailure(Throwable exception) {
             if (GrpcHelper.getReason(exception).equals("SERVICE_DISABLED")) {
-              connectionCache.markServiceAsDisabled(projectName);
+              apiEnablementCache.markServiceAsDisabled(projectName);
             }
           }
 
