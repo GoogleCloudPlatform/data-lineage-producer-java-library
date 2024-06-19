@@ -14,26 +14,26 @@
 
 package com.google.cloud.datacatalog.lineage.producerclient;
 
-/** A factory that returns ConnectionCache based on ConnectionCacheSettings. */
-public class ConnectionCacheFactory {
-  private static volatile ConnectionCache commonInstance;
+/** A factory that returns ConnectionCache based on ApiEnablementCacheSettings. */
+public class ApiEnablementCacheFactory {
+  private static volatile ApiEnablementCache commonInstance;
 
-  public static ConnectionCache get(ConnectionCacheSettings settings) {
+  public static ApiEnablementCache get(ApiEnablementCacheSettings settings) {
     if (!settings.getEnabled()) {
-      return new NoOpConnectionCache();
+      return new NoOpApiEnablementCache();
     }
 
     if (!settings.getUseCommonInstance()) {
-      return new StandardConnectionCache(settings.getOptions());
+      return new StandardApiEnablementCache(settings.getOptions());
     }
 
     if (commonInstance != null) {
       return commonInstance;
     }
 
-    synchronized (ConnectionCacheFactory.class) {
+    synchronized (ApiEnablementCacheFactory.class) {
       if (commonInstance == null) {
-        commonInstance = new StandardConnectionCache(settings.getOptions());
+        commonInstance = new StandardApiEnablementCache(settings.getOptions());
       }
     }
 

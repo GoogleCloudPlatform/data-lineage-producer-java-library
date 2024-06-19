@@ -21,7 +21,7 @@ import com.google.api.gax.rpc.ClientContext;
 import com.google.api.gax.rpc.HeaderProvider;
 import com.google.api.gax.rpc.TransportChannelProvider;
 import com.google.api.gax.rpc.WatchdogProvider;
-import com.google.cloud.datacatalog.lineage.producerclient.ConnectionCacheSettings;
+import com.google.cloud.datacatalog.lineage.producerclient.ApiEnablementCacheSettings;
 import com.google.cloud.datacatalog.lineage.v1.stub.LineageStubSettings;
 import java.io.IOException;
 import javax.annotation.Nullable;
@@ -80,7 +80,7 @@ public final class SyncLineageProducerClientSettings extends LineageBaseSettings
     }
 
     @Override
-    public Builder setConnectionCacheSettings(ConnectionCacheSettings settings) {
+    public Builder setConnectionCacheSettings(ApiEnablementCacheSettings settings) {
       return (Builder) super.setConnectionCacheSettings(settings);
     }
 

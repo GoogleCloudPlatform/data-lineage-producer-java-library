@@ -17,7 +17,7 @@ package com.google.cloud.datacatalog.lineage.producerclient.v1;
 import com.google.api.gax.retrying.RetrySettings;
 import com.google.api.gax.rpc.ClientContext;
 import com.google.api.gax.rpc.StatusCode.Code;
-import com.google.cloud.datacatalog.lineage.producerclient.ConnectionCacheSettings;
+import com.google.cloud.datacatalog.lineage.producerclient.ApiEnablementCacheSettings;
 import com.google.cloud.datacatalog.lineage.v1.LineageSettings;
 import com.google.cloud.datacatalog.lineage.v1.stub.LineageStubSettings;
 import com.google.common.collect.ImmutableSet;
@@ -42,15 +42,15 @@ public class LineageBaseSettings extends LineageSettings {
     return newBuilder().build();
   }
 
-  private final ConnectionCacheSettings connectionCacheSettings;
+  private final ApiEnablementCacheSettings apiEnablementCacheSettings;
 
   protected LineageBaseSettings(Builder settingsBuilder) throws IOException {
     super(settingsBuilder);
-    this.connectionCacheSettings = settingsBuilder.connectionCacheSettings;
+    this.apiEnablementCacheSettings = settingsBuilder.apiEnablementCacheSettings;
   }
 
-  public ConnectionCacheSettings getConnectionCacheSettings() {
-    return connectionCacheSettings;
+  public ApiEnablementCacheSettings getConnectionCacheSettings() {
+    return apiEnablementCacheSettings;
   }
 
   @Override
@@ -61,8 +61,9 @@ public class LineageBaseSettings extends LineageSettings {
   /**
    * * Builder for LineageBaseSettings.
    *
-   * <p>Lets setting all properties of LineageSettings and ConnectionCacheSettings. Can be created
-   * by ConnectionCacheSettings.newBuilder method. To create settings object, use build method.
+   * <p>Lets setting all properties of LineageSettings and ApiEnablementCacheSettings. Can be
+   * created by ApiEnablementCacheSettings.newBuilder method. To create settings object, use build
+   * method.
    */
   public static class Builder extends LineageSettings.Builder {
 
@@ -85,33 +86,33 @@ public class LineageBaseSettings extends LineageSettings {
       return new Builder(LineageStubSettings.newBuilder());
     }
 
-    private ConnectionCacheSettings connectionCacheSettings;
+    private ApiEnablementCacheSettings apiEnablementCacheSettings;
 
     protected Builder() throws IOException {
       super();
-      connectionCacheSettings = ConnectionCacheSettings.getCommonInstance();
+      apiEnablementCacheSettings = ApiEnablementCacheSettings.getCommonInstance();
       applyDefaultRetryPolicy();
     }
 
     protected Builder(ClientContext clientContext) {
       super(clientContext);
-      connectionCacheSettings = ConnectionCacheSettings.getCommonInstance();
+      apiEnablementCacheSettings = ApiEnablementCacheSettings.getCommonInstance();
       applyDefaultRetryPolicy();
     }
 
     protected Builder(LineageBaseSettings settings) {
       super(settings);
-      this.connectionCacheSettings = settings.connectionCacheSettings;
+      this.apiEnablementCacheSettings = settings.apiEnablementCacheSettings;
     }
 
     protected Builder(LineageStubSettings.Builder stubSettings) {
       super(stubSettings);
-      connectionCacheSettings = ConnectionCacheSettings.getCommonInstance();
+      apiEnablementCacheSettings = ApiEnablementCacheSettings.getCommonInstance();
       applyDefaultRetryPolicy();
     }
 
-    public Builder setConnectionCacheSettings(ConnectionCacheSettings settings) {
-      connectionCacheSettings = settings;
+    public Builder setConnectionCacheSettings(ApiEnablementCacheSettings settings) {
+      apiEnablementCacheSettings = settings;
       return this;
     }
 
