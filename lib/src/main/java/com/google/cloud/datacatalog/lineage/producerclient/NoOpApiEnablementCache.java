@@ -17,7 +17,7 @@ package com.google.cloud.datacatalog.lineage.producerclient;
 import java.time.Duration;
 
 /** NoOpConnectionCache always indicates that a project is enabled. */
-public class NoOpConnectionCache implements ConnectionCache {
+public class NoOpApiEnablementCache implements ApiEnablementCache {
 
   public void markServiceAsDisabled(String project) {}
 

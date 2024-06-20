@@ -17,9 +17,9 @@ package com.google.cloud.datacatalog.lineage.producerclient;
 import java.time.Duration;
 
 /** Cache used to store information about whether the API is disabled for a given project. */
-public interface ConnectionCache {
+public interface ApiEnablementCache {
 
-  /** @see ConnectionCache#markServiceAsDisabled(String, Duration) */
+  /** @see ApiEnablementCache#markServiceAsDisabled(String, Duration) */
   void markServiceAsDisabled(String project);
 
   /**
