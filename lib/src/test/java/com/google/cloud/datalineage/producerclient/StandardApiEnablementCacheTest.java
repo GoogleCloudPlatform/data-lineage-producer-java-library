@@ -14,8 +14,6 @@
 
 package com.google.cloud.datalineage.producerclient;
 
-import com.google.cloud.datalineage.producerclient.ApiEnablementCacheOptions;
-import com.google.cloud.datalineage.producerclient.StandardApiEnablementCache;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;
