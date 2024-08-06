@@ -57,6 +57,7 @@ shadowJar {
     relocate 'com.google.protobuf', 'datalineage.shaded.com.google.protobuf'
     relocate 'com.google.guava', 'datalineage.shaded.com.google.guava'
     relocate 'com.google.api', 'datalineage.shaded.com.google.api'
+    relocate 'com.google.auth', 'datalineage.shaded.com.google.auth'
     relocate 'io.grpc', 'datalineage.shaded.io.grpc'
     relocate 'com.google.common', 'datalineage.shaded.com.google.common'
     relocate 'com.google.gson', 'datalineage.shaded.com.google.gson'
