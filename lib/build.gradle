@@ -17,13 +17,13 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'com.github.sherter.google-java-format' version '0.9'
     id 'checkstyle'
+    id 'maven-publish'
+    id 'signing'
 }
 
 googleJavaFormat {
     toolVersion = '1.7'
 }
-
-version = '1.0.0'
 
 repositories {
     // Use Maven Central for resolving dependencies.
@@ -64,4 +64,85 @@ shadowJar {
     relocate 'META-INF/native/libio_grpc_netty_shaded_netty', 'META-INF/native/libdatalineage_shaded_io_grpc_netty_shaded_netty'
     relocate 'META-INF/native/io_grpc_netty_shaded_netty', 'META-INF/native/datalineage_shaded_io_grpc_netty_shaded_netty'
     mergeServiceFiles()
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            version = '1.0.0'
+            group = 'com.google.cloud.datalineage'
+            artifactId = 'producerclient'
+            from components.java
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = 'Java producer library for Data Lineage.'
+                description = 'The library provides Synchronous and Asynchronous clients for interacting with Data Lineage API.'
+                url = 'https://github.com/GoogleCloudPlatform/data-lineage-producer-java-library'
+                properties = [:]
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'midamkina'
+                        name = 'Mary Idamkina'
+                        email = 'midamkina@google.com'
+                    }
+                    developer {
+                        id = 'gabrysiaolsz'
+                        name = 'Gabriela Olszewska'
+                        email = 'gabrysiaolsz@google.com'
+                    }
+                    developer {
+                        id = 'ngorchakova'
+                        name = 'Natalia Gorchakova'
+                        email = 'ngorchakova@google.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:https://github.com/GoogleCloudPlatform/data-lineage-producer-java-library.git'
+                    developerConnection = 'scm:git:ssh://git@github.com/GoogleCloudPlatform/data-lineage-producer-java-library.git'
+                    url = 'https://github.com/GoogleCloudPlatform/data-lineage-producer-java-library'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            def releasesRepoUrl = 'https://google.oss.sonatype.org/content/repositories/releases/'
+            def snapshotsRepoUrl = 'https://google.oss.sonatype.org/content/repositories/snapshots/'
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            credentials {
+                // TODO: set those with your https://google.oss.sonatype.org OSSRH server user token.
+                username = 'secret'
+                password = 'secret'
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
+}
+
+
+javadoc {
+    if (JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
 }
