@@ -23,7 +23,7 @@ googleJavaFormat {
     toolVersion = '1.7'
 }
 
-version = '0.0.7'
+version = '1.0.0'
 
 repositories {
     // Use Maven Central for resolving dependencies.
@@ -54,13 +54,13 @@ test {
 
 shadowJar {
     archiveBaseName.set('data-lineage-producer-java-library')
-    relocate 'com.google.protobuf', 'datacatalog.lineage.shaded.com.google.protobuf'
-    relocate 'com.google.guava', 'datacatalog.lineage.shaded.com.google.guava'
-    relocate 'com.google.api', 'datacatalog.lineage.shaded.com.google.api'
-    relocate 'io.grpc', 'datacatalog.lineage.shaded.io.grpc'
-    relocate 'com.google.common', 'datacatalog.lineage.shaded.com.google.common'
-    relocate 'com.google.gson', 'datacatalog.lineage.shaded.com.google.gson'
-    relocate 'META-INF/native/libio_grpc_netty_shaded_netty', 'META-INF/native/libdatacatalog_lineage_shaded_io_grpc_netty_shaded_netty'
-    relocate 'META-INF/native/io_grpc_netty_shaded_netty', 'META-INF/native/datacatalog_lineage_shaded_io_grpc_netty_shaded_netty'
+    relocate 'com.google.protobuf', 'datalineage.shaded.com.google.protobuf'
+    relocate 'com.google.guava', 'datalineage.shaded.com.google.guava'
+    relocate 'com.google.api', 'datalineage.shaded.com.google.api'
+    relocate 'io.grpc', 'datalineage.shaded.io.grpc'
+    relocate 'com.google.common', 'datalineage.shaded.com.google.common'
+    relocate 'com.google.gson', 'datalineage.shaded.com.google.gson'
+    relocate 'META-INF/native/libio_grpc_netty_shaded_netty', 'META-INF/native/libdatalineage_shaded_io_grpc_netty_shaded_netty'
+    relocate 'META-INF/native/io_grpc_netty_shaded_netty', 'META-INF/native/datalineage_shaded_io_grpc_netty_shaded_netty'
     mergeServiceFiles()
 }
