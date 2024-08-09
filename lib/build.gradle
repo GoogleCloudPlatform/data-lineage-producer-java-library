@@ -30,6 +30,11 @@ repositories {
     mavenCentral()
 }
 
+java {
+    sourceCompatibility = "1.8"
+    targetCompatibility = "1.8"
+}
+
 dependencies {
     implementation platform('com.google.cloud:libraries-bom:26.36.0')
     implementation "com.google.cloud:google-cloud-datalineage"
