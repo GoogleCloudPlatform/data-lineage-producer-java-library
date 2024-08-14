@@ -21,7 +21,7 @@ public class NoOpApiEnablementCache implements ApiEnablementCache {
 
   public void markServiceAsDisabled(String project) {}
 
-  public void markServiceAsDisabled(String project, Duration offset) {}
+  public void markServiceAsDisabled(String project, Duration duration) {}
 
   public boolean isServiceMarkedAsDisabled(String project) {
     return false;

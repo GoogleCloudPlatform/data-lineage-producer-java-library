@@ -49,13 +49,13 @@ public class StandardApiEnablementCache implements ApiEnablementCache {
 
   /**
    * Sets service state for given project as disabled from current timestamp to current timestamp
-   * increased by duration time.
+   * increased by the given duration.
    *
    * <p>It is not guarantied that cache will indicate service state as disabled up to calculated
    * value. Specified entry may be deleted if cache is overloaded.
    */
-  public synchronized void markServiceAsDisabled(String projectName, Duration offset) {
-    projectToLockEndTime.put(projectName, LocalDateTime.now(clock).plus(offset));
+  public synchronized void markServiceAsDisabled(String projectName, Duration duration) {
+    projectToLockEndTime.put(projectName, LocalDateTime.now(clock).plus(duration));
   }
 
   /**

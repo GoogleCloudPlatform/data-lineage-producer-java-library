@@ -51,6 +51,8 @@ public interface SyncLineageClient extends BackgroundResource {
    * }</pre>
    *
    * @param request Required. The request object that will be used to execute API call.
+   * @throws InterruptedException if the thread is interrupted while waiting
+   * @throws ExecutionException if the computation threw an exception
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   void deleteProcess(DeleteProcessRequest request) throws ExecutionException, InterruptedException;
@@ -70,6 +72,8 @@ public interface SyncLineageClient extends BackgroundResource {
    * }</pre>
    *
    * @param request Required. The request object that will be used to execute API call.
+   * @throws InterruptedException if the thread is interrupted while waiting
+   * @throws ExecutionException if the computation threw an exception
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   void deleteRun(DeleteRunRequest request) throws ExecutionException, InterruptedException;
@@ -108,6 +112,7 @@ public interface SyncLineageClient extends BackgroundResource {
    * }</pre>
    *
    * @param request Required. The request object that will be used to execute API call.
+   * @return The requested process object
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   Process getProcess(GetProcessRequest request);
@@ -126,6 +131,7 @@ public interface SyncLineageClient extends BackgroundResource {
    * }</pre>
    *
    * @param request Required. The request object that will be used to execute API call.
+   * @return The requested run object
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   Run getRun(GetRunRequest request);
@@ -145,6 +151,7 @@ public interface SyncLineageClient extends BackgroundResource {
    * }</pre>
    *
    * @param request Required. The request object that will be used to execute API call.
+   * @return The requested lineage event object
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   LineageEvent getLineageEvent(GetLineageEventRequest request);
@@ -166,6 +173,7 @@ public interface SyncLineageClient extends BackgroundResource {
    * }</pre>
    *
    * @param request Required. The request object that will be used to execute API call.
+   * @return Paged response with the requested processes
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   ListProcessesPagedResponse listProcesses(ListProcessesRequest request);
@@ -187,6 +195,7 @@ public interface SyncLineageClient extends BackgroundResource {
    * }</pre>
    *
    * @param request Required. The request object that will be used to execute API call.
+   * @return The paged response with the requested runs
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   ListRunsPagedResponse listRuns(ListRunsRequest request);
@@ -208,6 +217,7 @@ public interface SyncLineageClient extends BackgroundResource {
    * }</pre>
    *
    * @param request Required. The request object that will be used to execute API call.
+   * @return The paged response with the requested lineage events
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   ListLineageEventsPagedResponse listLineageEvents(ListLineageEventsRequest request);
@@ -226,6 +236,7 @@ public interface SyncLineageClient extends BackgroundResource {
    * }</pre>
    *
    * @param request Required. The request object that will be used to execute API call.
+   * @return The API call response with details about the processed event(s).
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   ProcessOpenLineageRunEventResponse processOpenLineageRunEvent(
