@@ -17,40 +17,59 @@ package com.google.cloud.datalineage.producerclient;
 /** Provides an immutable object for storing connection cache settings. */
 public final class ApiEnablementCacheSettings {
 
-  /** Disables connection cache feature. */
+  /**
+   * Disables connection cache feature.
+   *
+   * @return The requested cache settings.
+   */
   public static ApiEnablementCacheSettings getDisabledInstance() {
     return new ApiEnablementCacheSettings(
         false, false, ApiEnablementCacheOptions.getDefaultInstance());
   }
 
-  /** Uses common instance. If there is no such instance, creates one with default settings. */
+  /**
+   * Uses common instance. If there is no such instance, creates one with default cache options.
+   * @return The requested cache settings.
+   */
   public static ApiEnablementCacheSettings getCommonInstance() {
     return new ApiEnablementCacheSettings(
         true, true, ApiEnablementCacheOptions.getDefaultInstance());
   }
 
-  /** Uses common instance. If there is no such instance, creates one using provided settings. */
+  /**
+   * Uses common instance. If there is no such instance, creates one using the provided cache options.
+   * @param fallbackOptions The fallback cache options.
+   * @return The requested cache settings.
+   */
   public static ApiEnablementCacheSettings getCommonInstance(
-      ApiEnablementCacheOptions fallbackSettings) {
-    if (fallbackSettings == null) {
+      ApiEnablementCacheOptions fallbackOptions) {
+    if (fallbackOptions == null) {
       throw new IllegalArgumentException("defaultSettings cannot be null");
     }
-    return new ApiEnablementCacheSettings(true, true, fallbackSettings);
+    return new ApiEnablementCacheSettings(true, true, fallbackOptions);
   }
 
-  /** Uses stand-alone instance with default settings. */
+  /**
+   * Uses stand-alone instance with default cache options.
+   * @return The requested cache settings.
+   * */
   public static ApiEnablementCacheSettings getStandAloneInstance() {
     return new ApiEnablementCacheSettings(
         true, false, ApiEnablementCacheOptions.getDefaultInstance());
   }
 
-  /** Uses stand-alone instance with provided settings. */
+  /**
+   * Uses stand-alone instance with provided settings.
+   *
+   * @param options The cache options
+   * @return The requested cache settings.
+   */
   public static ApiEnablementCacheSettings getStandAloneInstance(
-      ApiEnablementCacheOptions settings) {
-    if (settings == null) {
+      ApiEnablementCacheOptions options) {
+    if (options == null) {
       throw new IllegalArgumentException("settings cannot be null");
     }
-    return new ApiEnablementCacheSettings(true, false, settings);
+    return new ApiEnablementCacheSettings(true, false, options);
   }
 
   private final boolean enabled;
