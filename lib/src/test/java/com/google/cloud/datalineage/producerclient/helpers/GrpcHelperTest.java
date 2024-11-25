@@ -17,11 +17,11 @@ package com.google.cloud.datalineage.producerclient.helpers;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertThrows;
 
-import com.google.testing.junit.testparameterinjector.TestParameterInjector;
-import com.google.rpc.Status;
-import com.google.rpc.ErrorInfo;
-import io.grpc.protobuf.StatusProto;
 import com.google.protobuf.Any;
+import com.google.rpc.ErrorInfo;
+import com.google.rpc.Status;
+import com.google.testing.junit.testparameterinjector.TestParameterInjector;
+import io.grpc.protobuf.StatusProto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
