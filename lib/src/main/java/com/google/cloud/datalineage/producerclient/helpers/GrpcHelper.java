@@ -25,6 +25,9 @@ import io.grpc.protobuf.StatusProto;
 /** Set of helpers for Grpc handling. */
 public class GrpcHelper {
 
+  /** Make this helper class non-instantiable */
+  private GrpcHelper() {}
+
   /**
    * Lets getting reason field from grpc response.
    *

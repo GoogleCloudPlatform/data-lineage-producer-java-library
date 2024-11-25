@@ -24,6 +24,9 @@ public class NamesHelper {
       Pattern.compile(
           "^(?<" + PROJECT_NAME_AND_LOCATION_GROUP_NAME + ">projects/[^/]+/locations/[^/]+).*$");
 
+  /** Make this helper class non-instantiable */
+  private NamesHelper() {}
+
   public static String getProjectNameWithLocationFromResourceName(String resourceName) {
     Matcher matcher = RESOURCE_PATTERN.matcher(resourceName);
     if (!matcher.matches()) {
