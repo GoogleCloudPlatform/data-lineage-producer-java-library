@@ -20,13 +20,13 @@ import static org.junit.Assert.assertThrows;
 import com.google.protobuf.Any;
 import com.google.rpc.ErrorInfo;
 import com.google.rpc.Status;
-import com.google.testing.junit.testparameterinjector.TestParameterInjector;
 import io.grpc.protobuf.StatusProto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
-/** * Test suite for NamesHelper */
-@RunWith(TestParameterInjector.class)
+/** * Test suite for GrpcHelper */
+@RunWith(JUnit4.class)
 public class GrpcHelperTest {
 
   @Test
