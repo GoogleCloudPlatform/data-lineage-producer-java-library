@@ -72,7 +72,7 @@ public class ApiEnablementCacheOptionsTest {
   }
 
   @Test
-  public void toBuilder() {
+  public void toBuilder_preservesOptions() {
     Duration disabledTime = Duration.ofSeconds(30);
     int size = 500;
     Clock clock = Clock.fixed(Clock.systemDefaultZone().instant(), ZoneId.of("UTC"));

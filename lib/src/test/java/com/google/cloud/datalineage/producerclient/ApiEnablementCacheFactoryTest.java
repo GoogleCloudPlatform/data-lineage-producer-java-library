@@ -25,7 +25,7 @@ import org.junit.runners.JUnit4;
 public class ApiEnablementCacheFactoryTest {
 
   @Test
-  public void get_disabledSettings_returnsNoOpCache() {
+  public void getDisabledInstance_returnsNoOpCache() {
     ApiEnablementCacheSettings settings = ApiEnablementCacheSettings.getDisabledInstance();
 
     ApiEnablementCache cache = ApiEnablementCacheFactory.get(settings);
@@ -34,7 +34,7 @@ public class ApiEnablementCacheFactoryTest {
   }
 
   @Test
-  public void get_withStandAloneSettings_returnsStandardCache() {
+  public void getStandAloneInstance_returnsStandardCache() {
     ApiEnablementCacheSettings settings = ApiEnablementCacheSettings.getStandAloneInstance();
 
     ApiEnablementCache cache = ApiEnablementCacheFactory.get(settings);
@@ -43,7 +43,7 @@ public class ApiEnablementCacheFactoryTest {
   }
 
   @Test
-  public void get_withCommonInstanceSettings_returnsSameCacheInstance() {
+  public void getCommonInstance_returnsSameCacheInstance() {
     ApiEnablementCacheSettings settings = ApiEnablementCacheSettings.getCommonInstance();
 
     ApiEnablementCache cache1 = ApiEnablementCacheFactory.get(settings);
