@@ -25,21 +25,21 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class NoOpApiEnablementCacheTest {
   @Test
-  public void testMarkServiceAsDisabled() {
+  public void markServiceAsDisabled_serviceIsEnabled() {
     NoOpApiEnablementCache cache = new NoOpApiEnablementCache();
     cache.markServiceAsDisabled("testProject");
     assertFalse(cache.isServiceMarkedAsDisabled("testProject"));
   }
 
   @Test
-  public void testMarkServiceAsDisabledWithOffset() {
+  public void markServiceAsDisabledWithOffset_serviceIsEnabled() {
     NoOpApiEnablementCache cache = new NoOpApiEnablementCache();
     cache.markServiceAsDisabled("testProject", Duration.ofMinutes(5));
     assertFalse(cache.isServiceMarkedAsDisabled("testProject"));
   }
 
   @Test
-  public void testIsServiceMarkedAsDisabled() {
+  public void isServiceMarkedAsDisabled_returnsFalse() {
     NoOpApiEnablementCache cache = new NoOpApiEnablementCache();
     assertFalse(cache.isServiceMarkedAsDisabled("testProject"));
   }
