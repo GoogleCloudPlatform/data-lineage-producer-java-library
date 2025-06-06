@@ -68,14 +68,53 @@ test {
 
 shadowJar {
     archiveBaseName.set('data-lineage-producer-java-library')
+    archiveClassifier.set('')
+
+    exclude 'android/**'
+    exclude 'javax/**'
+    exclude 'io.opentelemetry'
+
+    // the closure was used to facilitate two functionalities
+    // 1. we would like to exclude using exact prefixes while e.g. traditional excluding 'google/**' excludes also 'io/google/**'
+    // 2. there are few exceptions we would like to make in general exclusions instead of manually excluding all libraries we don't want
+    exclude { FileTreeElement fte ->
+        ( // EXCLUDED
+            fte.path.startsWith('com/google/')
+            || fte.path.startsWith('opencensus/')
+            || fte.path.startsWith('grpc/')
+            || fte.path.startsWith('google/')
+            || fte.path.startsWith('org/')
+        ) &&
+        !( // INCLUDED
+            fte.path.startsWith("com/google/api")
+            || fte.path.startsWith("com/google/auth")
+            || fte.path.startsWith("com/google/common")
+            || fte.path.startsWith("com/google/gson")
+            || fte.path.startsWith("com/google/protobuf")
+            || fte.path.startsWith("com/google/longrunning")
+            || fte.path.startsWith("com/google/rpc")
+            || fte.path.startsWith("com/google/cloud/datalineage")
+            || fte.path.startsWith("com/google/cloud/datacatalog")
+            || fte.path.startsWith("org/threeten")
+            || fte.path == "com/google/cloud"
+            || fte.path == "org/"
+        )
+    }
+
     [
             'com.google.protobuf',
             'com.google.guava',
             'com.google.api',
             'com.google.auth',
+            'com.google.longrunning',
+            'com.google.rpc',
+            'com.google.cloud.datacatalog',
             'io.grpc',
+            'io.opencensus',
+            'io.perfmark',
             'com.google.common',
-            'com.google.gson'
+            'com.google.gson',
+            'org.threeten.bp'
     ].each { packageName ->
         relocate packageName, "datalineage.shaded.${packageName}"
     }
@@ -85,6 +124,7 @@ shadowJar {
     ].each { path ->
         relocate path, path.replaceFirst(/[^\/]+$/, { "datalineage_shaded_$it" })
     }
+
     mergeServiceFiles()
 }
 
@@ -99,15 +139,11 @@ publishing {
             version = '1.0.0'
             group = 'com.google.cloud.datalineage'
             artifactId = 'producerclient'
-            from components.java
-            versionMapping {
-                usage('java-api') {
-                    fromResolutionOf('runtimeClasspath')
-                }
-                usage('java-runtime') {
-                    fromResolutionResult()
-                }
-            }
+
+            artifact shadowJar
+            artifact javadocJar
+            artifact sourcesJar
+
             pom {
                 name = 'Java producer library for Data Lineage.'
                 description = 'Library that provides synchronous and asynchronous clients for interacting with the Google Cloud Data Lineage API.'
