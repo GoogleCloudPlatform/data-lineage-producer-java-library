@@ -33,7 +33,6 @@ repositories {
 dependencies {
     implementation platform('com.google.cloud:libraries-bom:26.37.0')
     implementation "com.google.cloud:google-cloud-datalineage"
-
     implementation "com.google.protobuf:protobuf-java-util:3.23.0"
     implementation 'com.google.api:gax:2.29.0'
     implementation 'com.google.api:gax-grpc:2.29.0'
