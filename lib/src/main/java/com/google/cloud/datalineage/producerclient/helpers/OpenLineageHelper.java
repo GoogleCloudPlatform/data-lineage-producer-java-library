@@ -21,6 +21,9 @@ import com.google.protobuf.util.JsonFormat;
 /** Helper class for working with OpenLineage messages */
 public class OpenLineageHelper {
 
+  /** Make this helper class non-instantiable */
+  private OpenLineageHelper() {}
+
   /** Converts a valid JSON String to a protobuf Struct */
   public static Struct jsonToStruct(String json) throws InvalidProtocolBufferException {
     Struct.Builder message = Struct.newBuilder();

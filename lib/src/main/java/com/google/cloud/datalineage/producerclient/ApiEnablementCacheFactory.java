@@ -18,6 +18,9 @@ package com.google.cloud.datalineage.producerclient;
 public class ApiEnablementCacheFactory {
   private static volatile ApiEnablementCache commonInstance;
 
+  /** Make the factory class non-instantiable */
+  private ApiEnablementCacheFactory() {}
+
   public static ApiEnablementCache get(ApiEnablementCacheSettings settings) {
     if (!settings.getEnabled()) {
       return new NoOpApiEnablementCache();
