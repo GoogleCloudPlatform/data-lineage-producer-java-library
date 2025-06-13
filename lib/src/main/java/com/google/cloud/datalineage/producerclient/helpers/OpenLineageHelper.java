@@ -21,10 +21,13 @@ import com.google.protobuf.util.JsonFormat;
 /** Helper class for working with OpenLineage messages */
 public class OpenLineageHelper {
 
-  /** Make this helper class non-instantiable */
-  private OpenLineageHelper() {}
-
-  /** Converts a valid JSON String to a protobuf Struct */
+  /**
+   * Converts a JSON string to a protobuf Struct.
+   *
+   * @param json The JSON string to be converted
+   * @return A Struct object representing the input JSON
+   * @throws InvalidProtocolBufferException If the input JSON is invalid or cannot be parsed
+   */
   public static Struct jsonToStruct(String json) throws InvalidProtocolBufferException {
     Struct.Builder message = Struct.newBuilder();
     JsonFormat.parser().ignoringUnknownFields().merge(json, message);

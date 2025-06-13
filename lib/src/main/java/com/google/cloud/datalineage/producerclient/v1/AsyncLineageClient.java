@@ -54,6 +54,7 @@ public interface AsyncLineageClient extends BackgroundResource {
    * }</pre>
    *
    * @param request Required. The request object that will be used to execute API call.
+   * @return An OperationFuture that represents the long-running operation.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   OperationFuture<Empty, OperationMetadata> deleteProcess(DeleteProcessRequest request);
@@ -73,6 +74,7 @@ public interface AsyncLineageClient extends BackgroundResource {
    * }</pre>
    *
    * @param request Required. The request object that will be used to execute API call.
+   * @return An OperationFuture that represents the long-running operation.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   OperationFuture<Empty, OperationMetadata> deleteRun(DeleteRunRequest request);
@@ -93,6 +95,7 @@ public interface AsyncLineageClient extends BackgroundResource {
    * }</pre>
    *
    * @param request Required. The request object that will be used to execute API call.
+   * @return ApiFuture that represents the asynchronous operation.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   ApiFuture<Empty> deleteLineageEvent(DeleteLineageEventRequest request);
@@ -111,6 +114,7 @@ public interface AsyncLineageClient extends BackgroundResource {
    * }</pre>
    *
    * @param request Required. The request object that will be used to execute API call.
+   * @return ApiFuture that represents the asynchronous operation.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   ApiFuture<Process> getProcess(GetProcessRequest request);
@@ -129,6 +133,7 @@ public interface AsyncLineageClient extends BackgroundResource {
    * }</pre>
    *
    * @param request Required. The request object that will be used to execute API call.
+   * @return ApiFuture that represents the asynchronous operation.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   ApiFuture<Run> getRun(GetRunRequest request);
@@ -148,6 +153,7 @@ public interface AsyncLineageClient extends BackgroundResource {
    * }</pre>
    *
    * @param request Required. The request object that will be used to execute API call.
+   * @return ApiFuture that represents the asynchronous operation.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   ApiFuture<LineageEvent> getLineageEvent(GetLineageEventRequest request);
@@ -169,6 +175,7 @@ public interface AsyncLineageClient extends BackgroundResource {
    * }</pre>
    *
    * @param request Required. The request object that will be used to execute API call.
+   * @return ApiFuture that represents the asynchronous operation.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   ApiFuture<ListProcessesPagedResponse> listProcesses(ListProcessesRequest request);
@@ -190,6 +197,7 @@ public interface AsyncLineageClient extends BackgroundResource {
    * }</pre>
    *
    * @param request Required. The request object that will be used to execute API call.
+   * @return ApiFuture that represents the asynchronous operation.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   ApiFuture<ListRunsPagedResponse> listRuns(ListRunsRequest request);
@@ -211,6 +219,7 @@ public interface AsyncLineageClient extends BackgroundResource {
    * }</pre>
    *
    * @param request Required. The request object that will be used to execute API call.
+   * @return ApiFuture that represents the asynchronous operation.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   ApiFuture<ListLineageEventsPagedResponse> listLineageEvents(ListLineageEventsRequest request);
@@ -229,6 +238,7 @@ public interface AsyncLineageClient extends BackgroundResource {
    * }</pre>
    *
    * @param request Required. The request object that will be used to execute API call.
+   * @return ApiFuture that represents the asynchronous operation.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   ApiFuture<ProcessOpenLineageRunEventResponse> processOpenLineageRunEvent(
