@@ -17,4 +17,4 @@
 # Fail on any error
 set -e
 
-./gradlew build
+./gradlew build shadowJar
