@@ -86,7 +86,7 @@ shadowJar {
     ]
 
     // exclude from shaded jar all packages starting with excludedPrefixes
-    // but keep those starting with includedPrefixes or includedExactPaths
+    // but keep those starting with includedPrefixes or containing exact paths from includedExactPaths
     exclude { FileTreeElement fte ->
         def isExcluded = excludedPrefixes.any { fte.path.startsWith(it) }
         def isIncluded = includedPrefixes.any { fte.path.startsWith(it) }
