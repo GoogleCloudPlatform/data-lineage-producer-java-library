@@ -70,35 +70,28 @@ shadowJar {
     archiveBaseName.set('data-lineage-producer-java-library')
     archiveClassifier.set('')
 
-    exclude 'android/**'
-    exclude 'javax/**'
-    exclude 'io.opentelemetry'
+    def excludedPrefixes = [
+            'android/', 'javax/', 'io/opentelemetry', 'com/google/', 'opencensus/', 'grpc/', 'google/', 'org/'
+    ]
 
-    // the closure was used to facilitate two functionalities
-    // 1. we would like to exclude using exact prefixes while e.g. traditional excluding 'google/**' excludes also 'io/google/**'
-    // 2. there are few exceptions we would like to make in general exclusions instead of manually excluding all libraries we don't want
+    def includedPrefixes = [
+            'com/google/api', 'com/google/auth', 'com/google/common',
+            'com/google/gson', 'com/google/protobuf', 'com/google/longrunning',
+            'com/google/rpc', 'com/google/cloud/datalineage',
+            'com/google/cloud/datacatalog', 'org/threeten'
+    ]
+
+    def includedExactPaths = [
+            'com/google/cloud', 'org'
+    ]
+
+    // exclude from shaded jar all packages starting with excludedPrefixes
+    // but keep those starting with includedPrefixes or includedExactPaths
     exclude { FileTreeElement fte ->
-        ( // EXCLUDED
-            fte.path.startsWith('com/google/')
-            || fte.path.startsWith('opencensus/')
-            || fte.path.startsWith('grpc/')
-            || fte.path.startsWith('google/')
-            || fte.path.startsWith('org/')
-        ) &&
-        !( // INCLUDED
-            fte.path.startsWith("com/google/api")
-            || fte.path.startsWith("com/google/auth")
-            || fte.path.startsWith("com/google/common")
-            || fte.path.startsWith("com/google/gson")
-            || fte.path.startsWith("com/google/protobuf")
-            || fte.path.startsWith("com/google/longrunning")
-            || fte.path.startsWith("com/google/rpc")
-            || fte.path.startsWith("com/google/cloud/datalineage")
-            || fte.path.startsWith("com/google/cloud/datacatalog")
-            || fte.path.startsWith("org/threeten")
-            || fte.path == "com/google/cloud"
-            || fte.path == "org/"
-        )
+        def isExcluded = excludedPrefixes.any { fte.path.startsWith(it) }
+        def isIncluded = includedPrefixes.any { fte.path.startsWith(it) }
+                || includedExactPaths.contains(fte.path)
+        return isExcluded && !isIncluded
     }
 
     [
