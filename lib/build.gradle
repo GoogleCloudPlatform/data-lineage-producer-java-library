@@ -68,14 +68,46 @@ test {
 
 shadowJar {
     archiveBaseName.set('data-lineage-producer-java-library')
+    archiveClassifier.set('')
+
+    def excludedPrefixes = [
+            'android/', 'javax/', 'io/opentelemetry', 'com/google/', 'opencensus/', 'grpc/', 'google/', 'org/'
+    ]
+
+    def includedPrefixes = [
+            'com/google/api', 'com/google/auth', 'com/google/common',
+            'com/google/gson', 'com/google/protobuf', 'com/google/longrunning',
+            'com/google/rpc', 'com/google/cloud/datalineage',
+            'com/google/cloud/datacatalog', 'org/threeten'
+    ]
+
+    def includedExactPaths = [
+            'com/google/cloud', 'org'
+    ]
+
+    // exclude from shaded jar all packages starting with excludedPrefixes
+    // but keep those starting with includedPrefixes or containing exact paths from includedExactPaths
+    exclude { FileTreeElement fte ->
+        def isExcluded = excludedPrefixes.any { fte.path.startsWith(it) }
+        def isIncluded = includedPrefixes.any { fte.path.startsWith(it) }
+                || includedExactPaths.contains(fte.path)
+        return isExcluded && !isIncluded
+    }
+
     [
             'com.google.protobuf',
             'com.google.guava',
             'com.google.api',
             'com.google.auth',
+            'com.google.longrunning',
+            'com.google.rpc',
+            'com.google.cloud.datacatalog',
             'io.grpc',
+            'io.opencensus',
+            'io.perfmark',
             'com.google.common',
-            'com.google.gson'
+            'com.google.gson',
+            'org.threeten.bp'
     ].each { packageName ->
         relocate packageName, "datalineage.shaded.${packageName}"
     }
@@ -85,6 +117,7 @@ shadowJar {
     ].each { path ->
         relocate path, path.replaceFirst(/[^\/]+$/, { "datalineage_shaded_$it" })
     }
+
     mergeServiceFiles()
 }
 
@@ -99,15 +132,11 @@ publishing {
             version = '1.0.0'
             group = 'com.google.cloud.datalineage'
             artifactId = 'producerclient'
-            from components.java
-            versionMapping {
-                usage('java-api') {
-                    fromResolutionOf('runtimeClasspath')
-                }
-                usage('java-runtime') {
-                    fromResolutionResult()
-                }
-            }
+
+            artifact shadowJar
+            artifact javadocJar
+            artifact sourcesJar
+
             pom {
                 name = 'Java producer library for Data Lineage.'
                 description = 'Library that provides synchronous and asynchronous clients for interacting with the Google Cloud Data Lineage API.'
