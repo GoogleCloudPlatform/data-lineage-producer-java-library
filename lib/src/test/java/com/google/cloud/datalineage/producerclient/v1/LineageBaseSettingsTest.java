@@ -35,7 +35,7 @@ public class LineageBaseSettingsTest {
   }
 
   @Test
-  public void Builder_initializesDefaultSettings() throws Exception {
+  public void builder_initializesDefaultSettings() throws Exception {
     LineageBaseSettings.Builder builder = new LineageBaseSettings.Builder();
 
     assertSettingsAreEqual(LineageBaseSettings.defaultInstance(), builder.build());
