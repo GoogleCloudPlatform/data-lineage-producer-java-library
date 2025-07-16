@@ -24,7 +24,7 @@ public interface ApiEnablementCache {
    *
    * @param projectName The project for which to disable the service
    * @see ApiEnablementCache#markServiceAsDisabled(String, Duration)
-   * */
+   */
   void markServiceAsDisabled(String projectName);
 
   /**
@@ -42,6 +42,6 @@ public interface ApiEnablementCache {
    *
    * @param projectName The project for which to disable the service
    * @return `true` is the service is marked as disabled
-   * */
+   */
   boolean isServiceMarkedAsDisabled(String projectName);
 }

@@ -59,7 +59,7 @@ dependencies {
     testImplementation "com.google.truth:truth:${truthVersion}"
     testImplementation "org.mockito:mockito-core:${mockitoVersion}"
     testImplementation "com.google.api:gax:${gaxTestLibVersion}:testlib"
-    testImplementation "com.google.testparameterinjector:test-parameter-${parameterInjectorVersion}"
+    testImplementation "com.google.testparameterinjector:test-parameter-injector:${parameterInjectorVersion}"
 }
 
 test {

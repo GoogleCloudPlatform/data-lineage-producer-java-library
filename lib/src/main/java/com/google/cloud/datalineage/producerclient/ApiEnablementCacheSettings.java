@@ -29,6 +29,7 @@ public final class ApiEnablementCacheSettings {
 
   /**
    * Uses common instance. If there is no such instance, creates one with default cache options.
+   *
    * @return The requested cache settings.
    */
   public static ApiEnablementCacheSettings getCommonInstance() {
@@ -37,7 +38,9 @@ public final class ApiEnablementCacheSettings {
   }
 
   /**
-   * Uses common instance. If there is no such instance, creates one using the provided cache options.
+   * Uses common instance. If there is no such instance, creates one using the provided cache
+   * options.
+   *
    * @param fallbackOptions The fallback cache options.
    * @return The requested cache settings.
    */
@@ -51,8 +54,9 @@ public final class ApiEnablementCacheSettings {
 
   /**
    * Uses stand-alone instance with default cache options.
+   *
    * @return The requested cache settings.
-   * */
+   */
   public static ApiEnablementCacheSettings getStandAloneInstance() {
     return new ApiEnablementCacheSettings(
         true, false, ApiEnablementCacheOptions.getDefaultInstance());
