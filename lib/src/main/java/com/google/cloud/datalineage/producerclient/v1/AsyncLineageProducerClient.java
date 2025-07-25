@@ -57,18 +57,27 @@ public final class AsyncLineageProducerClient implements BackgroundResource, Asy
   }
 
   static AsyncLineageProducerClient create(BasicLineageClient basicClient) throws IOException {
-    return new AsyncLineageProducerClient(basicClient);
+    return new AsyncLineageProducerClient(basicClient, 0L, TimeUnit.NANOSECONDS);
+  }
+  static AsyncLineageProducerClient create(BasicLineageClient basicClient, Long gracefulShutdownDuration, TimeUnit gracefulShutdownUnit) throws IOException {
+    return new AsyncLineageProducerClient(basicClient, gracefulShutdownDuration, gracefulShutdownUnit);
   }
 
   private final InternalClient client;
+  private final long gracefulShutdownDurationNanos;
 
   private AsyncLineageProducerClient(AsyncLineageProducerClientSettings settings)
       throws IOException {
     client = InternalClient.create(settings);
+    this.gracefulShutdownDurationNanos = settings.getGracefulShutdownUnit().toNanos(settings.getGracefulShutdownDuration());
   }
 
-  private AsyncLineageProducerClient(BasicLineageClient basicClient) throws IOException {
+  private AsyncLineageProducerClient(BasicLineageClient basicClient, Long gracefulShutdownDuration, TimeUnit gracefulShutdownUnit) throws IOException {
     client = InternalClient.create(basicClient);
+    if(gracefulShutdownDuration == null || gracefulShutdownUnit == null) {
+      throw new IllegalArgumentException("gracefulShutdownDuration and gracefulShutdownUnit cannot be null");
+    }
+    this.gracefulShutdownDurationNanos = gracefulShutdownDuration;
   }
 
   @Override
@@ -125,12 +134,24 @@ public final class AsyncLineageProducerClient implements BackgroundResource, Asy
 
   @Override
   public void close() throws Exception {
+    long start = System.nanoTime();
     client.close();
+    if(gracefulShutdownDurationNanos > 0) {
+      awaitTermination(System.nanoTime() - start - gracefulShutdownDurationNanos, TimeUnit.NANOSECONDS);
+    }
   }
 
   @Override
   public void shutdown() {
+    long start = System.nanoTime();
     client.shutdown();
+    if(gracefulShutdownDurationNanos > 0) {
+      try {
+        awaitTermination(System.nanoTime() - start - gracefulShutdownDurationNanos, TimeUnit.NANOSECONDS);
+      } catch (InterruptedException e) {
+        //TODO: LOG THAT IT HAPPENED IN SOME WAY CONSISTENT WITH THE GENERAL WAY OF LOGGING
+      }
+    }
   }
 
   @Override

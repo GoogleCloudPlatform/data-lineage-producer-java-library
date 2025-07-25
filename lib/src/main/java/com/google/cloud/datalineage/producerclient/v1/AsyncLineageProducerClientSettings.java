@@ -24,6 +24,7 @@ import com.google.api.gax.rpc.WatchdogProvider;
 import com.google.cloud.datacatalog.lineage.v1.stub.LineageStubSettings;
 import com.google.cloud.datalineage.producerclient.ApiEnablementCacheSettings;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 import org.threeten.bp.Duration;
 
@@ -32,6 +33,8 @@ import org.threeten.bp.Duration;
  * via Builder.
  */
 public final class AsyncLineageProducerClientSettings extends LineageBaseSettings {
+  private final Long gracefulShutdownDuration;
+  private final TimeUnit gracefulShutdownUnit;
 
   public static Builder newBuilder() {
     return Builder.createDefault();
@@ -47,6 +50,16 @@ public final class AsyncLineageProducerClientSettings extends LineageBaseSetting
 
   private AsyncLineageProducerClientSettings(Builder settingsBuilder) throws IOException {
     super(settingsBuilder);
+    this.gracefulShutdownDuration = settingsBuilder.gracefulShutdownDuration;
+    this.gracefulShutdownUnit = settingsBuilder.gracefulShutdownUnit;
+  }
+
+  public Long getGracefulShutdownDuration() {
+    return gracefulShutdownDuration;
+  }
+
+  public TimeUnit getGracefulShutdownUnit() {
+    return gracefulShutdownUnit;
   }
 
   /**
@@ -57,7 +70,8 @@ public final class AsyncLineageProducerClientSettings extends LineageBaseSetting
    * method.
    */
   public static final class Builder extends LineageBaseSettings.Builder {
-
+    private Long gracefulShutdownDuration = 0L;
+    private TimeUnit gracefulShutdownUnit = TimeUnit.NANOSECONDS;
     private static Builder createDefault() {
       return new Builder(LineageStubSettings.newBuilder());
     }
@@ -68,6 +82,8 @@ public final class AsyncLineageProducerClientSettings extends LineageBaseSetting
 
     Builder(AsyncLineageProducerClientSettings settings) {
       super(settings);
+      this.gracefulShutdownDuration = settings.gracefulShutdownDuration;
+      this.gracefulShutdownUnit = settings.gracefulShutdownUnit;
     }
 
     Builder(LineageStubSettings.Builder stubSettings) {
@@ -83,6 +99,24 @@ public final class AsyncLineageProducerClientSettings extends LineageBaseSetting
     public SyncLineageProducerClientSettings.Builder setConnectionCacheSettings(
         ApiEnablementCacheSettings settings) {
       return (SyncLineageProducerClientSettings.Builder) super.setConnectionCacheSettings(settings);
+    }
+
+    public Builder setGracefulShutdownDuration(Long gracefulShutdownDuration) {
+      this.gracefulShutdownDuration = gracefulShutdownDuration;
+      return this;
+    }
+
+    public Builder setGracefulShutdownTimeUnit(TimeUnit gracefulShutdownUnit) {
+      this.gracefulShutdownUnit = gracefulShutdownUnit;
+      return this;
+    }
+
+    public Long getGracefulShutdownDuration() {
+      return gracefulShutdownDuration;
+    }
+
+    public TimeUnit getGracefulShutdownUnit() {
+      return gracefulShutdownUnit;
     }
 
     @Override
