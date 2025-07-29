@@ -39,10 +39,10 @@ import io.grpc.protobuf.StatusProto;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.threeten.bp.Duration;
 
 /** Tests for AsyncLineageProducerClient. */
 public class AsyncLineageProducerClientTest {
@@ -105,27 +105,24 @@ public class AsyncLineageProducerClientTest {
 
   @Test
   public void gracefulShutdown_awaitsTerminationIfSet() throws Exception {
-    // objects passed to lambda must be final or effectively final, so we use arrays to store the values
-    long[] resultAwaitTerminationTime = new long[1];
-    final TimeUnit[] resultAwaitTerminationUnit = new TimeUnit[1];
+    // objects passed to lambda must be final or effectively final, so we use arrays to store the
+    // values
+    Duration[] resultAwaitTerminationTime = new Duration[1];
     AsyncLineageProducerClient asyncLineageProducerClient =
-            AsyncLineageProducerClient.create(basicLineageClient, 1L, TimeUnit.SECONDS);
+        AsyncLineageProducerClient.create(basicLineageClient, Duration.ofSeconds(1));
     doAnswer(
             invocation -> {
               resultAwaitTerminationTime[0] = invocation.getArgument(0);
-              resultAwaitTerminationUnit[0] = invocation.getArgument(1);
-              Thread.sleep(1000L);
               return true;
             })
-            .when(basicLineageClient)
-            .awaitTermination(anyLong(), any(TimeUnit.class));
+        .when(basicLineageClient)
+        .awaitTermination(anyLong(), any(TimeUnit.class));
 
     asyncLineageProducerClient.close();
     // Verify that the awaitTermination was called with the expected values
     // we cannot get the resultAwaitTerminationTime exactly, so we check reasonable scope
-    assertThat(resultAwaitTerminationTime[0]).isAtLeast(0);
-    assertThat(resultAwaitTerminationTime[0]).isAtMost(1000000L);
-    assertThat(resultAwaitTerminationUnit[0]).isEqualTo(TimeUnit.NANOSECONDS);
+    assertThat(resultAwaitTerminationTime[0]).isAtLeast(Duration.ZERO);
+    assertThat(resultAwaitTerminationTime[0]).isAtMost(Duration.ofSeconds(1));
   }
 
   private static Struct someOpenLineage() {

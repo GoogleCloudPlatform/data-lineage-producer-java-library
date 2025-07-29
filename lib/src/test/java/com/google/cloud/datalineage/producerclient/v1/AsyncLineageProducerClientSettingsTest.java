@@ -27,8 +27,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.threeten.bp.Duration;
 
-import java.util.concurrent.TimeUnit;
-
 /** * Test suite for AsyncLineageProducerClientSettingsTest */
 public class AsyncLineageProducerClientSettingsTest {
 
@@ -205,7 +203,7 @@ public class AsyncLineageProducerClientSettingsTest {
   public void builder_setGracefulShutdownDuration() {
     AsyncLineageProducerClientSettings.Builder builder =
         AsyncLineageProducerClientSettings.newBuilder();
-    Long gracefulShutdownDuration = 1000L; // 1 second
+    Duration gracefulShutdownDuration = Duration.ofSeconds(1); // 1 second
 
     AsyncLineageProducerClientSettings.Builder resultBuilder =
         builder.setGracefulShutdownDuration(gracefulShutdownDuration);
@@ -213,17 +211,4 @@ public class AsyncLineageProducerClientSettingsTest {
     assertNotNull(resultBuilder);
     assertEquals(gracefulShutdownDuration, resultBuilder.getGracefulShutdownDuration());
   }
-
-  @Test
-    public void builder_setGracefulShutdownUnit() {
-        AsyncLineageProducerClientSettings.Builder builder =
-            AsyncLineageProducerClientSettings.newBuilder();
-        TimeUnit gracefulShutdownUnit = TimeUnit.SECONDS;
-
-        AsyncLineageProducerClientSettings.Builder resultBuilder =
-            builder.setGracefulShutdownTimeUnit(gracefulShutdownUnit);
-
-        assertNotNull(resultBuilder);
-        assertEquals(gracefulShutdownUnit, resultBuilder.getGracefulShutdownUnit());
-    }
 }

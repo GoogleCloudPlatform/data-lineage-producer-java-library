@@ -38,6 +38,8 @@ import com.google.cloud.datacatalog.lineage.v1.Run;
 import com.google.protobuf.Empty;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import org.threeten.bp.Duration;
+import org.threeten.bp.Instant;
 
 /**
  * * Async producer client.
@@ -57,27 +59,27 @@ public final class AsyncLineageProducerClient implements BackgroundResource, Asy
   }
 
   static AsyncLineageProducerClient create(BasicLineageClient basicClient) throws IOException {
-    return new AsyncLineageProducerClient(basicClient, 0L, TimeUnit.NANOSECONDS);
+    return new AsyncLineageProducerClient(basicClient, Duration.ZERO);
   }
-  static AsyncLineageProducerClient create(BasicLineageClient basicClient, Long gracefulShutdownDuration, TimeUnit gracefulShutdownUnit) throws IOException {
-    return new AsyncLineageProducerClient(basicClient, gracefulShutdownDuration, gracefulShutdownUnit);
+
+  static AsyncLineageProducerClient create(
+      BasicLineageClient basicClient, Duration gracefulShutdownDuration) throws IOException {
+    return new AsyncLineageProducerClient(basicClient, gracefulShutdownDuration);
   }
 
   private final InternalClient client;
-  private final long gracefulShutdownDurationNanos;
+  private final Duration gracefulShutdownDuration;
 
   private AsyncLineageProducerClient(AsyncLineageProducerClientSettings settings)
       throws IOException {
     client = InternalClient.create(settings);
-    this.gracefulShutdownDurationNanos = settings.getGracefulShutdownUnit().toNanos(settings.getGracefulShutdownDuration());
+    this.gracefulShutdownDuration = settings.getGracefulShutdownDuration();
   }
 
-  private AsyncLineageProducerClient(BasicLineageClient basicClient, Long gracefulShutdownDuration, TimeUnit gracefulShutdownUnit) throws IOException {
+  private AsyncLineageProducerClient(
+      BasicLineageClient basicClient, Duration gracefulShutdownDuration) throws IOException {
     client = InternalClient.create(basicClient);
-    if(gracefulShutdownDuration == null || gracefulShutdownUnit == null) {
-      throw new IllegalArgumentException("gracefulShutdownDuration and gracefulShutdownUnit cannot be null");
-    }
-    this.gracefulShutdownDurationNanos = gracefulShutdownDuration;
+    this.gracefulShutdownDuration = gracefulShutdownDuration;
   }
 
   @Override
@@ -134,22 +136,26 @@ public final class AsyncLineageProducerClient implements BackgroundResource, Asy
 
   @Override
   public void close() throws Exception {
-    long start = System.nanoTime();
+    Instant start = Instant.now();
     client.close();
-    if(gracefulShutdownDurationNanos > 0) {
-      awaitTermination(System.nanoTime() - start - gracefulShutdownDurationNanos, TimeUnit.NANOSECONDS);
+    if (!gracefulShutdownDuration.isZero()) {
+      awaitTermination(
+          gracefulShutdownDuration.minus(Duration.between(start, Instant.now())).toNanos(),
+          TimeUnit.NANOSECONDS);
     }
   }
 
   @Override
   public void shutdown() {
-    long start = System.nanoTime();
+    Instant start = Instant.now();
     client.shutdown();
-    if(gracefulShutdownDurationNanos > 0) {
+    if (!gracefulShutdownDuration.isZero()) {
       try {
-        awaitTermination(System.nanoTime() - start - gracefulShutdownDurationNanos, TimeUnit.NANOSECONDS);
+        awaitTermination(
+            gracefulShutdownDuration.minus(Duration.between(start, Instant.now())).toNanos(),
+            TimeUnit.NANOSECONDS);
       } catch (InterruptedException e) {
-        //TODO: LOG THAT IT HAPPENED IN SOME WAY CONSISTENT WITH THE GENERAL WAY OF LOGGING
+        // TODO: LOG THAT IT HAPPENED IN SOME WAY CONSISTENT WITH THE GENERAL WAY OF LOGGING
       }
     }
   }
