@@ -37,6 +37,8 @@ ext {
     truthVersion = '1.1.3'
     mockitoVersion = '3.+'
     parameterInjectorVersion = '1.8'
+    slf4jVersion = '2.0.9'
+    logbackVersion = '1.4.14'
 }
 
 repositories {
@@ -54,12 +56,20 @@ dependencies {
     implementation "com.google.api:gax-httpjson:${gaxHttpJsonVersion}"
     implementation "io.grpc:grpc-protobuf:${grpcProtobufVersion}"
     implementation "com.google.guava:guava:${guavaVersion}"
+    
+    // SLF4J logging
+    implementation "org.slf4j:slf4j-api:${slf4jVersion}"
+    
     // Use JUnit test framework.
     testImplementation "junit:junit:${junitVersion}"
     testImplementation "com.google.truth:truth:${truthVersion}"
     testImplementation "org.mockito:mockito-core:${mockitoVersion}"
     testImplementation "com.google.api:gax:${gaxTestLibVersion}:testlib"
     testImplementation "com.google.testparameterinjector:test-parameter-injector:${parameterInjectorVersion}"
+    
+    // Test logging dependencies
+    testImplementation "ch.qos.logback:logback-classic:${logbackVersion}"
+    testImplementation "ch.qos.logback:logback-core:${logbackVersion}"
 }
 
 test {
