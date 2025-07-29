@@ -107,7 +107,7 @@ public class AsyncLineageProducerClientTest {
   public void gracefulShutdown_awaitsTerminationIfSet() throws Exception {
     // objects passed to lambda must be final or effectively final, so we use arrays to store the
     // values
-    Duration[] resultAwaitTerminationTime = new Duration[1];
+    long[] resultAwaitTerminationTime = new long[1];
     AsyncLineageProducerClient asyncLineageProducerClient =
         AsyncLineageProducerClient.create(basicLineageClient, Duration.ofSeconds(1));
     doAnswer(
@@ -121,8 +121,8 @@ public class AsyncLineageProducerClientTest {
     asyncLineageProducerClient.close();
     // Verify that the awaitTermination was called with the expected values
     // we cannot get the resultAwaitTerminationTime exactly, so we check reasonable scope
-    assertThat(resultAwaitTerminationTime[0]).isAtLeast(Duration.ZERO);
-    assertThat(resultAwaitTerminationTime[0]).isAtMost(Duration.ofSeconds(1));
+    assertThat(Duration.ofNanos(resultAwaitTerminationTime[0])).isAtLeast(Duration.ZERO);
+    assertThat(Duration.ofNanos(resultAwaitTerminationTime[0])).isAtMost(Duration.ofSeconds(1));
   }
 
   private static Struct someOpenLineage() {

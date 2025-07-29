@@ -39,6 +39,7 @@ ext {
     parameterInjectorVersion = '1.8'
     slf4jVersion = '2.0.9'
     logbackVersion = '1.4.14'
+    lombokVersion = '1.18.30'
 }
 
 repositories {
@@ -60,6 +61,10 @@ dependencies {
     // SLF4J logging
     implementation "org.slf4j:slf4j-api:${slf4jVersion}"
     
+    // Lombok for @Slf4j annotation
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    
     // Use JUnit test framework.
     testImplementation "junit:junit:${junitVersion}"
     testImplementation "com.google.truth:truth:${truthVersion}"
@@ -70,6 +75,10 @@ dependencies {
     // Test logging dependencies
     testImplementation "ch.qos.logback:logback-classic:${logbackVersion}"
     testImplementation "ch.qos.logback:logback-core:${logbackVersion}"
+    
+    // Test Lombok
+    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 }
 
 test {

@@ -35,8 +35,7 @@ import com.google.cloud.datacatalog.lineage.v1.Run;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * * Sync lineage producer client.
@@ -44,9 +43,8 @@ import org.slf4j.LoggerFactory;
  * <p>Implements SyncLineageClient using client library. This implementation also provides support
  * for connection cache.
  */
+@Slf4j
 public final class SyncLineageProducerClient implements SyncLineageClient {
-
-  private static final Logger logger = LoggerFactory.getLogger(SyncLineageProducerClient.class);
 
   public static SyncLineageProducerClient create() throws IOException {
     return create(SyncLineageProducerClientSettings.newBuilder().build());
@@ -73,8 +71,8 @@ public final class SyncLineageProducerClient implements SyncLineageClient {
 
   @Override
   public void deleteLineageEvent(DeleteLineageEventRequest request) {
-    if (logger.isDebugEnabled()) {
-      logger.debug("Deleting lineage event: {}", request.getName());
+    if (log.isDebugEnabled()) {
+      log.debug("Deleting lineage event: {}", request.getName());
     }
     ApiExceptions.callAndTranslateApiException(client.deleteLineageEvent(request));
   }
@@ -82,64 +80,64 @@ public final class SyncLineageProducerClient implements SyncLineageClient {
   @Override
   public void deleteProcess(DeleteProcessRequest request)
       throws ExecutionException, InterruptedException {
-    if (logger.isDebugEnabled()) {
-      logger.debug("Deleting process: {}", request.getName());
+    if (log.isDebugEnabled()) {
+      log.debug("Deleting process: {}", request.getName());
     }
     client.deleteProcess(request).get();
   }
 
   @Override
   public void deleteRun(DeleteRunRequest request) throws ExecutionException, InterruptedException {
-    if (logger.isDebugEnabled()) {
-      logger.debug("Deleting run: {}", request.getName());
+    if (log.isDebugEnabled()) {
+      log.debug("Deleting run: {}", request.getName());
     }
     client.deleteRun(request).get();
   }
 
   @Override
   public LineageEvent getLineageEvent(GetLineageEventRequest request) {
-    if (logger.isDebugEnabled()) {
-      logger.debug("Getting lineage event: {}", request.getName());
+    if (log.isDebugEnabled()) {
+      log.debug("Getting lineage event: {}", request.getName());
     }
     return ApiExceptions.callAndTranslateApiException(client.getLineageEvent(request));
   }
 
   @Override
   public Process getProcess(GetProcessRequest request) {
-    if (logger.isDebugEnabled()) {
-      logger.debug("Getting process: {}", request.getName());
+    if (log.isDebugEnabled()) {
+      log.debug("Getting process: {}", request.getName());
     }
     return ApiExceptions.callAndTranslateApiException(client.getProcess(request));
   }
 
   @Override
   public Run getRun(GetRunRequest request) {
-    if (logger.isDebugEnabled()) {
-      logger.debug("Getting run: {}", request.getName());
+    if (log.isDebugEnabled()) {
+      log.debug("Getting run: {}", request.getName());
     }
     return ApiExceptions.callAndTranslateApiException(client.getRun(request));
   }
 
   @Override
   public ListLineageEventsPagedResponse listLineageEvents(ListLineageEventsRequest request) {
-    if (logger.isDebugEnabled()) {
-      logger.debug("Listing lineage events with request: {}", request);
+    if (log.isDebugEnabled()) {
+      log.debug("Listing lineage events with request: {}", request);
     }
     return ApiExceptions.callAndTranslateApiException(client.listLineageEvents(request));
   }
 
   @Override
   public ListProcessesPagedResponse listProcesses(ListProcessesRequest request) {
-    if (logger.isDebugEnabled()) {
-      logger.debug("Listing processes with request: {}", request);
+    if (log.isDebugEnabled()) {
+      log.debug("Listing processes with request: {}", request);
     }
     return ApiExceptions.callAndTranslateApiException(client.listProcesses(request));
   }
 
   @Override
   public ListRunsPagedResponse listRuns(ListRunsRequest request) {
-    if (logger.isDebugEnabled()) {
-      logger.debug("Listing runs with request: {}", request);
+    if (log.isDebugEnabled()) {
+      log.debug("Listing runs with request: {}", request);
     }
     return ApiExceptions.callAndTranslateApiException(client.listRuns(request));
   }
@@ -147,8 +145,8 @@ public final class SyncLineageProducerClient implements SyncLineageClient {
   @Override
   public ProcessOpenLineageRunEventResponse processOpenLineageRunEvent(
       ProcessOpenLineageRunEventRequest request) {
-    if (logger.isDebugEnabled()) {
-      logger.debug("Processing OpenLineage run event: {}", request.getOpenLineage());
+    if (log.isDebugEnabled()) {
+      log.debug("Processing OpenLineage run event: {}", request.getOpenLineage());
     }
     return ApiExceptions.callAndTranslateApiException(client.processOpenLineageRunEvent(request));
   }

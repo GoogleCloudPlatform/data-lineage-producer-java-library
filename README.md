@@ -16,6 +16,56 @@ Or, for a shadow jar:
 ```
 
 The output will be located at `lib/build/libs`.
+
+## Logging
+
+This library uses [SLF4J](https://www.slf4j.org/) for logging. To see log output, you need to include an SLF4J binding in your application dependencies.
+
+### Adding a logging implementation
+
+For Logback (recommended):
+```xml
+<dependency>
+    <groupId>ch.qos.logback</groupId>
+    <artifactId>logback-classic</artifactId>
+    <version>1.4.14</version>
+</dependency>
+```
+
+For Log4j2:
+```xml
+<dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-slf4j2-impl</artifactId>
+    <version>2.20.0</version>
+</dependency>
+```
+
+### Configuring log levels
+
+The library logs at different levels:
+- **INFO**: Client creation, cache initialization, shutdown events
+- **WARN**: Service disruptions, graceful shutdown timeouts, API errors
+- **DEBUG**: Detailed API call information, cache operations
+
+Example Logback configuration (`logback.xml`):
+```xml
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Set debug level for data lineage producer client -->
+    <logger name="com.google.cloud.datalineage.producerclient" level="DEBUG"/>
+    
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>
+```
+
 ## Performing calls
 To perform a call, you need to:
 1. Create a client

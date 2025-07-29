@@ -21,8 +21,10 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.rpc.ErrorInfo;
 import com.google.rpc.Status;
 import io.grpc.protobuf.StatusProto;
+import lombok.extern.slf4j.Slf4j;
 
 /** Set of helpers for Grpc handling. */
+@Slf4j
 public class GrpcHelper {
 
   /** Make this helper class non-instantiable */
@@ -35,8 +37,11 @@ public class GrpcHelper {
    * @return string with value from reason field
    */
   public static String getReason(Throwable grpcException) {
+    log.debug("Extracting reason from gRPC exception: {}", grpcException.getMessage());
     Status statusProto = StatusProto.fromThrowable(grpcException);
     if (statusProto == null) {
+      log.error(
+          "Provided throwable is not a gRPC exception: {}", grpcException.getClass().getName());
       throw new IllegalArgumentException("Provided throwable is not a Grpc exception");
     }
     /* Status is a standard way to represent API error.
@@ -50,12 +55,16 @@ public class GrpcHelper {
     for (Any any : statusProto.getDetailsList()) {
       if (any.is(ErrorInfo.class)) {
         try {
-          return any.unpack(ErrorInfo.class).getReason();
+          String reason = any.unpack(ErrorInfo.class).getReason();
+          log.debug("Successfully extracted reason from ErrorInfo: {}", reason);
+          return reason;
         } catch (InvalidProtocolBufferException exception) {
+          log.error("Invalid protocol buffer message while extracting ErrorInfo", exception);
           throw new IllegalArgumentException("Invalid protocol buffer message", exception);
         }
       }
     }
+    log.warn("Message does not contain ErrorInfo for exception: {}", grpcException.getMessage());
     throw new IllegalArgumentException("Message does not contain ErrorInfo", grpcException);
   }
 
