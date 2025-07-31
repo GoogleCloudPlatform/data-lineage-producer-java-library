@@ -35,6 +35,7 @@ import com.google.cloud.datacatalog.lineage.v1.Run;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * * Sync lineage producer client.
@@ -42,6 +43,7 @@ import java.util.concurrent.TimeUnit;
  * <p>Implements SyncLineageClient using client library. This implementation also provides support
  * for connection cache.
  */
+@Slf4j
 public final class SyncLineageProducerClient implements SyncLineageClient {
 
   public static SyncLineageProducerClient create() throws IOException {
@@ -69,53 +71,63 @@ public final class SyncLineageProducerClient implements SyncLineageClient {
 
   @Override
   public void deleteLineageEvent(DeleteLineageEventRequest request) {
+    log.debug("Deleting lineage event: {}", request.getName());
     ApiExceptions.callAndTranslateApiException(client.deleteLineageEvent(request));
   }
 
   @Override
   public void deleteProcess(DeleteProcessRequest request)
       throws ExecutionException, InterruptedException {
+    log.debug("Deleting process: {}", request.getName());
     client.deleteProcess(request).get();
   }
 
   @Override
   public void deleteRun(DeleteRunRequest request) throws ExecutionException, InterruptedException {
+    log.debug("Deleting run: {}", request.getName());
     client.deleteRun(request).get();
   }
 
   @Override
   public LineageEvent getLineageEvent(GetLineageEventRequest request) {
+    log.debug("Getting lineage event: {}", request.getName());
     return ApiExceptions.callAndTranslateApiException(client.getLineageEvent(request));
   }
 
   @Override
   public Process getProcess(GetProcessRequest request) {
+    log.debug("Getting process: {}", request.getName());
     return ApiExceptions.callAndTranslateApiException(client.getProcess(request));
   }
 
   @Override
   public Run getRun(GetRunRequest request) {
+    log.debug("Getting run: {}", request.getName());
     return ApiExceptions.callAndTranslateApiException(client.getRun(request));
   }
 
   @Override
   public ListLineageEventsPagedResponse listLineageEvents(ListLineageEventsRequest request) {
+    log.debug("Listing lineage events for parent: {}", request.getParent());
     return ApiExceptions.callAndTranslateApiException(client.listLineageEvents(request));
   }
 
   @Override
   public ListProcessesPagedResponse listProcesses(ListProcessesRequest request) {
+    log.debug("Listing processes for parent: {}", request.getParent());
     return ApiExceptions.callAndTranslateApiException(client.listProcesses(request));
   }
 
   @Override
   public ListRunsPagedResponse listRuns(ListRunsRequest request) {
+    log.debug("Listing runs for parent: {}", request.getParent());
     return ApiExceptions.callAndTranslateApiException(client.listRuns(request));
   }
 
   @Override
   public ProcessOpenLineageRunEventResponse processOpenLineageRunEvent(
       ProcessOpenLineageRunEventRequest request) {
+    log.debug("Processing OpenLineage run event: {}", request.getOpenLineage());
     return ApiExceptions.callAndTranslateApiException(client.processOpenLineageRunEvent(request));
   }
 

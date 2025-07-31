@@ -38,6 +38,9 @@ import com.google.cloud.datacatalog.lineage.v1.Run;
 import com.google.protobuf.Empty;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
+import org.threeten.bp.Duration;
+import org.threeten.bp.Instant;
 
 /**
  * * Async producer client.
@@ -45,6 +48,7 @@ import java.util.concurrent.TimeUnit;
  * <p>Implements AsyncLineageClient using client library. This implementation also provides support
  * for connection cache.
  */
+@Slf4j
 public final class AsyncLineageProducerClient implements BackgroundResource, AsyncLineageClient {
 
   public static AsyncLineageProducerClient create() throws IOException {
@@ -53,84 +57,114 @@ public final class AsyncLineageProducerClient implements BackgroundResource, Asy
 
   public static AsyncLineageProducerClient create(AsyncLineageProducerClientSettings settings)
       throws IOException {
+    log.debug(
+        "Creating AsyncLineageProducerClient with graceful shutdown duration: {}",
+        settings.getGracefulShutdownDuration());
     return new AsyncLineageProducerClient(settings);
   }
 
   static AsyncLineageProducerClient create(BasicLineageClient basicClient) throws IOException {
-    return new AsyncLineageProducerClient(basicClient);
+    return new AsyncLineageProducerClient(basicClient, Duration.ZERO);
+  }
+
+  static AsyncLineageProducerClient create(
+      BasicLineageClient basicClient, Duration gracefulShutdownDuration) throws IOException {
+    return new AsyncLineageProducerClient(basicClient, gracefulShutdownDuration);
   }
 
   private final InternalClient client;
+  private final Duration gracefulShutdownDuration;
 
   private AsyncLineageProducerClient(AsyncLineageProducerClientSettings settings)
       throws IOException {
     client = InternalClient.create(settings);
+    this.gracefulShutdownDuration = settings.getGracefulShutdownDuration();
   }
 
-  private AsyncLineageProducerClient(BasicLineageClient basicClient) throws IOException {
+  private AsyncLineageProducerClient(
+      BasicLineageClient basicClient, Duration gracefulShutdownDuration) throws IOException {
     client = InternalClient.create(basicClient);
+    this.gracefulShutdownDuration = gracefulShutdownDuration;
   }
 
   @Override
   public ApiFuture<Empty> deleteLineageEvent(DeleteLineageEventRequest request) {
+    log.debug("Deleting lineage event: {}", request.getName());
     return client.deleteLineageEvent(request);
   }
 
   @Override
   public OperationFuture<Empty, OperationMetadata> deleteProcess(DeleteProcessRequest request) {
+    log.debug("Deleting process: {}", request.getName());
     return client.deleteProcess(request);
   }
 
   @Override
   public OperationFuture<Empty, OperationMetadata> deleteRun(DeleteRunRequest request) {
+    log.debug("Deleting run: {}", request.getName());
     return client.deleteRun(request);
   }
 
   @Override
   public ApiFuture<LineageEvent> getLineageEvent(GetLineageEventRequest request) {
+    log.debug("Getting lineage event: {}", request.getName());
     return client.getLineageEvent(request);
   }
 
   @Override
   public ApiFuture<Process> getProcess(GetProcessRequest request) {
+    log.debug("Getting process: {}", request.getName());
     return client.getProcess(request);
   }
 
   @Override
   public ApiFuture<Run> getRun(GetRunRequest request) {
+    log.debug("Getting run: {}", request.getName());
     return client.getRun(request);
   }
 
   @Override
   public ApiFuture<ListLineageEventsPagedResponse> listLineageEvents(
       ListLineageEventsRequest request) {
+    log.debug("Listing lineage events for parent: {}", request.getParent());
     return client.listLineageEvents(request);
   }
 
   @Override
   public ApiFuture<ListProcessesPagedResponse> listProcesses(ListProcessesRequest request) {
+    log.debug("Listing processes for parent: {}", request.getParent());
     return client.listProcesses(request);
   }
 
   @Override
   public ApiFuture<ListRunsPagedResponse> listRuns(ListRunsRequest request) {
+    log.debug("Listing runs for parent: {}", request.getParent());
     return client.listRuns(request);
   }
 
   @Override
   public ApiFuture<ProcessOpenLineageRunEventResponse> processOpenLineageRunEvent(
       ProcessOpenLineageRunEventRequest request) {
+    log.debug("Processing OpenLineage run event: {}", request.getOpenLineage());
     return client.processOpenLineageRunEvent(request);
   }
 
   @Override
   public void close() throws Exception {
+    Instant start = Instant.now();
     client.close();
+    gracefulShutdown(start);
   }
 
   @Override
   public void shutdown() {
+    Instant start = Instant.now();
     client.shutdown();
+    try {
+      gracefulShutdown(start);
+    } catch (InterruptedException e) {
+      log.warn("Interrupted during shutdown", e);
+    }
   }
 
   @Override
@@ -151,5 +185,21 @@ public final class AsyncLineageProducerClient implements BackgroundResource, Asy
   @Override
   public boolean awaitTermination(long duration, TimeUnit unit) throws InterruptedException {
     return client.awaitTermination(duration, unit);
+  }
+
+  private void gracefulShutdown(Instant start) throws InterruptedException {
+    if (!gracefulShutdownDuration.isZero()) {
+      log.debug("Starting graceful shutdown with duration: {}", gracefulShutdownDuration);
+      boolean terminated =
+          awaitTermination(
+              gracefulShutdownDuration.minus(Duration.between(start, Instant.now())).toNanos(),
+              TimeUnit.NANOSECONDS);
+      if (!terminated) {
+        log.warn(
+            "AsyncLineageProducerClient did not terminate within the "
+                + "graceful shutdown duration: {}",
+            gracefulShutdownDuration);
+      }
+    }
   }
 }

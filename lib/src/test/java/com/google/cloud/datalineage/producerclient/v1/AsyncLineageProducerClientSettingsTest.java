@@ -198,4 +198,17 @@ public class AsyncLineageProducerClientSettingsTest {
     assertNotNull(resultBuilder);
     assertEquals(mockExecutorProvider, resultBuilder.getBackgroundExecutorProvider());
   }
+
+  @Test
+  public void builder_setGracefulShutdownDuration() {
+    AsyncLineageProducerClientSettings.Builder builder =
+        AsyncLineageProducerClientSettings.newBuilder();
+    Duration gracefulShutdownDuration = Duration.ofSeconds(1); // 1 second
+
+    AsyncLineageProducerClientSettings.Builder resultBuilder =
+        builder.setGracefulShutdownDuration(gracefulShutdownDuration);
+
+    assertNotNull(resultBuilder);
+    assertEquals(gracefulShutdownDuration, resultBuilder.getGracefulShutdownDuration());
+  }
 }

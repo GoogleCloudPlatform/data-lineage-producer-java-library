@@ -16,6 +16,9 @@ package com.google.cloud.datalineage.producerclient.v1;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -35,9 +38,11 @@ import com.google.rpc.Status;
 import io.grpc.protobuf.StatusProto;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.threeten.bp.Duration;
 
 /** Tests for AsyncLineageProducerClient. */
 public class AsyncLineageProducerClientTest {
@@ -96,6 +101,28 @@ public class AsyncLineageProducerClientTest {
         assertThrows(ApiException.class, () -> client.processOpenLineageRunEvent(request))
             .getMessage()
             .contains("Data Lineage API is disabled in project"));
+  }
+
+  @Test
+  public void gracefulShutdown_awaitsTerminationIfSet() throws Exception {
+    // objects passed to lambda must be final or effectively final, so we use arrays to store the
+    // values
+    long[] resultAwaitTerminationTime = new long[1];
+    AsyncLineageProducerClient asyncLineageProducerClient =
+        AsyncLineageProducerClient.create(basicLineageClient, Duration.ofSeconds(1));
+    doAnswer(
+            invocation -> {
+              resultAwaitTerminationTime[0] = invocation.getArgument(0);
+              return true;
+            })
+        .when(basicLineageClient)
+        .awaitTermination(anyLong(), any(TimeUnit.class));
+
+    asyncLineageProducerClient.close();
+    // Verify that the awaitTermination was called with the expected values
+    // we cannot get the resultAwaitTerminationTime exactly, so we check reasonable scope
+    assertThat(Duration.ofNanos(resultAwaitTerminationTime[0])).isAtLeast(Duration.ZERO);
+    assertThat(Duration.ofNanos(resultAwaitTerminationTime[0])).isAtMost(Duration.ofSeconds(1));
   }
 
   private static Struct someOpenLineage() {

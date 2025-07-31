@@ -32,6 +32,7 @@ import org.threeten.bp.Duration;
  * via Builder.
  */
 public final class AsyncLineageProducerClientSettings extends LineageBaseSettings {
+  private final Duration gracefulShutdownDuration;
 
   public static Builder newBuilder() {
     return Builder.createDefault();
@@ -47,6 +48,11 @@ public final class AsyncLineageProducerClientSettings extends LineageBaseSetting
 
   private AsyncLineageProducerClientSettings(Builder settingsBuilder) throws IOException {
     super(settingsBuilder);
+    this.gracefulShutdownDuration = settingsBuilder.gracefulShutdownDuration;
+  }
+
+  public Duration getGracefulShutdownDuration() {
+    return gracefulShutdownDuration;
   }
 
   /**
@@ -57,6 +63,7 @@ public final class AsyncLineageProducerClientSettings extends LineageBaseSetting
    * method.
    */
   public static final class Builder extends LineageBaseSettings.Builder {
+    private Duration gracefulShutdownDuration = Duration.ZERO;
 
     private static Builder createDefault() {
       return new Builder(LineageStubSettings.newBuilder());
@@ -68,6 +75,7 @@ public final class AsyncLineageProducerClientSettings extends LineageBaseSetting
 
     Builder(AsyncLineageProducerClientSettings settings) {
       super(settings);
+      this.gracefulShutdownDuration = settings.gracefulShutdownDuration;
     }
 
     Builder(LineageStubSettings.Builder stubSettings) {
@@ -83,6 +91,15 @@ public final class AsyncLineageProducerClientSettings extends LineageBaseSetting
     public SyncLineageProducerClientSettings.Builder setConnectionCacheSettings(
         ApiEnablementCacheSettings settings) {
       return (SyncLineageProducerClientSettings.Builder) super.setConnectionCacheSettings(settings);
+    }
+
+    public Builder setGracefulShutdownDuration(Duration gracefulShutdownDuration) {
+      this.gracefulShutdownDuration = gracefulShutdownDuration;
+      return this;
+    }
+
+    public Duration getGracefulShutdownDuration() {
+      return gracefulShutdownDuration;
     }
 
     @Override

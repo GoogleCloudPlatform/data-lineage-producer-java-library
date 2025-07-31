@@ -37,6 +37,9 @@ ext {
     truthVersion = '1.1.3'
     mockitoVersion = '3.+'
     parameterInjectorVersion = '1.8'
+    slf4jVersion = '2.0.9'
+    logbackVersion = '1.4.14'
+    lombokVersion = '1.18.30'
 }
 
 repositories {
@@ -54,12 +57,28 @@ dependencies {
     implementation "com.google.api:gax-httpjson:${gaxHttpJsonVersion}"
     implementation "io.grpc:grpc-protobuf:${grpcProtobufVersion}"
     implementation "com.google.guava:guava:${guavaVersion}"
+    
+    // SLF4J logging
+    implementation "org.slf4j:slf4j-api:${slf4jVersion}"
+    
+    // Lombok for @Slf4j annotation
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    
     // Use JUnit test framework.
     testImplementation "junit:junit:${junitVersion}"
     testImplementation "com.google.truth:truth:${truthVersion}"
     testImplementation "org.mockito:mockito-core:${mockitoVersion}"
     testImplementation "com.google.api:gax:${gaxTestLibVersion}:testlib"
     testImplementation "com.google.testparameterinjector:test-parameter-injector:${parameterInjectorVersion}"
+    
+    // Test logging dependencies
+    testImplementation "ch.qos.logback:logback-classic:${logbackVersion}"
+    testImplementation "ch.qos.logback:logback-core:${logbackVersion}"
+    
+    // Test Lombok
+    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 }
 
 test {

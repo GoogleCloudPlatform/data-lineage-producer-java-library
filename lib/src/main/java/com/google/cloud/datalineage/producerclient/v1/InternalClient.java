@@ -48,9 +48,12 @@ import com.google.protobuf.Empty;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Wraps standard lineage client and provides common functionalities. */
 final class InternalClient implements AsyncLineageClient {
+  private static final Logger logger = LoggerFactory.getLogger(AsyncLineageProducerClient.class);
 
   static InternalClient create() throws IOException {
     return create(LineageBaseSettings.defaultInstance());
@@ -183,13 +186,22 @@ final class InternalClient implements AsyncLineageClient {
         new ApiFutureCallback<>() {
           @Override
           public void onFailure(Throwable exception) {
+            logger.error(
+                "Failed to call API for resource {}: {}",
+                resourceName,
+                exception.getMessage(),
+                exception);
             if (GrpcHelper.getReason(exception).equals("SERVICE_DISABLED")) {
               apiEnablementCache.markServiceAsDisabled(projectName);
             }
           }
 
           @Override
-          public void onSuccess(Object result) {}
+          public void onSuccess(Object result) {
+            if (logger.isDebugEnabled()) {
+              logger.debug("Successfully called API for resource: {}", resourceName);
+            }
+          }
         },
         MoreExecutors.directExecutor());
 
