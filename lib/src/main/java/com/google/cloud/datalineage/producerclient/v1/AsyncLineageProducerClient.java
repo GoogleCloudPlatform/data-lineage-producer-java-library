@@ -89,83 +89,63 @@ public final class AsyncLineageProducerClient implements BackgroundResource, Asy
 
   @Override
   public ApiFuture<Empty> deleteLineageEvent(DeleteLineageEventRequest request) {
-    if (log.isDebugEnabled()) {
-      log.debug("Deleting lineage event: {}", request.getName());
-    }
+    log.debug("Deleting lineage event: {}", request.getName());
     return client.deleteLineageEvent(request);
   }
 
   @Override
   public OperationFuture<Empty, OperationMetadata> deleteProcess(DeleteProcessRequest request) {
-    if (log.isDebugEnabled()) {
-      log.debug("Deleting process: {}", request.getName());
-    }
+    log.debug("Deleting process: {}", request.getName());
     return client.deleteProcess(request);
   }
 
   @Override
   public OperationFuture<Empty, OperationMetadata> deleteRun(DeleteRunRequest request) {
-    if (log.isDebugEnabled()) {
-      log.debug("Deleting run: {}", request.getName());
-    }
+    log.debug("Deleting run: {}", request.getName());
     return client.deleteRun(request);
   }
 
   @Override
   public ApiFuture<LineageEvent> getLineageEvent(GetLineageEventRequest request) {
-    if (log.isDebugEnabled()) {
-      log.debug("Getting lineage event: {}", request.getName());
-    }
+    log.debug("Getting lineage event: {}", request.getName());
     return client.getLineageEvent(request);
   }
 
   @Override
   public ApiFuture<Process> getProcess(GetProcessRequest request) {
-    if (log.isDebugEnabled()) {
-      log.debug("Getting process: {}", request.getName());
-    }
+    log.debug("Getting process: {}", request.getName());
     return client.getProcess(request);
   }
 
   @Override
   public ApiFuture<Run> getRun(GetRunRequest request) {
-    if (log.isDebugEnabled()) {
-      log.debug("Getting run: {}", request.getName());
-    }
+    log.debug("Getting run: {}", request.getName());
     return client.getRun(request);
   }
 
   @Override
   public ApiFuture<ListLineageEventsPagedResponse> listLineageEvents(
       ListLineageEventsRequest request) {
-    if (log.isDebugEnabled()) {
-      log.debug("Listing lineage events for request: {}", request);
-    }
+    log.debug("Listing lineage events for parent: {}", request.getParent());
     return client.listLineageEvents(request);
   }
 
   @Override
   public ApiFuture<ListProcessesPagedResponse> listProcesses(ListProcessesRequest request) {
-    if (log.isDebugEnabled()) {
-      log.debug("Listing processes for request: {}", request);
-    }
+    log.debug("Listing processes for parent: {}", request.getParent());
     return client.listProcesses(request);
   }
 
   @Override
   public ApiFuture<ListRunsPagedResponse> listRuns(ListRunsRequest request) {
-    if (log.isDebugEnabled()) {
-      log.debug("Listing runs for request: {}", request);
-    }
+    log.debug("Listing runs for parent: {}", request.getParent());
     return client.listRuns(request);
   }
 
   @Override
   public ApiFuture<ProcessOpenLineageRunEventResponse> processOpenLineageRunEvent(
       ProcessOpenLineageRunEventRequest request) {
-    if (log.isDebugEnabled()) {
-      log.debug("Processing OpenLineage run event: {}", request.getOpenLineage());
-    }
+    log.debug("Processing OpenLineage run event: {}", request.getOpenLineage());
     return client.processOpenLineageRunEvent(request);
   }
 
@@ -209,9 +189,7 @@ public final class AsyncLineageProducerClient implements BackgroundResource, Asy
 
   private void gracefulShutdown(Instant start) throws InterruptedException {
     if (!gracefulShutdownDuration.isZero()) {
-      if (log.isDebugEnabled()) {
-        log.debug("Starting graceful shutdown with duration: {}", gracefulShutdownDuration);
-      }
+      log.debug("Starting graceful shutdown with duration: {}", gracefulShutdownDuration);
       boolean terminated =
           awaitTermination(
               gracefulShutdownDuration.minus(Duration.between(start, Instant.now())).toNanos(),

@@ -34,13 +34,11 @@ public class StandardApiEnablementCache implements ApiEnablementCache {
   private final Clock clock;
 
   StandardApiEnablementCache(ApiEnablementCacheOptions options) {
-    if (log.isDebugEnabled()) {
-      log.debug(
-          "Initializing StandardApiEnablementCache with cache size: {}, "
-              + "default disabled duration: {}",
-          options.getCacheSize(),
-          options.getDefaultCacheDisabledStatusTime());
-    }
+    log.debug(
+        "Initializing StandardApiEnablementCache with cache size: {}, "
+            + "default disabled duration: {}",
+        options.getCacheSize(),
+        options.getDefaultCacheDisabledStatusTime());
     defaultCacheDisabledStatusTime = options.getDefaultCacheDisabledStatusTime();
     clock = options.getClock();
 
