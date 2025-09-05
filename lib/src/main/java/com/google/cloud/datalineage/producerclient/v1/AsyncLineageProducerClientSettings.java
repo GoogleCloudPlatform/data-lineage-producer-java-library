@@ -63,7 +63,7 @@ public final class AsyncLineageProducerClientSettings extends LineageBaseSetting
    * method.
    */
   public static final class Builder extends LineageBaseSettings.Builder {
-    private Duration gracefulShutdownDuration = Duration.ZERO;
+    private Duration gracefulShutdownDuration = Duration.ofMinutes(1);
 
     private static Builder createDefault() {
       return new Builder(LineageStubSettings.newBuilder());

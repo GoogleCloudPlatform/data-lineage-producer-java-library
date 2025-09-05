@@ -64,7 +64,7 @@ public final class AsyncLineageProducerClient implements BackgroundResource, Asy
   }
 
   static AsyncLineageProducerClient create(BasicLineageClient basicClient) throws IOException {
-    return new AsyncLineageProducerClient(basicClient, Duration.ZERO);
+    return new AsyncLineageProducerClient(basicClient, Duration.ofMinutes(1));
   }
 
   static AsyncLineageProducerClient create(
