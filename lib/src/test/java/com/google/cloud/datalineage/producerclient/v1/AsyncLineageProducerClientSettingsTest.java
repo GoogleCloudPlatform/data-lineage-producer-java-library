@@ -203,7 +203,7 @@ public class AsyncLineageProducerClientSettingsTest {
   public void builder_setGracefulShutdownDuration() {
     AsyncLineageProducerClientSettings.Builder builder =
         AsyncLineageProducerClientSettings.newBuilder();
-    Duration gracefulShutdownDuration = Duration.ofSeconds(1); // 1 second
+    Duration gracefulShutdownDuration = Duration.ofSeconds(2);
 
     AsyncLineageProducerClientSettings.Builder resultBuilder =
         builder.setGracefulShutdownDuration(gracefulShutdownDuration);
