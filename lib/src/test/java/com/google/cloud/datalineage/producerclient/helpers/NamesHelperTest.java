@@ -28,13 +28,13 @@ public class NamesHelperTest {
   @Test
   public void getProjectNameWithLocationFromResourceName_baseCase(
       @TestParameter({
-            "a",
-            "bcd123",
-            "efg-hij",
-            "klm-0456789-nopqrs",
-            "0",
-            "112355",
-            "9223372036854775807",
+         "a",
+         "bcd123",
+         "efg-hij",
+         "klm-0456789-nopqrs",
+         "0",
+         "112355",
+         "9223372036854775807",
           })
           String projectNamesOrId) {
     String projectName = "projects/" + projectNamesOrId + "/locations/location";
