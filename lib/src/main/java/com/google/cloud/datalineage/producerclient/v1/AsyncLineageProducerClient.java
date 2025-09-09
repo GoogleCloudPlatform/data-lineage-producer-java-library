@@ -71,7 +71,8 @@ public final class AsyncLineageProducerClient implements BackgroundResource, Asy
 
   @VisibleForTesting
   static AsyncLineageProducerClient create(
-      BasicLineageClient basicClient, AsyncLineageProducerClientSettings settings) throws IOException {
+      BasicLineageClient basicClient, AsyncLineageProducerClientSettings settings)
+      throws IOException {
     return new AsyncLineageProducerClient(basicClient, settings);
   }
 
@@ -84,7 +85,8 @@ public final class AsyncLineageProducerClient implements BackgroundResource, Asy
     this.gracefulShutdownDuration = settings.getGracefulShutdownDuration();
   }
 
-  private AsyncLineageProducerClient(BasicLineageClient basicClient, AsyncLineageProducerClientSettings settings) throws IOException {
+  private AsyncLineageProducerClient(BasicLineageClient basicClient,
+      AsyncLineageProducerClientSettings settings) throws IOException {
     client = InternalClient.create(basicClient);
     this.gracefulShutdownDuration = settings.getGracefulShutdownDuration();
   }

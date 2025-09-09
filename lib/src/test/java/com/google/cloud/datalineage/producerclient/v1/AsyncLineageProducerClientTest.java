@@ -46,7 +46,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.threeten.bp.Duration;
 
-/** Tests for AsyncLineageProducerClient. */
+/**
+ * Tests for AsyncLineageProducerClient.
+ */
 public class AsyncLineageProducerClientTest {
 
   private static final String PROJECT_NAME_AND_LOCATION = "projects/test/locations/test";
@@ -113,10 +115,10 @@ public class AsyncLineageProducerClientTest {
     AsyncLineageProducerClient asyncLineageProducerClient =
         AsyncLineageProducerClient.create(basicLineageClient);
     doAnswer(
-            invocation -> {
-              resultAwaitTerminationTime[0] = invocation.getArgument(0);
-              return true;
-            })
+        invocation -> {
+          resultAwaitTerminationTime[0] = invocation.getArgument(0);
+          return true;
+        })
         .when(basicLineageClient)
         .awaitTermination(anyLong(), any(TimeUnit.class));
 

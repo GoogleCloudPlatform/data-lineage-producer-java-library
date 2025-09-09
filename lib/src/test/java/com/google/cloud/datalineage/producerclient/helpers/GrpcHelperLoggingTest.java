@@ -33,7 +33,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.slf4j.LoggerFactory;
 
-/** Tests logging functionality in GrpcHelper. */
+/**
+ * Tests logging functionality in GrpcHelper.
+ */
 @RunWith(JUnit4.class)
 public class GrpcHelperLoggingTest {
 
@@ -90,11 +92,8 @@ public class GrpcHelperLoggingTest {
     assertThat(reason).isEqualTo("API_DISABLED");
 
     // Verify debug logging
-    boolean found =
-        testAppender.getMessagesAtLevel(Level.DEBUG).stream()
-            .anyMatch(
-                log -> log.contains("Successfully extracted reason from ErrorInfo: API_DISABLED"));
-    assertThat(found).isTrue();
+    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG)).contains(
+        "Successfully extracted reason from ErrorInfo: API_DISABLED");
   }
 
   @Test
@@ -124,11 +123,8 @@ public class GrpcHelperLoggingTest {
     assertThat(thrown.getMessage()).contains("Invalid protocol buffer message");
 
     // Verify error logging
-    boolean found =
-        testAppender.getMessagesAtLevel(Level.ERROR).stream()
-            .anyMatch(
-                log -> log.contains("Invalid protocol buffer message while extracting ErrorInfo"));
-    assertThat(found).isTrue();
+    assertThat(testAppender.getMessagesAtLevel(Level.ERROR)).contains(
+        "Invalid protocol buffer message while extracting ErrorInfo");
   }
 
   @Test
@@ -151,14 +147,9 @@ public class GrpcHelperLoggingTest {
     assertThat(thrown.getMessage()).contains("Message does not contain ErrorInfo");
 
     // Verify warning logging
-    boolean found =
-        testAppender.getMessagesAtLevel(Level.WARN).stream()
-            .anyMatch(
-                log ->
-                    log.contains(
-                        "Message does not contain ErrorInfo for exception:"
-                            + " FAILED_PRECONDITION: API is disabled"));
-    assertThat(found).isTrue();
+    assertThat(testAppender.getMessagesAtLevel(Level.WARN)).contains(
+        "Message does not contain ErrorInfo for exception:"
+            + " FAILED_PRECONDITION: API is disabled");
   }
 
   @Test
