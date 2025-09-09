@@ -126,8 +126,8 @@ public class AsyncLineageProducerClientTest {
     // Verify that the awaitTermination was called with the expected values
     // we cannot get the resultAwaitTerminationTime exactly, so we check reasonable scope
     assertThat(Duration.ofNanos(resultAwaitTerminationTime[0])).isAtLeast(Duration.ZERO);
-    assertThat(Duration.ofNanos(resultAwaitTerminationTime[0])).isAtMost(
-        DEFAULT_GRACEFUL_SHUTDOWN_DURATION.plus(ofSeconds(1)));
+    assertThat(Duration.ofNanos(resultAwaitTerminationTime[0]))
+        .isAtMost(DEFAULT_GRACEFUL_SHUTDOWN_DURATION.plus(ofSeconds(1)));
   }
 
   private static Struct someOpenLineage() {

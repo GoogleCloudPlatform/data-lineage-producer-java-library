@@ -84,8 +84,9 @@ public class AsyncLineageProducerClientLoggingTest {
       // Expected to fail in test environment, we're just testing logging
     }
     // Verify the debug log was created
-    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG)).contains(
-        "Deleting lineage event: projects/test-project/locations/us-central1/processes/test-process/runs/test-run/lineageEvents/test-event");
+    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG))
+        .contains(
+            "Deleting lineage event: projects/test-project/locations/us-central1/processes/test-process/runs/test-run/lineageEvents/test-event");
   }
 
   @Test
@@ -101,8 +102,9 @@ public class AsyncLineageProducerClientLoggingTest {
       // Expected to fail in test environment, we're just testing logging
     }
     // Verify the debug log was created
-    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG)).contains(
-        "Getting lineage event: projects/test-project/locations/us-central1/processes/test-process/runs/test-run/lineageEvents/test-event");
+    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG))
+        .contains(
+            "Getting lineage event: projects/test-project/locations/us-central1/processes/test-process/runs/test-run/lineageEvents/test-event");
   }
 
   @Test
@@ -117,8 +119,8 @@ public class AsyncLineageProducerClientLoggingTest {
       // Expected to fail in test environment, we're just testing logging
     }
     // Verify the debug log was created
-    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG)).contains(
-        "Processing OpenLineage run event: ");
+    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG))
+        .contains("Processing OpenLineage run event: ");
   }
 
   @Test
@@ -133,9 +135,8 @@ public class AsyncLineageProducerClientLoggingTest {
       // Expected to fail in test environment, we're just testing logging
     }
     // Verify the debug log was created
-    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG)).contains(
-        "Listing processes for parent: "
-            + "projects/test-project/locations/us-central1");
+    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG))
+        .contains("Listing processes for parent: " + "projects/test-project/locations/us-central1");
   }
 
   @Test
@@ -152,8 +153,8 @@ public class AsyncLineageProducerClientLoggingTest {
       // Expected to fail in test environment, we're just testing logging
     }
     // Verify the debug log includes parent (parameters are not logged individually)
-    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG)).contains(
-        "Listing processes for parent: projects/test-project/locations/us-central1");
+    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG))
+        .contains("Listing processes for parent: projects/test-project/locations/us-central1");
   }
 
   @Test
@@ -161,8 +162,8 @@ public class AsyncLineageProducerClientLoggingTest {
     // Test graceful shutdown logging
     client.close();
     // Verify shutdown logging
-    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG)).contains(
-        "Starting graceful shutdown with duration: PT30S");
+    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG))
+        .contains("Starting graceful shutdown with duration: PT30S");
   }
 
   @Test
@@ -178,8 +179,9 @@ public class AsyncLineageProducerClientLoggingTest {
     hardShutdownClient.close();
 
     // Verify hard-shutdown message is printed
-    assertThat(testAppender.getMessagesAtLevel(Level.WARN)).contains(
-        "AsyncLineageProducerClient graceful shutdown duration was set to zero. This effectively means hard shutdown");
+    assertThat(testAppender.getMessagesAtLevel(Level.WARN))
+        .contains(
+            "AsyncLineageProducerClient graceful shutdown duration was set to zero. This effectively means hard shutdown");
   }
 
   @Test
@@ -215,9 +217,10 @@ public class AsyncLineageProducerClientLoggingTest {
     }
 
     // Verify timeout warning was logged
-    assertThat(testAppender.getMessagesAtLevel(Level.WARN)).contains(
-        "AsyncLineageProducerClient did not terminate within the"
-            + " graceful shutdown duration");
+    assertThat(testAppender.getMessagesAtLevel(Level.WARN))
+        .contains(
+            "AsyncLineageProducerClient did not terminate within the"
+                + " graceful shutdown duration");
     shortTimeoutClient.shutdownNow();
   }
 }

@@ -73,9 +73,10 @@ public class StandardApiEnablementCacheLoggingTest {
   @Test
   public void testCacheInitializationLogging() {
     // Verify that cache initialization is logged
-    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG)).contains(
-        "Initializing StandardApiEnablementCache with cache size: 100, "
-            + "default disabled duration: PT5M");
+    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG))
+        .contains(
+            "Initializing StandardApiEnablementCache with cache size: 100, "
+                + "default disabled duration: PT5M");
   }
 
   @Test
@@ -88,9 +89,9 @@ public class StandardApiEnablementCacheLoggingTest {
     cache.markServiceAsDisabled(projectName, duration);
 
     // Verify that marking service as disabled is logged
-    assertThat(testAppender.getMessagesAtLevel(Level.WARN)).contains(
-        "Marking service as disabled for project 'test-project'"
-            + " for duration: PT10M");
+    assertThat(testAppender.getMessagesAtLevel(Level.WARN))
+        .contains(
+            "Marking service as disabled for project 'test-project'" + " for duration: PT10M");
   }
 
   @Test
@@ -102,8 +103,8 @@ public class StandardApiEnablementCacheLoggingTest {
     boolean result = cache.isServiceMarkedAsDisabled(projectName);
 
     assertThat(result).isFalse();
-    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG)).contains(
-        "No cache entry found for project: non-existent-project");
+    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG))
+        .contains("No cache entry found for project: non-existent-project");
   }
 
   @Test
@@ -143,7 +144,7 @@ public class StandardApiEnablementCacheLoggingTest {
     boolean result = cache.isServiceMarkedAsDisabled("test-project");
 
     assertThat(result).isFalse();
-    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG)).contains(
-        "Service disability has expired for project: test-project");
+    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG))
+        .contains("Service disability has expired for project: test-project");
   }
 }

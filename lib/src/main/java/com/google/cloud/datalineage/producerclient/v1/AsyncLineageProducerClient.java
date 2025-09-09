@@ -85,8 +85,9 @@ public final class AsyncLineageProducerClient implements BackgroundResource, Asy
     this.gracefulShutdownDuration = settings.getGracefulShutdownDuration();
   }
 
-  private AsyncLineageProducerClient(BasicLineageClient basicClient,
-      AsyncLineageProducerClientSettings settings) throws IOException {
+  private AsyncLineageProducerClient(
+      BasicLineageClient basicClient, AsyncLineageProducerClientSettings settings)
+      throws IOException {
     client = InternalClient.create(basicClient);
     this.gracefulShutdownDuration = settings.getGracefulShutdownDuration();
   }
@@ -200,7 +201,8 @@ public final class AsyncLineageProducerClient implements BackgroundResource, Asy
     log.debug("Starting graceful shutdown with duration: {}", gracefulShutdownDuration);
     boolean terminated =
         awaitTermination(
-            gracefulShutdownDuration.minus(Duration.between(shutdownStartedAt, Instant.now()))
+            gracefulShutdownDuration
+                .minus(Duration.between(shutdownStartedAt, Instant.now()))
                 .toNanos(),
             TimeUnit.NANOSECONDS);
     if (!terminated) {
