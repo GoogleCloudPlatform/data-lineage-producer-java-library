@@ -33,9 +33,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.slf4j.LoggerFactory;
 
-/**
- * Tests logging functionality in GrpcHelper.
- */
+/** Tests logging functionality in GrpcHelper. */
 @RunWith(JUnit4.class)
 public class GrpcHelperLoggingTest {
 
