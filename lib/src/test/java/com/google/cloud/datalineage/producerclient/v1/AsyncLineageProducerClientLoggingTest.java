@@ -76,7 +76,8 @@ public class AsyncLineageProducerClientLoggingTest {
     DeleteLineageEventRequest request =
         DeleteLineageEventRequest.newBuilder()
             .setName(
-                "projects/test-project/locations/us-central1/processes/test-process/runs/test-run/lineageEvents/test-event")
+                "projects/test-project/locations/us-central1/"
+                    + "processes/test-process/runs/test-run/lineageEvents/test-event")
             .build();
     try {
       client.deleteLineageEvent(request);

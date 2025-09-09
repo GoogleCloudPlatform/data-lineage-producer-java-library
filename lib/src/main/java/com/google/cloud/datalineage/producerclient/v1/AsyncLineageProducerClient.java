@@ -195,7 +195,8 @@ public final class AsyncLineageProducerClient implements BackgroundResource, Asy
   private void gracefulShutdown(Instant shutdownStartedAt) throws InterruptedException {
     if (gracefulShutdownDuration.isZero()) {
       log.warn(
-          "AsyncLineageProducerClient graceful shutdown duration was set to zero. This effectively means hard shutdown");
+          "AsyncLineageProducerClient graceful shutdown duration was set to zero. "
+              + "This effectively means hard shutdown");
       return;
     }
     log.debug("Starting graceful shutdown with duration: {}", gracefulShutdownDuration);
