@@ -73,13 +73,10 @@ public class StandardApiEnablementCacheLoggingTest {
   @Test
   public void testCacheInitializationLogging() {
     // Verify that cache initialization is logged
-    boolean found =
-        testAppender.getMessagesAtLevel(Level.DEBUG).stream()
-            .anyMatch(
-                log ->
-                    log.contains("Initializing StandardApiEnablementCache with cache size: 100")
-                        && log.contains("default disabled duration: PT5M"));
-    assertThat(found).isTrue();
+    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG))
+        .contains(
+            "Initializing StandardApiEnablementCache with cache size: 100, "
+                + "default disabled duration: PT5M");
   }
 
   @Test
@@ -92,14 +89,9 @@ public class StandardApiEnablementCacheLoggingTest {
     cache.markServiceAsDisabled(projectName, duration);
 
     // Verify that marking service as disabled is logged
-    boolean found =
-        testAppender.getMessagesAtLevel(Level.WARN).stream()
-            .anyMatch(
-                log ->
-                    log.contains(
-                        "Marking service as disabled for project 'test-project'"
-                            + " for duration: PT10M"));
-    assertThat(found).isTrue();
+    assertThat(testAppender.getMessagesAtLevel(Level.WARN))
+        .contains(
+            "Marking service as disabled for project 'test-project'" + " for duration: PT10M");
   }
 
   @Test
@@ -111,11 +103,8 @@ public class StandardApiEnablementCacheLoggingTest {
     boolean result = cache.isServiceMarkedAsDisabled(projectName);
 
     assertThat(result).isFalse();
-    boolean found =
-        testAppender.getMessagesAtLevel(Level.DEBUG).stream()
-            .anyMatch(
-                log -> log.contains("No cache entry found for project: non-existent-project"));
-    assertThat(found).isTrue();
+    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG))
+        .contains("No cache entry found for project: non-existent-project");
   }
 
   @Test
@@ -155,10 +144,7 @@ public class StandardApiEnablementCacheLoggingTest {
     boolean result = cache.isServiceMarkedAsDisabled("test-project");
 
     assertThat(result).isFalse();
-    boolean found =
-        testAppender.getMessagesAtLevel(Level.DEBUG).stream()
-            .anyMatch(
-                log -> log.contains("Service disability has expired for project: test-project"));
-    assertThat(found).isTrue();
+    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG))
+        .contains("Service disability has expired for project: test-project");
   }
 }
