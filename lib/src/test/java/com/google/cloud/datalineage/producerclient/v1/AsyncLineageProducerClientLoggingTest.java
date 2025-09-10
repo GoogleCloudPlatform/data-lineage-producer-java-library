@@ -219,7 +219,7 @@ public class AsyncLineageProducerClientLoggingTest {
     // Verify timeout warning was logged
     List<String> warnings = testAppender.getMessagesAtLevel(Level.WARN);
     assertThat(warnings).hasSize(1);
-    assertThat(warnings.getFirst())
+    assertThat(warnings.get(0))
         .contains(
             "AsyncLineageProducerClient did not terminate within the graceful shutdown duration");
     shortTimeoutClient.shutdownNow();
