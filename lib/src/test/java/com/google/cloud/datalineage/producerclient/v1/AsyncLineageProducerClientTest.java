@@ -14,6 +14,7 @@
 
 package com.google.cloud.datalineage.producerclient.v1;
 
+import static com.google.cloud.datalineage.producerclient.v1.AsyncLineageProducerClientSettings.DEFAULT_GRACEFUL_SHUTDOWN_DURATION;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -21,6 +22,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.threeten.bp.Duration.ofSeconds;
 
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutures;
@@ -104,12 +106,12 @@ public class AsyncLineageProducerClientTest {
   }
 
   @Test
-  public void gracefulShutdown_awaitsTerminationIfSet() throws Exception {
+  public void gracefulShutdown_awaitsTerminationByDefault() throws Exception {
     // objects passed to lambda must be final or effectively final, so we use arrays to store the
     // values
     long[] resultAwaitTerminationTime = new long[1];
     AsyncLineageProducerClient asyncLineageProducerClient =
-        AsyncLineageProducerClient.create(basicLineageClient, Duration.ofSeconds(1));
+        AsyncLineageProducerClient.create(basicLineageClient);
     doAnswer(
             invocation -> {
               resultAwaitTerminationTime[0] = invocation.getArgument(0);
@@ -122,7 +124,8 @@ public class AsyncLineageProducerClientTest {
     // Verify that the awaitTermination was called with the expected values
     // we cannot get the resultAwaitTerminationTime exactly, so we check reasonable scope
     assertThat(Duration.ofNanos(resultAwaitTerminationTime[0])).isAtLeast(Duration.ZERO);
-    assertThat(Duration.ofNanos(resultAwaitTerminationTime[0])).isAtMost(Duration.ofSeconds(1));
+    assertThat(Duration.ofNanos(resultAwaitTerminationTime[0])).isAtMost(
+        DEFAULT_GRACEFUL_SHUTDOWN_DURATION.plus(ofSeconds(1)));
   }
 
   private static Struct someOpenLineage() {
