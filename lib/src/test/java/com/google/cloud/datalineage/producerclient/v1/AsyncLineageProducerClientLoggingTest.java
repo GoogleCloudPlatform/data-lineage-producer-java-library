@@ -183,7 +183,7 @@ public class AsyncLineageProducerClientLoggingTest {
     assertThat(testAppender.getMessagesAtLevel(Level.WARN))
         .contains(
             "AsyncLineageProducerClient graceful shutdown duration was set to zero. "
-                + "This effectively means hard shutdown");
+                + "This effectively means hard shutdown with potential data loss");
   }
 
   @Test
