@@ -32,6 +32,8 @@ import org.threeten.bp.Duration;
  * via Builder.
  */
 public final class AsyncLineageProducerClientSettings extends LineageBaseSettings {
+
+  public static final Duration DEFAULT_GRACEFUL_SHUTDOWN_DURATION = Duration.ofSeconds(30);
   private final Duration gracefulShutdownDuration;
 
   public static Builder newBuilder() {
@@ -63,7 +65,7 @@ public final class AsyncLineageProducerClientSettings extends LineageBaseSetting
    * method.
    */
   public static final class Builder extends LineageBaseSettings.Builder {
-    private Duration gracefulShutdownDuration = Duration.ZERO;
+    private Duration gracefulShutdownDuration = DEFAULT_GRACEFUL_SHUTDOWN_DURATION;
 
     private static Builder createDefault() {
       return new Builder(LineageStubSettings.newBuilder());

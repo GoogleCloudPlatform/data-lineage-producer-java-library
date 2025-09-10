@@ -35,6 +35,7 @@ import com.google.cloud.datacatalog.lineage.v1.Process;
 import com.google.cloud.datacatalog.lineage.v1.ProcessOpenLineageRunEventRequest;
 import com.google.cloud.datacatalog.lineage.v1.ProcessOpenLineageRunEventResponse;
 import com.google.cloud.datacatalog.lineage.v1.Run;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.protobuf.Empty;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -52,7 +53,7 @@ import org.threeten.bp.Instant;
 public final class AsyncLineageProducerClient implements BackgroundResource, AsyncLineageClient {
 
   public static AsyncLineageProducerClient create() throws IOException {
-    return create(AsyncLineageProducerClientSettings.newBuilder().build());
+    return create(AsyncLineageProducerClientSettings.defaultInstance());
   }
 
   public static AsyncLineageProducerClient create(AsyncLineageProducerClientSettings settings)
@@ -63,13 +64,15 @@ public final class AsyncLineageProducerClient implements BackgroundResource, Asy
     return new AsyncLineageProducerClient(settings);
   }
 
+  @VisibleForTesting
   static AsyncLineageProducerClient create(BasicLineageClient basicClient) throws IOException {
-    return new AsyncLineageProducerClient(basicClient, Duration.ZERO);
+    return create(basicClient, AsyncLineageProducerClientSettings.defaultInstance());
   }
 
+  @VisibleForTesting
   static AsyncLineageProducerClient create(
-      BasicLineageClient basicClient, Duration gracefulShutdownDuration) throws IOException {
-    return new AsyncLineageProducerClient(basicClient, gracefulShutdownDuration);
+      BasicLineageClient basicClient, AsyncLineageProducerClientSettings settings) throws IOException {
+    return new AsyncLineageProducerClient(basicClient, settings);
   }
 
   private final InternalClient client;
@@ -81,10 +84,9 @@ public final class AsyncLineageProducerClient implements BackgroundResource, Asy
     this.gracefulShutdownDuration = settings.getGracefulShutdownDuration();
   }
 
-  private AsyncLineageProducerClient(
-      BasicLineageClient basicClient, Duration gracefulShutdownDuration) throws IOException {
+  private AsyncLineageProducerClient(BasicLineageClient basicClient, AsyncLineageProducerClientSettings settings) throws IOException {
     client = InternalClient.create(basicClient);
-    this.gracefulShutdownDuration = gracefulShutdownDuration;
+    this.gracefulShutdownDuration = settings.getGracefulShutdownDuration();
   }
 
   @Override
@@ -187,19 +189,23 @@ public final class AsyncLineageProducerClient implements BackgroundResource, Asy
     return client.awaitTermination(duration, unit);
   }
 
-  private void gracefulShutdown(Instant start) throws InterruptedException {
-    if (!gracefulShutdownDuration.isZero()) {
-      log.debug("Starting graceful shutdown with duration: {}", gracefulShutdownDuration);
-      boolean terminated =
-          awaitTermination(
-              gracefulShutdownDuration.minus(Duration.between(start, Instant.now())).toNanos(),
-              TimeUnit.NANOSECONDS);
-      if (!terminated) {
-        log.warn(
-            "AsyncLineageProducerClient did not terminate within the "
-                + "graceful shutdown duration: {}",
-            gracefulShutdownDuration);
-      }
+  private void gracefulShutdown(Instant shutdownStartedAt) throws InterruptedException {
+    if (gracefulShutdownDuration.isZero()) {
+      log.warn(
+          "AsyncLineageProducerClient graceful shutdown duration was set to zero. This effectively means hard shutdown");
+      return;
+    }
+    log.debug("Starting graceful shutdown with duration: {}", gracefulShutdownDuration);
+    boolean terminated =
+        awaitTermination(
+            gracefulShutdownDuration.minus(Duration.between(shutdownStartedAt, Instant.now()))
+                .toNanos(),
+            TimeUnit.NANOSECONDS);
+    if (!terminated) {
+      log.warn(
+          "AsyncLineageProducerClient did not terminate within the "
+              + "graceful shutdown duration: {}",
+          gracefulShutdownDuration);
     }
   }
 }
