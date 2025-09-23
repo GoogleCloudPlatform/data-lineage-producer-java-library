@@ -14,11 +14,16 @@
 
 plugins {
     id 'java-library'
+//    TODO upgrade this to https://plugins.gradle.org/plugin/com.gradleup.shadow
     id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'com.github.sherter.google-java-format' version '0.9'
     id 'checkstyle'
     id 'maven-publish'
     id 'signing'
+
+// v"2.2.5" is recommended, but it uses Java21 which is incompatible with other
+// plugins (e.g. "com.github.johnrengelman.shadow"), therefore, using latest compatible version
+   id("com.google.cloud.artifactregistry.gradle-plugin") version "2.1.5"
 }
 
 googleJavaFormat {
@@ -148,7 +153,7 @@ java {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            version = '1.0.0'
+            version = '1.1.0'
             group = 'com.google.cloud.datalineage'
             artifactId = 'producerclient'
 
@@ -183,6 +188,16 @@ publishing {
                         name = 'Natalia Gorchakova'
                         email = 'ngorchakova@google.com'
                     }
+                    developer {
+                        id = 'mikhalevich'
+                        name = 'Konstantin Mikhalevich'
+                        email = 'mikhalevich@google.com'
+                    }
+                    developer {
+                        id = 'wojtekl'
+                        name = 'Wojciech Łowiec'
+                        email = 'wojtekl@google.com'
+                    }
                 }
                 scm {
                     connection = 'scm:git:https://github.com/GoogleCloudPlatform/data-lineage-producer-java-library.git'
@@ -194,22 +209,10 @@ publishing {
     }
     repositories {
         maven {
-            def releasesRepoUrl = 'https://google.oss.sonatype.org/service/local/staging/deploy/maven2/'
-            def snapshotsRepoUrl = 'https://google.oss.sonatype.org/content/repositories/snapshots/'
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-            credentials {
-                // TODO: set those with your https://google.oss.sonatype.org OSSRH server user token.
-                username = 'secret'
-                password = 'secret'
-            }
+            url "artifactregistry://us-central1-maven.pkg.dev/dataplex-gob-louhi-releaser/cloud-dataplex-maven-releases"
         }
     }
 }
-
-signing {
-    sign publishing.publications.mavenJava
-}
-
 
 javadoc {
     if (JavaVersion.current().isJava9Compatible()) {
