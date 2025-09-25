@@ -205,7 +205,7 @@ publishing {
     }
     repositories {
         maven {
-            url "artifactregistry://us-central1-maven.pkg.dev/dataplex-gob-louhi-releaser/cloud-dataplex-maven-releases"
+            url "artifactregistry://us-maven.pkg.dev/oss-exit-gate-prod/dataplex-lineage--mavencentral"
         }
     }
 }
