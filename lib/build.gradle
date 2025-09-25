@@ -14,16 +14,12 @@
 
 plugins {
     id 'java-library'
-//    TODO upgrade this to https://plugins.gradle.org/plugin/com.gradleup.shadow
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id("com.gradleup.shadow") version "9.2.1"
     id 'com.github.sherter.google-java-format' version '0.9'
     id 'checkstyle'
     id 'maven-publish'
     id 'signing'
-
-// v"2.2.5" is recommended, but it uses Java21 which is incompatible with other
-// plugins (e.g. "com.github.johnrengelman.shadow"), therefore, using latest compatible version
-   id("com.google.cloud.artifactregistry.gradle-plugin") version "2.1.5"
+    id("com.google.cloud.artifactregistry.gradle-plugin") version "2.2.5"
 }
 
 googleJavaFormat {
@@ -149,7 +145,7 @@ java {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            version = '1.1.0'
+            version = '1.1.1'
             group = 'com.google.cloud.datalineage'
             artifactId = 'producerclient'
 
