@@ -17,8 +17,17 @@
 # Fail on any error
 set -e
 
-sudo update-java-alternatives --set java-1.11.0-openjdk-amd64
-JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+sudo apt update
+
+# Install OpenJDK 21
+sudo apt install -y openjdk-21-jdk
+
+# List available Java alternatives to confirm the name (optional, for debugging)
+# sudo update-java-alternatives --list
+
+# Set Java 21 as the default
+sudo update-java-alternatives --set java-1.21.0-openjdk-amd64
+export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
 
 cd "${KOKORO_ARTIFACTS_DIR}/git/data-lineage-producer-java-library"
 ./tests.sh
