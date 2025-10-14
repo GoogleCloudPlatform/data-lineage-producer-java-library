@@ -20,6 +20,7 @@ import com.google.api.gax.rpc.StatusCode.Code;
 import com.google.cloud.datacatalog.lineage.v1.LineageSettings;
 import com.google.cloud.datacatalog.lineage.v1.stub.LineageStubSettings;
 import com.google.cloud.datalineage.producerclient.ApiEnablementCacheSettings;
+import com.google.cloud.datalineage.producerclient.LineageEnablementCacheSettings;
 import com.google.common.collect.ImmutableSet;
 import java.io.IOException;
 import org.threeten.bp.Duration;
@@ -43,14 +44,20 @@ public class LineageBaseSettings extends LineageSettings {
   }
 
   private final ApiEnablementCacheSettings apiEnablementCacheSettings;
+  private final LineageEnablementCacheSettings lineageEnablementCacheSettings;
 
   protected LineageBaseSettings(Builder settingsBuilder) throws IOException {
     super(settingsBuilder);
     this.apiEnablementCacheSettings = settingsBuilder.apiEnablementCacheSettings;
+    this.lineageEnablementCacheSettings = settingsBuilder.lineageEnablementCacheSettings;
   }
 
   public ApiEnablementCacheSettings getConnectionCacheSettings() {
     return apiEnablementCacheSettings;
+  }
+
+  public LineageEnablementCacheSettings getLineageEnablementCacheSettings() {
+    return lineageEnablementCacheSettings;
   }
 
   @Override
@@ -87,32 +94,42 @@ public class LineageBaseSettings extends LineageSettings {
     }
 
     private ApiEnablementCacheSettings apiEnablementCacheSettings;
+    private LineageEnablementCacheSettings lineageEnablementCacheSettings;
 
     protected Builder() throws IOException {
       super();
       apiEnablementCacheSettings = ApiEnablementCacheSettings.getCommonInstance();
+      lineageEnablementCacheSettings = LineageEnablementCacheSettings.getCommonInstance();
       applyDefaultRetryPolicy();
     }
 
     protected Builder(ClientContext clientContext) {
       super(clientContext);
       apiEnablementCacheSettings = ApiEnablementCacheSettings.getCommonInstance();
+      lineageEnablementCacheSettings = LineageEnablementCacheSettings.getCommonInstance();
       applyDefaultRetryPolicy();
     }
 
     protected Builder(LineageBaseSettings settings) {
       super(settings);
       this.apiEnablementCacheSettings = settings.apiEnablementCacheSettings;
+      this.lineageEnablementCacheSettings = settings.lineageEnablementCacheSettings;
     }
 
     protected Builder(LineageStubSettings.Builder stubSettings) {
       super(stubSettings);
       apiEnablementCacheSettings = ApiEnablementCacheSettings.getCommonInstance();
+      lineageEnablementCacheSettings = LineageEnablementCacheSettings.getCommonInstance();
       applyDefaultRetryPolicy();
     }
 
     public Builder setConnectionCacheSettings(ApiEnablementCacheSettings settings) {
       apiEnablementCacheSettings = settings;
+      return this;
+    }
+
+    public Builder setLineageEnablementCacheSettings(LineageEnablementCacheSettings settings) {
+      lineageEnablementCacheSettings = settings;
       return this;
     }
 

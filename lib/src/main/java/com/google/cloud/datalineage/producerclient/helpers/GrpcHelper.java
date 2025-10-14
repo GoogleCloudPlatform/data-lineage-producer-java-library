@@ -23,26 +23,31 @@ import com.google.rpc.Status;
 import io.grpc.protobuf.StatusProto;
 import lombok.extern.slf4j.Slf4j;
 
-/** Set of helpers for Grpc handling. */
+/**
+ * Set of helpers for Grpc handling.
+ */
 @Slf4j
 public class GrpcHelper {
 
-  /** Make this helper class non-instantiable */
-  private GrpcHelper() {}
+  /**
+   * Make this helper class non-instantiable
+   */
+  private GrpcHelper() {
+  }
 
   /**
-   * Lets getting reason field from grpc response.
+   * Gets reason field from grpc response. ets reason field from grpc response.
    *
    * @param grpcException - error returned form grpc call
-   * @return string with value from reason field
+   * @return string with value from reason field and null if it is unable to extract reason
    */
   public static String getReason(Throwable grpcException) {
     log.debug("Extracting reason from gRPC exception: {}", grpcException.getMessage());
     Status statusProto = StatusProto.fromThrowable(grpcException);
     if (statusProto == null) {
-      log.error(
+      log.debug(
           "Provided throwable is not a gRPC exception: {}", grpcException.getClass().getName());
-      throw new IllegalArgumentException("Provided throwable is not a Grpc exception");
+      return null;
     }
     /* Status is a standard way to represent API error.
      * This model consists of code, message and details.
@@ -59,13 +64,13 @@ public class GrpcHelper {
           log.debug("Successfully extracted reason from ErrorInfo: {}", reason);
           return reason;
         } catch (InvalidProtocolBufferException exception) {
-          log.error("Invalid protocol buffer message while extracting ErrorInfo", exception);
-          throw new IllegalArgumentException("Invalid protocol buffer message", exception);
+          log.warn("Invalid protocol buffer message while extracting ErrorInfo", exception);
+          return null;
         }
       }
     }
-    log.warn("Message does not contain ErrorInfo for exception: {}", grpcException.getMessage());
-    throw new IllegalArgumentException("Message does not contain ErrorInfo", grpcException);
+    log.debug("Message does not contain ErrorInfo for exception: {}", grpcException.getMessage());
+    return null;
   }
 
   /**

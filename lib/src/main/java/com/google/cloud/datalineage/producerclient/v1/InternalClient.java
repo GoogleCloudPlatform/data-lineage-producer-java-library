@@ -41,6 +41,8 @@ import com.google.cloud.datacatalog.lineage.v1.ProcessOpenLineageRunEventRespons
 import com.google.cloud.datacatalog.lineage.v1.Run;
 import com.google.cloud.datalineage.producerclient.ApiEnablementCache;
 import com.google.cloud.datalineage.producerclient.ApiEnablementCacheFactory;
+import com.google.cloud.datalineage.producerclient.LineageEnablementCache;
+import com.google.cloud.datalineage.producerclient.LineageEnablementCacheFactory;
 import com.google.cloud.datalineage.producerclient.helpers.GrpcHelper;
 import com.google.cloud.datalineage.producerclient.helpers.NamesHelper;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -51,8 +53,11 @@ import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Wraps standard lineage client and provides common functionalities. */
+/**
+ * Wraps standard lineage client and provides common functionalities.
+ */
 final class InternalClient implements AsyncLineageClient {
+
   private static final Logger logger = LoggerFactory.getLogger(AsyncLineageProducerClient.class);
 
   static InternalClient create() throws IOException {
@@ -69,9 +74,12 @@ final class InternalClient implements AsyncLineageClient {
 
   private final BasicLineageClient client;
   private final ApiEnablementCache apiEnablementCache;
+  private final LineageEnablementCache lineageEnablementCache;
 
   private InternalClient(LineageBaseSettings settings, BasicLineageClient basicLineageClient) {
     apiEnablementCache = ApiEnablementCacheFactory.get(settings.getConnectionCacheSettings());
+    lineageEnablementCache =
+        LineageEnablementCacheFactory.get(settings.getLineageEnablementCacheSettings());
     client = basicLineageClient;
   }
 
@@ -180,6 +188,16 @@ final class InternalClient implements AsyncLineageClient {
           false);
     }
 
+    if (lineageEnablementCache.isLineageMarkedAsDisabled(projectName)) {
+      throw ApiExceptionFactory.createException(
+          "Lineage is not enabled in Lineage Configurations for project "
+              + projectName
+              + ". Please enable Lineage in Lineage Configurations and try again after a few minutes.",
+          null,
+          GrpcHelper.getStatusCodeFromCode(Code.PERMISSION_DENIED),
+          false);
+    }
+
     F result = call.get();
     ApiFutures.addCallback(
         result,
@@ -191,8 +209,13 @@ final class InternalClient implements AsyncLineageClient {
                 resourceName,
                 exception.getMessage(),
                 exception);
-            if (GrpcHelper.getReason(exception).equals("SERVICE_DISABLED")) {
+
+            String reason = GrpcHelper.getReason(exception);
+            if ("SERVICE_DISABLED".equals(reason)) {
               apiEnablementCache.markServiceAsDisabled(projectName);
+            } else if (exception.getMessage()
+                .contains("Lineage is not enabled in Lineage Configurations")) {
+              lineageEnablementCache.markLineageAsDisabled(projectName);
             }
           }
 

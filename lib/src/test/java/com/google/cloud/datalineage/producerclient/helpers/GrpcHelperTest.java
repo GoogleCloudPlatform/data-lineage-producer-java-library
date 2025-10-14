@@ -30,16 +30,16 @@ import org.junit.runners.JUnit4;
 public class GrpcHelperTest {
 
   @Test
-  public void getReason_withNonGrpcException_throwsIllegalArgumentException() {
+  public void getReason_withNonGrpcException_returnsNull() {
     Throwable nonGrpcException = new IllegalArgumentException("This is not a gRPC exception");
 
-    assertThrows(IllegalArgumentException.class, () -> GrpcHelper.getReason(nonGrpcException));
+    assertThat(GrpcHelper.getReason(nonGrpcException)).isNull();
   }
 
   @Test
-  public void getReason_withGrpcExceptionWithoutErrorInfo_throwsIllegalArgumentException() {
+  public void getReason_withGrpcExceptionWithoutErrorInfo_returnsNull() {
     Throwable grpcException = StatusProto.toStatusRuntimeException(Status.newBuilder().build());
-    assertThrows(IllegalArgumentException.class, () -> GrpcHelper.getReason(grpcException));
+    assertThat(GrpcHelper.getReason(grpcException)).isNull();
   }
 
   @Test

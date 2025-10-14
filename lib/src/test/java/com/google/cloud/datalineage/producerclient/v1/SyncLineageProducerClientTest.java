@@ -96,6 +96,22 @@ public class SyncLineageProducerClientTest {
             .contains("Data Lineage API is disabled in project"));
   }
 
+  @Test
+  public void lineageDisabled_doesNotRetry() {
+    returnLineageDisabledFromMocker();
+    ProcessOpenLineageRunEventRequest request =
+        createProcessOpenLineageRunEventRequest("projects/test-lineage-disabled-sync/locations/test");
+
+    // For the first call, throw a PERMISSION_DENIED exception
+    assertThrows(
+        UncheckedExecutionException.class, () -> client.processOpenLineageRunEvent(request));
+    // Not attempt the second call
+    assertThat(
+        assertThrows(ApiException.class, () -> client.processOpenLineageRunEvent(request))
+            .getMessage()
+            .contains("Lineage is not enabled in Lineage Configurations for project"));
+  }
+
   private static Struct someOpenLineage() {
     return Struct.newBuilder().build();
   }
@@ -129,6 +145,27 @@ public class SyncLineageProducerClientTest {
                     ErrorInfo.newBuilder().setReason("SERVICE_DISABLED");
 
                 statusBuilder.addDetails(Any.pack(errorInfoBuilder.build()));
+
+                return ApiFutures.immediateFailedFuture(
+                    StatusProto.toStatusException(statusBuilder.build()));
+              }
+            });
+  }
+
+  /**
+   * Configure the BasicLineageClient mocker to return an exception indicating Lineage is not
+   * enabled.
+   */
+  private void returnLineageDisabledFromMocker() {
+    when(basicLineageClient.processOpenLineageRunEventCallable())
+        .thenReturn(
+            new UnaryCallable<>() {
+              @Override
+              public ApiFuture<ProcessOpenLineageRunEventResponse> futureCall(
+                  ProcessOpenLineageRunEventRequest request, ApiCallContext context) {
+                Status.Builder statusBuilder = com.google.rpc.Status.newBuilder();
+                statusBuilder.setCode(Code.PERMISSION_DENIED.getNumber());
+                statusBuilder.setMessage("Lineage is not enabled in Lineage Configurations");
 
                 return ApiFutures.immediateFailedFuture(
                     StatusProto.toStatusException(statusBuilder.build()));
