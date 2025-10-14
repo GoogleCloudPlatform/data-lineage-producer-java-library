@@ -28,7 +28,7 @@ public class StandardLineageEnablementCacheTest {
   @Test
   public void isServiceMarkedAsDisabled_afterMarking_returnsTrue() {
     StandardLineageEnablementCache cache =
-        new StandardLineageEnablementCache(LineageEnablementCacheOptions.newBuilder().build());
+        new StandardLineageEnablementCache(CacheOptions.newBuilder().build());
     cache.markLineageAsDisabled(PROJECT_ID);
     assertThat(cache.isLineageMarkedAsDisabled(PROJECT_ID)).isTrue();
   }
@@ -36,7 +36,7 @@ public class StandardLineageEnablementCacheTest {
   @Test
   public void isServiceMarkedAsDisabled_withoutMarking_returnsFalse() {
     StandardLineageEnablementCache cache =
-        new StandardLineageEnablementCache(LineageEnablementCacheOptions.newBuilder().build());
+        new StandardLineageEnablementCache(CacheOptions.newBuilder().build());
     assertThat(cache.isLineageMarkedAsDisabled(PROJECT_ID)).isFalse();
   }
 
@@ -44,8 +44,8 @@ public class StandardLineageEnablementCacheTest {
   public void isServiceMarkedAsDisabled_afterDurationPasses_returnsFalse() {
     Clock clock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
     Duration duration = Duration.ofMinutes(5);
-    LineageEnablementCacheOptions options =
-        LineageEnablementCacheOptions.newBuilder().setDefaultCacheDisabledStatusTime(duration).setClock(clock).build();
+    CacheOptions options =
+        CacheOptions.newBuilder().setDefaultCacheDisabledStatusTime(duration).setClock(clock).build();
     StandardLineageEnablementCache cache = new StandardLineageEnablementCache(options);
 
     cache.markLineageAsDisabled(PROJECT_ID);

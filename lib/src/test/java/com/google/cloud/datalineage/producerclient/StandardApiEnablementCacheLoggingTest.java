@@ -41,7 +41,7 @@ public class StandardApiEnablementCacheLoggingTest {
   public void setUp() {
     // Set up logging capture
     LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
-    logger = loggerContext.getLogger(StandardApiEnablementCache.class);
+    logger = loggerContext.getLogger(ProjectStatusCache.class);
 
     testAppender = new TestLogAppender();
     testAppender.setContext(loggerContext);
@@ -50,8 +50,8 @@ public class StandardApiEnablementCacheLoggingTest {
     logger.addAppender(testAppender);
     logger.setLevel(Level.DEBUG); // Enable debug logging for tests
 
-    ApiEnablementCacheOptions options =
-        ApiEnablementCacheOptions.newBuilder()
+    CacheOptions options =
+        CacheOptions.newBuilder()
             .setCacheSize(100)
             .setDefaultCacheDisabledStatusTime(Duration.ofMinutes(5))
             .setClock(Clock.systemDefaultZone())
@@ -75,7 +75,7 @@ public class StandardApiEnablementCacheLoggingTest {
     // Verify that cache initialization is logged
     assertThat(testAppender.getMessagesAtLevel(Level.DEBUG))
         .contains(
-            "Initializing StandardApiEnablementCache with cache size: 100, "
+            "Initializing ProjectStatusCache 'API Enablement' with cache size: 100, "
                 + "default disabled duration: PT5M");
   }
 
@@ -91,7 +91,7 @@ public class StandardApiEnablementCacheLoggingTest {
     // Verify that marking service as disabled is logged
     assertThat(testAppender.getMessagesAtLevel(Level.WARN))
         .contains(
-            "Marking service as disabled for project 'test-project'" + " for duration: PT10M");
+            "Marking project 'test-project' as disabled in cache 'API Enablement' for duration: PT10M");
   }
 
   @Test
@@ -104,7 +104,7 @@ public class StandardApiEnablementCacheLoggingTest {
 
     assertThat(result).isFalse();
     assertThat(testAppender.getMessagesAtLevel(Level.DEBUG))
-        .contains("No cache entry found for project: non-existent-project");
+        .contains("No cache entry found for project 'non-existent-project' in cache 'API Enablement'");
   }
 
   @Test
@@ -122,7 +122,7 @@ public class StandardApiEnablementCacheLoggingTest {
         testAppender.getMessagesAtLevel(Level.DEBUG).stream()
             .anyMatch(
                 log ->
-                    log.contains("Service is marked as disabled for project: test-project until"));
+                    log.contains("Project 'test-project' is marked as disabled in cache 'API Enablement' until"));
     assertThat(found).isTrue();
   }
 
@@ -145,6 +145,7 @@ public class StandardApiEnablementCacheLoggingTest {
 
     assertThat(result).isFalse();
     assertThat(testAppender.getMessagesAtLevel(Level.DEBUG))
-        .contains("Service disability has expired for project: test-project");
+        .contains("Project disability has expired for project 'test-project' in cache 'API Enablement'");
   }
+
 }

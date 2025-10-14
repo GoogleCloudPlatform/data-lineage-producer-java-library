@@ -7,7 +7,7 @@ public class LineageEnablementCacheFactory {
   /** Make the factory class non-instantiable */
   private LineageEnablementCacheFactory() {}
 
-  public static LineageEnablementCache get(LineageEnablementCacheSettings settings) {
+  public static LineageEnablementCache get(CacheSettings settings) {
     if (!settings.getEnabled()) {
       return new NoOpLineageEnablementCache();
     }

@@ -15,16 +15,21 @@
 package com.google.cloud.datalineage.producerclient;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertThrows;
 
 import java.time.Clock;
 import java.time.Duration;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
-public class LineageEnablementCacheOptionsTest {
+@RunWith(JUnit4.class)
+public class CacheOptionsTest {
+
   @Test
   public void newBuilder_setsDefaultValues() {
-    LineageEnablementCacheOptions options = LineageEnablementCacheOptions.newBuilder().build();
-    assertThat(options.getCacheSize()).isEqualTo(1000L);
+    CacheOptions options = CacheOptions.newBuilder().build();
+    assertThat(options.getCacheSize()).isEqualTo(1000);
     assertThat(options.getDefaultCacheDisabledStatusTime()).isEqualTo(Duration.ofMinutes(10));
     assertThat(options.getClock()).isEqualTo(Clock.systemUTC());
   }
@@ -32,15 +37,32 @@ public class LineageEnablementCacheOptionsTest {
   @Test
   public void setters_changeValues() {
     Clock clock = Clock.systemDefaultZone();
-    LineageEnablementCacheOptions options =
-        LineageEnablementCacheOptions.newBuilder()
-            .setCacheSize(500L)
+    CacheOptions options =
+        CacheOptions.newBuilder()
+            .setCacheSize(500)
             .setDefaultCacheDisabledStatusTime(Duration.ofMinutes(5))
             .setClock(clock)
             .build();
 
-    assertThat(options.getCacheSize()).isEqualTo(500L);
+    assertThat(options.getCacheSize()).isEqualTo(500);
     assertThat(options.getDefaultCacheDisabledStatusTime()).isEqualTo(Duration.ofMinutes(5));
     assertThat(options.getClock()).isEqualTo(clock);
+  }
+
+  @Test
+  public void setCacheSize_negative_throwsIllegalArgumentException() {
+    IllegalArgumentException exception =
+        assertThrows(
+            IllegalArgumentException.class, () -> CacheOptions.newBuilder().setCacheSize(-1));
+    assertThat(exception).hasMessageThat().contains("Limit cannot be negative");
+  }
+
+  @Test
+  public void setDefaultCacheDisabledStatusTime_negative_throwsIllegalArgumentException() {
+    IllegalArgumentException exception =
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> CacheOptions.newBuilder().setDefaultCacheDisabledStatusTime(Duration.ofMinutes(-1)));
+    assertThat(exception).hasMessageThat().contains("Duration cannot be negative");
   }
 }

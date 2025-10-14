@@ -22,7 +22,7 @@ import com.google.api.gax.rpc.HeaderProvider;
 import com.google.api.gax.rpc.TransportChannelProvider;
 import com.google.api.gax.rpc.WatchdogProvider;
 import com.google.cloud.datacatalog.lineage.v1.stub.LineageStubSettings;
-import com.google.cloud.datalineage.producerclient.ApiEnablementCacheSettings;
+import com.google.cloud.datalineage.producerclient.CacheSettings;
 import java.io.IOException;
 import javax.annotation.Nullable;
 import org.threeten.bp.Duration;
@@ -90,9 +90,9 @@ public final class AsyncLineageProducerClientSettings extends LineageBaseSetting
     }
 
     @Override
-    public SyncLineageProducerClientSettings.Builder setConnectionCacheSettings(
-        ApiEnablementCacheSettings settings) {
-      return (SyncLineageProducerClientSettings.Builder) super.setConnectionCacheSettings(settings);
+    public Builder setApiEnablementCacheSettings(
+        CacheSettings settings) {
+      return (Builder) super.setApiEnablementCacheSettings(settings);
     }
 
     public Builder setGracefulShutdownDuration(Duration gracefulShutdownDuration) {

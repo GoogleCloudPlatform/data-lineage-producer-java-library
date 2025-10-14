@@ -22,7 +22,7 @@ public class LineageEnablementCacheFactoryTest {
 
   @Test
   public void get_returnsSameInstance() {
-    LineageEnablementCacheSettings settings = LineageEnablementCacheSettings.getCommonInstance();
+    CacheSettings settings = CacheSettings.getCommonInstance();
     LineageEnablementCache firstInstance = LineageEnablementCacheFactory.get(settings);
     LineageEnablementCache secondInstance = LineageEnablementCacheFactory.get(settings);
     assertThat(firstInstance).isSameInstanceAs(secondInstance);

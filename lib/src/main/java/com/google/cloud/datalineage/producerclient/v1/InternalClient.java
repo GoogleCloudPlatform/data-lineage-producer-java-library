@@ -77,7 +77,7 @@ final class InternalClient implements AsyncLineageClient {
   private final LineageEnablementCache lineageEnablementCache;
 
   private InternalClient(LineageBaseSettings settings, BasicLineageClient basicLineageClient) {
-    apiEnablementCache = ApiEnablementCacheFactory.get(settings.getConnectionCacheSettings());
+    apiEnablementCache = ApiEnablementCacheFactory.get(settings.getApiEnablementCacheSettings());
     lineageEnablementCache =
         LineageEnablementCacheFactory.get(settings.getLineageEnablementCacheSettings());
     client = basicLineageClient;

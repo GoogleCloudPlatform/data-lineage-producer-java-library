@@ -21,7 +21,7 @@ public class ApiEnablementCacheFactory {
   /** Make the factory class non-instantiable */
   private ApiEnablementCacheFactory() {}
 
-  public static ApiEnablementCache get(ApiEnablementCacheSettings settings) {
+  public static ApiEnablementCache get(CacheSettings settings) {
     if (!settings.getEnabled()) {
       return new NoOpApiEnablementCache();
     }

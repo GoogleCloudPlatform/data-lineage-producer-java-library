@@ -17,38 +17,29 @@ package com.google.cloud.datalineage.producerclient;
 import static com.google.common.truth.Truth.assertThat;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
-/** * Test suite for ApiEnablementCacheFactory */
-@RunWith(JUnit4.class)
 public class ApiEnablementCacheFactoryTest {
 
   @Test
-  public void getDisabledInstance_returnsNoOpCache() {
-    ApiEnablementCacheSettings settings = ApiEnablementCacheSettings.getDisabledInstance();
+  public void get_returnsSameInstance() {
+    CacheSettings settings = CacheSettings.getCommonInstance();
+    ApiEnablementCache firstInstance = ApiEnablementCacheFactory.get(settings);
+    ApiEnablementCache secondInstance = ApiEnablementCacheFactory.get(settings);
+    assertThat(firstInstance).isSameInstanceAs(secondInstance);
+  }
 
+  @Test
+  public void get_disabled_returnsNoOpInstance() {
+    CacheSettings settings = CacheSettings.getDisabledInstance();
     ApiEnablementCache cache = ApiEnablementCacheFactory.get(settings);
-
     assertThat(cache).isInstanceOf(NoOpApiEnablementCache.class);
   }
 
   @Test
-  public void getStandAloneInstance_returnsStandardCache() {
-    ApiEnablementCacheSettings settings = ApiEnablementCacheSettings.getStandAloneInstance();
-
-    ApiEnablementCache cache = ApiEnablementCacheFactory.get(settings);
-
-    assertThat(cache).isInstanceOf(StandardApiEnablementCache.class);
-  }
-
-  @Test
-  public void getCommonInstance_returnsSameCacheInstance() {
-    ApiEnablementCacheSettings settings = ApiEnablementCacheSettings.getCommonInstance();
-
-    ApiEnablementCache cache1 = ApiEnablementCacheFactory.get(settings);
-    ApiEnablementCache cache2 = ApiEnablementCacheFactory.get(settings);
-
-    assertThat(cache1).isSameInstanceAs(cache2);
+  public void get_standAlone_returnsNewInstance() {
+    CacheSettings settings = CacheSettings.getStandAloneInstance();
+    ApiEnablementCache firstInstance = ApiEnablementCacheFactory.get(settings);
+    ApiEnablementCache secondInstance = ApiEnablementCacheFactory.get(settings);
+    assertThat(firstInstance).isNotSameInstanceAs(secondInstance);
   }
 }

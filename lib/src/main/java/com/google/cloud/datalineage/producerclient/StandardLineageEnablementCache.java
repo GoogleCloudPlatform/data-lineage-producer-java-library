@@ -14,76 +14,32 @@
 
 package com.google.cloud.datalineage.producerclient;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import java.time.Clock;
 import java.time.Duration;
-import java.time.LocalDateTime;
-import lombok.extern.slf4j.Slf4j;
 
 /**
- * Cache used to indicate whether API is disabled for given project.
+ * Cache used to indicate whether Lineage is disabled for a given project.
  *
- * <p>Class lets specify default cache size, default duration of service disability and Clock.
- * Structure is thread-safe. There is no eviction guaranteed in case of cache overload.
+ * <p>This class is a wrapper around a generic ProjectStatusCache.
  */
-@Slf4j
 public class StandardLineageEnablementCache implements LineageEnablementCache {
-  private final Cache<String, LocalDateTime> projectToLockEndTime;
-  private final Duration defaultCacheDisabledStatusTime;
-  private final Clock clock;
+  private final ProjectStatusCache delegate;
 
-  StandardLineageEnablementCache(LineageEnablementCacheOptions options) {
-    log.debug(
-        "Initializing StandardLineageEnablementCache with cache size: {}, "
-            + "default disabled duration: {}",
-        options.getCacheSize(),
-        options.getDefaultCacheDisabledStatusTime());
-    defaultCacheDisabledStatusTime = options.getDefaultCacheDisabledStatusTime();
-    clock = options.getClock();
-
-    projectToLockEndTime = CacheBuilder.newBuilder().maximumSize(options.getCacheSize()).build();
+  StandardLineageEnablementCache(CacheOptions options) {
+    this.delegate = new ProjectStatusCache(options, "Lineage Enablement");
   }
 
-  /**
-   * Defaults Duration to value specified by constructor.
-   *
-   * @see StandardLineageEnablementCache#markLineageAsDisabled(String, Duration)
-   */
-  public synchronized void markLineageAsDisabled(String project) {
-    markLineageAsDisabled(project, defaultCacheDisabledStatusTime);
+  @Override
+  public void markLineageAsDisabled(String project) {
+    delegate.markProjectAsDisabled(project);
   }
 
-  /**
-   * Sets service state for given project as disabled from current timestamp to current timestamp
-   * increased by the given duration.
-   *
-   * <p>It is not guarantied that cache will indicate service state as disabled up to calculated
-   * value. Specified entry may be deleted if cache is overloaded.
-   */
-  public synchronized void markLineageAsDisabled(String projectName, Duration duration) {
-    log.warn(
-        "Marking lineage as disabled for project '{}' for duration: {}", projectName, duration);
-    projectToLockEndTime.put(projectName, LocalDateTime.now(clock).plus(duration));
+  @Override
+  public void markLineageAsDisabled(String projectName, Duration duration) {
+    delegate.markProjectAsDisabled(projectName, duration);
   }
 
-  /**
-   * Indicates if service is disabled for given project.
-   *
-   * @return A boolean that indicates if service is disabled for given project
-   */
-  public synchronized boolean isLineageMarkedAsDisabled(String projectName) {
-    LocalDateTime maybeTime = projectToLockEndTime.getIfPresent(projectName);
-    if (maybeTime == null) {
-      log.debug("No cache entry found for project: {}", projectName);
-      return false;
-    }
-    boolean isDisabled = !maybeTime.isBefore(LocalDateTime.now(clock));
-    if (isDisabled) {
-      log.debug("Lineage is marked as disabled for project: {} until {}", projectName, maybeTime);
-    } else {
-      log.debug("Lineage disability has expired for project: {}", projectName);
-    }
-    return isDisabled;
+  @Override
+  public boolean isLineageMarkedAsDisabled(String projectName) {
+    return delegate.isProjectDisabled(projectName);
   }
 }
