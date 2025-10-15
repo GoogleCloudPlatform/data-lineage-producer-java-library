@@ -37,6 +37,7 @@ import io.grpc.StatusException;
 import io.grpc.protobuf.StatusProto;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -174,7 +175,7 @@ public class SyncLineageProducerClientTest {
     statusBuilder.addAllDetails(
         Arrays.stream(reasons)
             .map(r -> Any.pack(ErrorInfo.newBuilder().setReason(r).build()))
-            .toList());
+            .collect(Collectors.toList()));
     return StatusProto.toStatusException(statusBuilder.build());
   }
 }
