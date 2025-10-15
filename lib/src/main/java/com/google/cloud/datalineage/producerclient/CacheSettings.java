@@ -23,8 +23,7 @@ public final class CacheSettings {
    * @return The requested cache settings.
    */
   public static CacheSettings getDisabledInstance() {
-    return new CacheSettings(
-        false, false, CacheOptions.getDefaultInstance());
+    return new CacheSettings(false, false, CacheOptions.getDefaultInstance());
   }
 
   /**
@@ -33,8 +32,7 @@ public final class CacheSettings {
    * @return The requested cache settings.
    */
   public static CacheSettings getCommonInstance() {
-    return new CacheSettings(
-        true, true, CacheOptions.getDefaultInstance());
+    return new CacheSettings(true, true, CacheOptions.getDefaultInstance());
   }
 
   /**
@@ -44,8 +42,7 @@ public final class CacheSettings {
    * @param fallbackOptions The fallback cache options.
    * @return The requested cache settings.
    */
-  public static CacheSettings getCommonInstance(
-      CacheOptions fallbackOptions) {
+  public static CacheSettings getCommonInstance(CacheOptions fallbackOptions) {
     if (fallbackOptions == null) {
       throw new IllegalArgumentException("defaultSettings cannot be null");
     }
@@ -58,8 +55,7 @@ public final class CacheSettings {
    * @return The requested cache settings.
    */
   public static CacheSettings getStandAloneInstance() {
-    return new CacheSettings(
-        true, false, CacheOptions.getDefaultInstance());
+    return new CacheSettings(true, false, CacheOptions.getDefaultInstance());
   }
 
   /**
@@ -68,8 +64,7 @@ public final class CacheSettings {
    * @param options The cache options
    * @return The requested cache settings.
    */
-  public static CacheSettings getStandAloneInstance(
-      CacheOptions options) {
+  public static CacheSettings getStandAloneInstance(CacheOptions options) {
     if (options == null) {
       throw new IllegalArgumentException("settings cannot be null");
     }
@@ -80,8 +75,7 @@ public final class CacheSettings {
   private final boolean useCommonInstance;
   private final CacheOptions options;
 
-  private CacheSettings(
-      boolean enabled, boolean useCommonInstance, CacheOptions options) {
+  private CacheSettings(boolean enabled, boolean useCommonInstance, CacheOptions options) {
     this.enabled = enabled;
     this.useCommonInstance = useCommonInstance;
     this.options = options;

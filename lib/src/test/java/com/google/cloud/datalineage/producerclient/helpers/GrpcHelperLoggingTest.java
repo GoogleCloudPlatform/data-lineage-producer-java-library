@@ -34,9 +34,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.slf4j.LoggerFactory;
 
-/**
- * Tests logging functionality in GrpcHelper.
- */
+/** Tests logging functionality in GrpcHelper. */
 @RunWith(JUnit4.class)
 public class GrpcHelperLoggingTest {
 
@@ -72,12 +70,16 @@ public class GrpcHelperLoggingTest {
     testAppender.clear(); // Clear any existing logs
 
     // Create an ErrorInfo with a reason
-    ErrorInfo errorInfo = ErrorInfo.newBuilder().setReason("API_DISABLED")
-        .setDomain("googleapis.com").build();
+    ErrorInfo errorInfo =
+        ErrorInfo.newBuilder().setReason("API_DISABLED").setDomain("googleapis.com").build();
 
     // Create a Status with the ErrorInfo
-    Status status = Status.newBuilder().setCode(com.google.rpc.Code.FAILED_PRECONDITION_VALUE)
-        .setMessage("API is disabled").addDetails(Any.pack(errorInfo)).build();
+    Status status =
+        Status.newBuilder()
+            .setCode(com.google.rpc.Code.FAILED_PRECONDITION_VALUE)
+            .setMessage("API is disabled")
+            .addDetails(Any.pack(errorInfo))
+            .build();
 
     // Create a gRPC exception from the status
     StatusRuntimeException exception = StatusProto.toStatusRuntimeException(status);
@@ -89,8 +91,8 @@ public class GrpcHelperLoggingTest {
     assertThat(reason).containsExactly("API_DISABLED");
 
     // Verify debug logging
-    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG)).contains(
-        "Successfully extracted reason from ErrorInfo: API_DISABLED");
+    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG))
+        .contains("Successfully extracted reason from ErrorInfo: API_DISABLED");
   }
 
   @Test
@@ -98,21 +100,27 @@ public class GrpcHelperLoggingTest {
     testAppender.clear(); // Clear any existing logs
 
     // Create a malformed Any that can't be unpacked
-    Any invalidAny = Any.newBuilder().setTypeUrl("type.googleapis.com/google.rpc.ErrorInfo")
-        .setValue(com.google.protobuf.ByteString.copyFromUtf8("invalid-data")).build();
+    Any invalidAny =
+        Any.newBuilder()
+            .setTypeUrl("type.googleapis.com/google.rpc.ErrorInfo")
+            .setValue(com.google.protobuf.ByteString.copyFromUtf8("invalid-data"))
+            .build();
 
-    Status status = Status.newBuilder().setCode(com.google.rpc.Code.FAILED_PRECONDITION_VALUE)
-        .setMessage("API is disabled").addDetails(invalidAny).build();
+    Status status =
+        Status.newBuilder()
+            .setCode(com.google.rpc.Code.FAILED_PRECONDITION_VALUE)
+            .setMessage("API is disabled")
+            .addDetails(invalidAny)
+            .build();
 
     StatusRuntimeException exception = StatusProto.toStatusRuntimeException(status);
 
-    IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class,
-        () -> GrpcHelper.getErrorReasons(exception));
+    IllegalArgumentException thrown =
+        assertThrows(IllegalArgumentException.class, () -> GrpcHelper.getErrorReasons(exception));
 
-    assertThat(thrown).hasMessageThat()
-        .contains("Invalid protocol buffer message");
-    assertThat(testAppender.getMessagesAtLevel(Level.ERROR)).contains(
-        "Invalid protocol buffer message while extracting ErrorInfo");
+    assertThat(thrown).hasMessageThat().contains("Invalid protocol buffer message");
+    assertThat(testAppender.getMessagesAtLevel(Level.ERROR))
+        .contains("Invalid protocol buffer message while extracting ErrorInfo");
   }
 
   @Test
@@ -123,11 +131,11 @@ public class GrpcHelperLoggingTest {
     RuntimeException nonGrpcException = new RuntimeException("Not a gRPC exception");
 
     // Call the method
-    assertThrows(IllegalArgumentException.class,
-        () -> GrpcHelper.getErrorReasons(nonGrpcException));
+    assertThrows(
+        IllegalArgumentException.class, () -> GrpcHelper.getErrorReasons(nonGrpcException));
 
     // Verify debug logging
-    assertThat(testAppender.getMessagesAtLevel(Level.ERROR)).contains(
-        "Provided throwable is not a gRPC exception: java.lang.RuntimeException");
+    assertThat(testAppender.getMessagesAtLevel(Level.ERROR))
+        .contains("Provided throwable is not a gRPC exception: java.lang.RuntimeException");
   }
 }

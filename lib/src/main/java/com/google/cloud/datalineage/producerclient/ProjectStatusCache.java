@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Generic cache to indicate whether a feature is disabled for a given project.
  *
- * <p> This class is thread-safe. There is no eviction guaranteed in case of cache overload.
+ * <p>This class is thread-safe. There is no eviction guaranteed in case of cache overload.
  */
 @Slf4j
 public class ProjectStatusCache {
@@ -42,8 +42,8 @@ public class ProjectStatusCache {
         options.getDefaultCacheDisabledStatusTime());
     this.defaultCacheDisabledStatusTime = options.getDefaultCacheDisabledStatusTime();
     this.clock = options.getClock();
-    this.projectToLockEndTime = CacheBuilder.newBuilder().maximumSize(options.getCacheSize())
-        .build();
+    this.projectToLockEndTime =
+        CacheBuilder.newBuilder().maximumSize(options.getCacheSize()).build();
     this.cacheName = cacheName;
   }
 

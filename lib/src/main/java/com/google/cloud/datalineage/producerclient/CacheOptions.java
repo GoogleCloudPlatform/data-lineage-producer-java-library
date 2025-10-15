@@ -61,13 +61,18 @@ public class CacheOptions {
     return new CacheOptions.Builder(this);
   }
 
-
   @Override
-  public boolean equals(Object options) {
-    return options instanceof CacheOptions that
-        && that.getDefaultCacheDisabledStatusTime() == this.defaultCacheDisabledStatusTime &&
-        that.getCacheSize() == this.cacheSize &&
-        that.clock == this.clock;
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (!(obj instanceof CacheOptions)) {
+      return false;
+    }
+    CacheOptions that = (CacheOptions) obj;
+    return this.cacheSize == that.cacheSize
+        && this.defaultCacheDisabledStatusTime.equals(that.defaultCacheDisabledStatusTime)
+        && this.clock.equals(that.clock);
   }
 
   /**
@@ -95,8 +100,7 @@ public class CacheOptions {
     }
 
     private static CacheOptions.Builder createDefault() {
-      return new CacheOptions.Builder(
-          DEFAULT_DISABLED_TIME, DEFAULT_SIZE, DEFAULT_CLOCK);
+      return new CacheOptions.Builder(DEFAULT_DISABLED_TIME, DEFAULT_SIZE, DEFAULT_CLOCK);
     }
 
     public CacheOptions.Builder setDefaultCacheDisabledStatusTime(

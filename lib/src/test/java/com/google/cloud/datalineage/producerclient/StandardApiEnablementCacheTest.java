@@ -15,7 +15,6 @@
 package com.google.cloud.datalineage.producerclient;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.assertThrows;
 
 import java.time.Clock;
 import java.time.Duration;
@@ -25,9 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-/**
- * Test suite for StandardApiEnablementCache
- */
+/** Test suite for StandardApiEnablementCache */
 @RunWith(JUnit4.class)
 public class StandardApiEnablementCacheTest {
 
@@ -53,7 +50,9 @@ public class StandardApiEnablementCacheTest {
     Clock clock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
     Duration duration = Duration.ofMinutes(5);
     CacheOptions options =
-        CacheOptions.newBuilder().setDefaultCacheDisabledStatusTime(duration).setClock(clock)
+        CacheOptions.newBuilder()
+            .setDefaultCacheDisabledStatusTime(duration)
+            .setClock(clock)
             .build();
     StandardApiEnablementCache cache = new StandardApiEnablementCache(options);
 

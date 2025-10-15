@@ -90,8 +90,7 @@ public final class AsyncLineageProducerClientSettings extends LineageBaseSetting
     }
 
     @Override
-    public Builder setApiEnablementCacheSettings(
-        CacheSettings settings) {
+    public Builder setApiEnablementCacheSettings(CacheSettings settings) {
       return (Builder) super.setApiEnablementCacheSettings(settings);
     }
 

@@ -16,27 +16,19 @@ package com.google.cloud.datalineage.producerclient.helpers;
 
 import com.google.api.gax.rpc.StatusCode;
 import com.google.api.gax.rpc.StatusCode.Code;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.protobuf.Any;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.rpc.ErrorInfo;
 import com.google.rpc.Status;
 import io.grpc.protobuf.StatusProto;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Set of helpers for Grpc handling.
- */
+/** Set of helpers for Grpc handling. */
 @Slf4j
 public class GrpcHelper {
 
-  /**
-   * Make this helper class non-instantiable
-   */
-  private GrpcHelper() {
-  }
+  /** Make this helper class non-instantiable */
+  private GrpcHelper() {}
 
   /**
    * Returns a set of error reasons from <code>com.google.rpc.Status</code> of a gRPC Exception.
@@ -60,18 +52,20 @@ public class GrpcHelper {
      * - user can introduce new ones.
      * That's why in order to get ErrorInfo, we need to iterate over details and check all of them.
      */
-    return statusProto.getDetailsList().stream().filter((detail) -> detail.is(ErrorInfo.class))
-        .map((errorInfo) -> {
-          try {
-            String reason = errorInfo.unpack(
-                ErrorInfo.class).getReason();
-            log.debug("Successfully extracted reason from ErrorInfo: {}", reason);
-            return reason;
-          } catch (InvalidProtocolBufferException e) {
-            log.error("Invalid protocol buffer message while extracting ErrorInfo", e);
-            throw new IllegalArgumentException("Invalid protocol buffer message", e);
-          }
-        }).collect(ImmutableSet.toImmutableSet());
+    return statusProto.getDetailsList().stream()
+        .filter((detail) -> detail.is(ErrorInfo.class))
+        .map(
+            (errorInfo) -> {
+              try {
+                String reason = errorInfo.unpack(ErrorInfo.class).getReason();
+                log.debug("Successfully extracted reason from ErrorInfo: {}", reason);
+                return reason;
+              } catch (InvalidProtocolBufferException e) {
+                log.error("Invalid protocol buffer message while extracting ErrorInfo", e);
+                throw new IllegalArgumentException("Invalid protocol buffer message", e);
+              }
+            })
+        .collect(ImmutableSet.toImmutableSet());
   }
 
   /**

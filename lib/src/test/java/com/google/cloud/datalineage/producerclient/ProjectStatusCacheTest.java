@@ -98,9 +98,9 @@ public class ProjectStatusCacheTest {
   public void markProjectAsDisabled_respectsSize() {
     ImmutableList<String> projects = ImmutableList.of("project1", "project2", "project3");
     int cacheSize = projects.size() - 1;
-    cache = new ProjectStatusCache(
-        CacheOptions.newBuilder().setCacheSize(cacheSize).build(),
-        CACHE_NAME);
+    cache =
+        new ProjectStatusCache(
+            CacheOptions.newBuilder().setCacheSize(cacheSize).build(), CACHE_NAME);
 
     projects.forEach(p -> cache.markProjectAsDisabled(p));
 
@@ -109,8 +109,7 @@ public class ProjectStatusCacheTest {
   }
 
   /**
-   * Asserts that there was no change in state for a project before and after a given point in
-   * time.
+   * Asserts that there was no change in state for a project before and after a given point in time.
    */
   private void assertNoStateChangeAtTime(String projectId, LocalDateTime time) {
     setupTime(time);
@@ -121,9 +120,7 @@ public class ProjectStatusCacheTest {
     assertEquals(before, after);
   }
 
-  /**
-   * Asserts that the state was flipped for a project at a given point in time.
-   */
+  /** Asserts that the state was flipped for a project at a given point in time. */
   private void assertStateChangedAtTime(String projectId, LocalDateTime time) {
     setupTime(time);
     boolean before = cache.isProjectDisabled(projectId);
@@ -134,8 +131,8 @@ public class ProjectStatusCacheTest {
   }
 
   private void setupTime(LocalDateTime time) {
-    Clock fixedClock = Clock.fixed(time.toInstant(OffsetDateTime.now().getOffset()),
-        ZoneId.systemDefault());
+    Clock fixedClock =
+        Clock.fixed(time.toInstant(OffsetDateTime.now().getOffset()), ZoneId.systemDefault());
     Mockito.doReturn(fixedClock.instant()).when(clock).instant();
     Mockito.doReturn(fixedClock.getZone()).when(clock).getZone();
   }

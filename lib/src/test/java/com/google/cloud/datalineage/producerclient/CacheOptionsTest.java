@@ -31,8 +31,8 @@ public class CacheOptionsTest {
   public void newBuilder_setsDefaultValues() {
     CacheOptions options = CacheOptions.newBuilder().build();
     assertThat(options.getCacheSize()).isEqualTo(1000);
-    assertThat(options.getDefaultCacheDisabledStatusTime()).isEqualTo(Duration.ofMinutes(10));
-    assertThat(options.getClock()).isEqualTo(Clock.systemUTC());
+    assertThat(options.getDefaultCacheDisabledStatusTime()).isEqualTo(Duration.ofMinutes(5));
+    assertThat(options.getClock()).isEqualTo(Clock.systemDefaultZone());
   }
 
   @Test
@@ -63,8 +63,9 @@ public class CacheOptionsTest {
     IllegalArgumentException exception =
         assertThrows(
             IllegalArgumentException.class,
-            () -> CacheOptions.newBuilder()
-                .setDefaultCacheDisabledStatusTime(Duration.ofMinutes(-1)));
+            () ->
+                CacheOptions.newBuilder()
+                    .setDefaultCacheDisabledStatusTime(Duration.ofMinutes(-1)));
     assertThat(exception).hasMessageThat().contains("Duration cannot be negative");
   }
 
@@ -74,8 +75,12 @@ public class CacheOptionsTest {
     int size = 500;
     Clock clock = Clock.fixed(Clock.systemDefaultZone().instant(), ZoneId.of("UTC"));
 
-    CacheOptions options = CacheOptions.newBuilder().setDefaultCacheDisabledStatusTime(disabledTime)
-        .setCacheSize(size).setClock(clock).build();
+    CacheOptions options =
+        CacheOptions.newBuilder()
+            .setDefaultCacheDisabledStatusTime(disabledTime)
+            .setCacheSize(size)
+            .setClock(clock)
+            .build();
 
     CacheOptions newOptions = options.toBuilder().setCacheSize(1000).build();
 

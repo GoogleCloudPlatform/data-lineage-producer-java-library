@@ -29,7 +29,6 @@ import com.google.api.core.ApiFutures;
 import com.google.api.gax.rpc.ApiCallContext;
 import com.google.api.gax.rpc.ApiException;
 import com.google.api.gax.rpc.InvalidArgumentException;
-import com.google.api.gax.rpc.PermissionDeniedException;
 import com.google.api.gax.rpc.UnaryCallable;
 import com.google.cloud.datacatalog.lineage.v1.ProcessOpenLineageRunEventRequest;
 import com.google.cloud.datacatalog.lineage.v1.ProcessOpenLineageRunEventResponse;
@@ -49,9 +48,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.threeten.bp.Duration;
 
-/**
- * Tests for AsyncLineageProducerClient.
- */
+/** Tests for AsyncLineageProducerClient. */
 public class AsyncLineageProducerClientTest {
 
   private static final String PROJECT_NAME_AND_LOCATION = "projects/test/locations/test";
@@ -73,13 +70,13 @@ public class AsyncLineageProducerClientTest {
   public void processOpenLineageRunEvent_supported()
       throws ExecutionException, InterruptedException {
     ProcessOpenLineageRunEventRequest request = createProcessOpenLineageRunEventRequest();
-    ProcessOpenLineageRunEventResponse response = ProcessOpenLineageRunEventResponse.newBuilder()
-        .build();
-    when(basicLineageClient.processOpenLineageRunEventCallable()).thenReturn(
-        new UnaryCallableFake<>(r -> response));
+    ProcessOpenLineageRunEventResponse response =
+        ProcessOpenLineageRunEventResponse.newBuilder().build();
+    when(basicLineageClient.processOpenLineageRunEventCallable())
+        .thenReturn(new UnaryCallableFake<>(r -> response));
 
-    ProcessOpenLineageRunEventResponse gotResponse = client.processOpenLineageRunEvent(request)
-        .get();
+    ProcessOpenLineageRunEventResponse gotResponse =
+        client.processOpenLineageRunEvent(request).get();
 
     assertThat(gotResponse).isEqualTo(response);
   }
@@ -88,40 +85,42 @@ public class AsyncLineageProducerClientTest {
   public void propagatesException() {
     ProcessOpenLineageRunEventRequest request = createProcessOpenLineageRunEventRequest();
 
-    when(basicLineageClient.processOpenLineageRunEventCallable()).thenThrow(
-        InvalidArgumentException.class);
+    when(basicLineageClient.processOpenLineageRunEventCallable())
+        .thenThrow(InvalidArgumentException.class);
 
-    assertThrows(InvalidArgumentException.class,
-        () -> client.processOpenLineageRunEvent(request).get());
+    assertThrows(
+        InvalidArgumentException.class, () -> client.processOpenLineageRunEvent(request).get());
   }
 
   @Test
   public void apiDisabled_doesNotRetry() {
     returnServiceDisabledFromMocker();
-    ProcessOpenLineageRunEventRequest request = createProcessOpenLineageRunEventRequest(
-        "projects/test-api-disabled-async/locations/test");
+    ProcessOpenLineageRunEventRequest request =
+        createProcessOpenLineageRunEventRequest("projects/test-api-disabled-async/locations/test");
 
     // For the first call, throw a SERVICE_DISABLED exception
     assertThrows(ExecutionException.class, () -> client.processOpenLineageRunEvent(request).get());
     // Not attempt the second call
-    assertThat(assertThrows(ApiException.class,
-        () -> client.processOpenLineageRunEvent(request)).getMessage()
-        .contains("Data Lineage API is disabled in project"));
+    assertThat(
+        assertThrows(ApiException.class, () -> client.processOpenLineageRunEvent(request))
+            .getMessage()
+            .contains("Data Lineage API is disabled in project"));
   }
 
   @Test
   public void lineageDisabled_doesNotRetry() {
     returnLineageDisabledFromMocker();
-    ProcessOpenLineageRunEventRequest request = createProcessOpenLineageRunEventRequest(
-        "projects/test-lineage-disabled-async/locations/test");
+    ProcessOpenLineageRunEventRequest request =
+        createProcessOpenLineageRunEventRequest(
+            "projects/test-lineage-disabled-async/locations/test");
 
     // For the first call, throw a PERMISSION_DENIED exception
     assertThrows(ExecutionException.class, () -> client.processOpenLineageRunEvent(request).get());
     // Not attempt the second call
-    ApiException exception = assertThrows(ApiException.class,
-        () -> client.processOpenLineageRunEvent(request));
-    assertThat(exception.getMessage()).contains(
-        "Lineage is not enabled in Lineage Configurations for project");
+    ApiException exception =
+        assertThrows(ApiException.class, () -> client.processOpenLineageRunEvent(request));
+    assertThat(exception.getMessage())
+        .contains("Lineage is not enabled in Lineage Configurations for project");
   }
 
   @Test
@@ -129,19 +128,22 @@ public class AsyncLineageProducerClientTest {
     // objects passed to lambda must be final or effectively final, so we use arrays to store the
     // values
     long[] resultAwaitTerminationTime = new long[1];
-    AsyncLineageProducerClient asyncLineageProducerClient = AsyncLineageProducerClient.create(
-        basicLineageClient);
-    doAnswer(invocation -> {
-      resultAwaitTerminationTime[0] = invocation.getArgument(0);
-      return true;
-    }).when(basicLineageClient).awaitTermination(anyLong(), any(TimeUnit.class));
+    AsyncLineageProducerClient asyncLineageProducerClient =
+        AsyncLineageProducerClient.create(basicLineageClient);
+    doAnswer(
+            invocation -> {
+              resultAwaitTerminationTime[0] = invocation.getArgument(0);
+              return true;
+            })
+        .when(basicLineageClient)
+        .awaitTermination(anyLong(), any(TimeUnit.class));
 
     asyncLineageProducerClient.close();
     // Verify that the awaitTermination was called with the expected values
     // we cannot get the resultAwaitTerminationTime exactly, so we check reasonable scope
     assertThat(Duration.ofNanos(resultAwaitTerminationTime[0])).isAtLeast(Duration.ZERO);
-    assertThat(Duration.ofNanos(resultAwaitTerminationTime[0])).isAtMost(
-        DEFAULT_GRACEFUL_SHUTDOWN_DURATION.plus(ofSeconds(1)));
+    assertThat(Duration.ofNanos(resultAwaitTerminationTime[0]))
+        .isAtMost(DEFAULT_GRACEFUL_SHUTDOWN_DURATION.plus(ofSeconds(1)));
   }
 
   private static Struct someOpenLineage() {
@@ -154,8 +156,10 @@ public class AsyncLineageProducerClientTest {
 
   private static ProcessOpenLineageRunEventRequest createProcessOpenLineageRunEventRequest(
       String parent) {
-    return ProcessOpenLineageRunEventRequest.newBuilder().setParent(parent)
-        .setOpenLineage(someOpenLineage()).build();
+    return ProcessOpenLineageRunEventRequest.newBuilder()
+        .setParent(parent)
+        .setOpenLineage(someOpenLineage())
+        .build();
   }
 
   /**
@@ -163,15 +167,17 @@ public class AsyncLineageProducerClientTest {
    * disablement.
    */
   private void returnServiceDisabledFromMocker() {
-    when(basicLineageClient.processOpenLineageRunEventCallable()).thenReturn(new UnaryCallable<>() {
-      @Override
-      public ApiFuture<ProcessOpenLineageRunEventResponse> futureCall(
-          ProcessOpenLineageRunEventRequest request, ApiCallContext context) {
+    when(basicLineageClient.processOpenLineageRunEventCallable())
+        .thenReturn(
+            new UnaryCallable<>() {
+              @Override
+              public ApiFuture<ProcessOpenLineageRunEventResponse> futureCall(
+                  ProcessOpenLineageRunEventRequest request, ApiCallContext context) {
 
-        return ApiFutures.immediateFailedFuture(
-            createStatusExceptionWithReasons("SERVICE_DISABLED", "SOME_OTHER_REASON"));
-      }
-    });
+                return ApiFutures.immediateFailedFuture(
+                    createStatusExceptionWithReasons("SERVICE_DISABLED", "SOME_OTHER_REASON"));
+              }
+            });
   }
 
   /**
@@ -179,22 +185,26 @@ public class AsyncLineageProducerClientTest {
    * enabled.
    */
   private void returnLineageDisabledFromMocker() {
-    when(basicLineageClient.processOpenLineageRunEventCallable()).thenReturn(new UnaryCallable<>() {
-      @Override
-      public ApiFuture<ProcessOpenLineageRunEventResponse> futureCall(
-          ProcessOpenLineageRunEventRequest request, ApiCallContext context) {
+    when(basicLineageClient.processOpenLineageRunEventCallable())
+        .thenReturn(
+            new UnaryCallable<>() {
+              @Override
+              public ApiFuture<ProcessOpenLineageRunEventResponse> futureCall(
+                  ProcessOpenLineageRunEventRequest request, ApiCallContext context) {
 
-        return ApiFutures.immediateFailedFuture(
-            createStatusExceptionWithReasons("LINEAGE_INGESTION_DISABLED", "SOME_OTHER_REASON"));
-      }
-    });
+                return ApiFutures.immediateFailedFuture(
+                    createStatusExceptionWithReasons(
+                        "LINEAGE_INGESTION_DISABLED", "SOME_OTHER_REASON"));
+              }
+            });
   }
 
   private StatusException createStatusExceptionWithReasons(String... reasons) {
     Status.Builder statusBuilder = com.google.rpc.Status.newBuilder();
     statusBuilder.setCode(Code.PERMISSION_DENIED.getNumber());
     statusBuilder.addAllDetails(
-        Arrays.stream(reasons).map(r -> Any.pack(ErrorInfo.newBuilder().setReason(r).build()))
+        Arrays.stream(reasons)
+            .map(r -> Any.pack(ErrorInfo.newBuilder().setReason(r).build()))
             .toList());
     return StatusProto.toStatusException(statusBuilder.build());
   }

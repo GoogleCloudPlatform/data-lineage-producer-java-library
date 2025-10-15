@@ -45,7 +45,10 @@ public class StandardLineageEnablementCacheTest {
     Clock clock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
     Duration duration = Duration.ofMinutes(5);
     CacheOptions options =
-        CacheOptions.newBuilder().setDefaultCacheDisabledStatusTime(duration).setClock(clock).build();
+        CacheOptions.newBuilder()
+            .setDefaultCacheDisabledStatusTime(duration)
+            .setClock(clock)
+            .build();
     StandardLineageEnablementCache cache = new StandardLineageEnablementCache(options);
 
     cache.markLineageAsDisabled(PROJECT_ID);

@@ -44,10 +44,8 @@ public class CacheSettingsTest {
 
   @Test
   public void getCommonInstanceWithFallback_returnsCorrectSettings() {
-    CacheOptions fallbackOptions =
-        CacheOptions.newBuilder().setCacheSize(50).build();
-    CacheSettings settings =
-        CacheSettings.getCommonInstance(fallbackOptions);
+    CacheOptions fallbackOptions = CacheOptions.newBuilder().setCacheSize(50).build();
+    CacheSettings settings = CacheSettings.getCommonInstance(fallbackOptions);
 
     assertThat(settings.getEnabled()).isTrue();
     assertThat(settings.getUseCommonInstance()).isTrue();
@@ -56,8 +54,7 @@ public class CacheSettingsTest {
 
   @Test
   public void getCommonInstanceWithFallback_withNullFallback_throwsException() {
-    assertThrows(
-        IllegalArgumentException.class, () -> CacheSettings.getCommonInstance(null));
+    assertThrows(IllegalArgumentException.class, () -> CacheSettings.getCommonInstance(null));
   }
 
   @Test
@@ -70,8 +67,7 @@ public class CacheSettingsTest {
 
   @Test
   public void getStandAloneInstanceWithFallback_returnsEnabledAndNotCommon() {
-    CacheOptions fallbackOptions =
-        CacheOptions.newBuilder().setCacheSize(50).build();
+    CacheOptions fallbackOptions = CacheOptions.newBuilder().setCacheSize(50).build();
     CacheSettings settings = CacheSettings.getStandAloneInstance(fallbackOptions);
     assertThat(settings.getEnabled()).isTrue();
     assertThat(settings.getUseCommonInstance()).isFalse();
@@ -80,7 +76,6 @@ public class CacheSettingsTest {
 
   @Test
   public void getStandAloneInstanceWithFallback_withNullFallback_throwsException() {
-    assertThrows(
-        IllegalArgumentException.class, () -> CacheSettings.getStandAloneInstance(null));
+    assertThrows(IllegalArgumentException.class, () -> CacheSettings.getStandAloneInstance(null));
   }
 }

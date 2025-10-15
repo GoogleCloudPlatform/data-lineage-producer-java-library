@@ -54,9 +54,7 @@ import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Wraps standard lineage client and provides common functionalities.
- */
+/** Wraps standard lineage client and provides common functionalities. */
 final class InternalClient implements AsyncLineageClient {
 
   private static final Logger logger = LoggerFactory.getLogger(AsyncLineageProducerClient.class);
@@ -79,8 +77,8 @@ final class InternalClient implements AsyncLineageClient {
 
   private InternalClient(LineageBaseSettings settings, BasicLineageClient basicLineageClient) {
     apiEnablementCache = ApiEnablementCacheFactory.get(settings.getApiEnablementCacheSettings());
-    lineageEnablementCache = LineageEnablementCacheFactory.get(
-        settings.getLineageEnablementCacheSettings());
+    lineageEnablementCache =
+        LineageEnablementCacheFactory.get(settings.getLineageEnablementCacheSettings());
     client = basicLineageClient;
   }
 
@@ -96,8 +94,8 @@ final class InternalClient implements AsyncLineageClient {
 
   @Override
   public ApiFuture<Empty> deleteLineageEvent(DeleteLineageEventRequest request) {
-    return handleCall(() -> client.deleteLineageEventCallable().futureCall(request),
-        request.getName());
+    return handleCall(
+        () -> client.deleteLineageEventCallable().futureCall(request), request.getName());
   }
 
   @Override
@@ -117,28 +115,28 @@ final class InternalClient implements AsyncLineageClient {
 
   @Override
   public ApiFuture<ListProcessesPagedResponse> listProcesses(ListProcessesRequest request) {
-    return handleCall(() -> client.listProcessesPagedCallable().futureCall(request),
-        request.getParent());
+    return handleCall(
+        () -> client.listProcessesPagedCallable().futureCall(request), request.getParent());
   }
 
   @Override
   public ApiFuture<ListRunsPagedResponse> listRuns(ListRunsRequest request) {
-    return handleCall(() -> client.listRunsPagedCallable().futureCall(request),
-        request.getParent());
+    return handleCall(
+        () -> client.listRunsPagedCallable().futureCall(request), request.getParent());
   }
 
   @Override
   public ApiFuture<ListLineageEventsPagedResponse> listLineageEvents(
       ListLineageEventsRequest request) {
-    return handleCall(() -> client.listLineageEventsPagedCallable().futureCall(request),
-        request.getParent());
+    return handleCall(
+        () -> client.listLineageEventsPagedCallable().futureCall(request), request.getParent());
   }
 
   @Override
   public ApiFuture<ProcessOpenLineageRunEventResponse> processOpenLineageRunEvent(
       ProcessOpenLineageRunEventRequest request) {
-    return handleCall(() -> client.processOpenLineageRunEventCallable().futureCall(request),
-        request.getParent());
+    return handleCall(
+        () -> client.processOpenLineageRunEventCallable().futureCall(request), request.getParent());
   }
 
   public void shutdown() {
@@ -181,39 +179,51 @@ final class InternalClient implements AsyncLineageClient {
     String projectName = NamesHelper.getProjectNameWithLocationFromResourceName(resourceName);
     if (apiEnablementCache.isServiceMarkedAsDisabled(projectName)) {
       throw ApiExceptionFactory.createException(
-          "Data Lineage API is disabled in project " + projectName
-              + ". Please enable the API and try again after a few minutes.", null,
-          GrpcHelper.getStatusCodeFromCode(Code.PERMISSION_DENIED), false);
+          "Data Lineage API is disabled in project "
+              + projectName
+              + ". Please enable the API and try again after a few minutes.",
+          null,
+          GrpcHelper.getStatusCodeFromCode(Code.PERMISSION_DENIED),
+          false);
     }
 
     if (lineageEnablementCache.isLineageMarkedAsDisabled(projectName)) {
       throw ApiExceptionFactory.createException(
-          "Lineage is not enabled in Lineage Configurations for project " + projectName
+          "Lineage is not enabled in Lineage Configurations for project "
+              + projectName
               + ". Please enable Lineage in Lineage Configurations and try again after a few minutes.",
-          null, GrpcHelper.getStatusCodeFromCode(Code.PERMISSION_DENIED), false);
+          null,
+          GrpcHelper.getStatusCodeFromCode(Code.PERMISSION_DENIED),
+          false);
     }
 
     F result = call.get();
-    ApiFutures.addCallback(result, new ApiFutureCallback<>() {
-      @Override
-      public void onFailure(Throwable exception) {
-        logger.error("Failed to call API for resource {}: {}", resourceName, exception.getMessage(),
-            exception);
-        ImmutableSet<String> reasons = GrpcHelper.getErrorReasons(exception);
-        if (reasons.contains("SERVICE_DISABLED")) {
-          apiEnablementCache.markServiceAsDisabled(projectName);
-        } else if (reasons.contains("LINEAGE_INGESTION_DISABLED")) {
-          lineageEnablementCache.markLineageAsDisabled(projectName);
-        }
-      }
+    ApiFutures.addCallback(
+        result,
+        new ApiFutureCallback<>() {
+          @Override
+          public void onFailure(Throwable exception) {
+            logger.error(
+                "Failed to call API for resource {}: {}",
+                resourceName,
+                exception.getMessage(),
+                exception);
+            ImmutableSet<String> reasons = GrpcHelper.getErrorReasons(exception);
+            if (reasons.contains("SERVICE_DISABLED")) {
+              apiEnablementCache.markServiceAsDisabled(projectName);
+            } else if (reasons.contains("LINEAGE_INGESTION_DISABLED")) {
+              lineageEnablementCache.markLineageAsDisabled(projectName);
+            }
+          }
 
-      @Override
-      public void onSuccess(Object result) {
-        if (logger.isDebugEnabled()) {
-          logger.debug("Successfully called API for resource: {}", resourceName);
-        }
-      }
-    }, MoreExecutors.directExecutor());
+          @Override
+          public void onSuccess(Object result) {
+            if (logger.isDebugEnabled()) {
+              logger.debug("Successfully called API for resource: {}", resourceName);
+            }
+          }
+        },
+        MoreExecutors.directExecutor());
 
     return result;
   }

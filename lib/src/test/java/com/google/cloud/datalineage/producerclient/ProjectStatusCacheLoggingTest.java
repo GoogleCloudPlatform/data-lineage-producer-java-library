@@ -29,9 +29,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.slf4j.LoggerFactory;
 
-/**
- * Tests logging functionality in ProjectStatusCache.
- */
+/** Tests logging functionality in ProjectStatusCache. */
 @RunWith(JUnit4.class)
 public class ProjectStatusCacheLoggingTest {
 
@@ -78,7 +76,9 @@ public class ProjectStatusCacheLoggingTest {
     // Verify that cache initialization is logged
     assertThat(testAppender.getMessagesAtLevel(Level.DEBUG))
         .contains(
-            "Initializing ProjectStatusCache '" + CACHE_NAME + "' with cache size: 100, "
+            "Initializing ProjectStatusCache '"
+                + CACHE_NAME
+                + "' with cache size: 100, "
                 + "default disabled duration: PT5M");
   }
 
@@ -94,7 +94,8 @@ public class ProjectStatusCacheLoggingTest {
     // Verify that marking service as disabled is logged
     assertThat(testAppender.getMessagesAtLevel(Level.WARN))
         .contains(
-            "Marking project 'test-project' as disabled in cache '" + CACHE_NAME
+            "Marking project 'test-project' as disabled in cache '"
+                + CACHE_NAME
                 + "' for duration: PT10M");
   }
 
@@ -109,7 +110,8 @@ public class ProjectStatusCacheLoggingTest {
     assertThat(result).isFalse();
     assertThat(testAppender.getMessagesAtLevel(Level.DEBUG))
         .contains(
-            "No cache entry found for project 'non-existent-project' in cache '" + CACHE_NAME
+            "No cache entry found for project 'non-existent-project' in cache '"
+                + CACHE_NAME
                 + "'");
   }
 
@@ -129,7 +131,8 @@ public class ProjectStatusCacheLoggingTest {
             .anyMatch(
                 log ->
                     log.contains(
-                        "Project 'test-project' is marked as disabled in cache '" + CACHE_NAME
+                        "Project 'test-project' is marked as disabled in cache '"
+                            + CACHE_NAME
                             + "' until"));
     assertThat(found).isTrue();
   }
@@ -154,8 +157,8 @@ public class ProjectStatusCacheLoggingTest {
     assertThat(result).isFalse();
     assertThat(testAppender.getMessagesAtLevel(Level.DEBUG))
         .contains(
-            "Project disability has expired for project 'test-project' in cache '" + CACHE_NAME
+            "Project disability has expired for project 'test-project' in cache '"
+                + CACHE_NAME
                 + "'");
   }
-
 }
