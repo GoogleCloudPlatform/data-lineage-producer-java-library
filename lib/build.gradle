@@ -23,7 +23,7 @@ plugins {
 
 // v"2.2.5" is recommended, but it uses Java21 which is incompatible with other
 // plugins (e.g. "com.github.johnrengelman.shadow"), therefore, using latest compatible version
-   id("com.google.cloud.artifactregistry.gradle-plugin") version "2.1.5"
+    id("com.google.cloud.artifactregistry.gradle-plugin") version "2.1.5"
 }
 
 googleJavaFormat {
@@ -62,10 +62,10 @@ dependencies {
     implementation "com.google.api:gax-httpjson:${gaxHttpJsonVersion}"
     implementation "io.grpc:grpc-protobuf:${grpcProtobufVersion}"
     implementation "com.google.guava:guava:${guavaVersion}"
-    
+
     // SLF4J logging
     implementation "org.slf4j:slf4j-api:${slf4jVersion}"
-    
+
     // Lombok for @Slf4j annotation
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
@@ -74,21 +74,17 @@ dependencies {
     compileOnly "com.google.auto.value:auto-value-annotations:1.10.1"
     annotationProcessor "com.google.auto.value:auto-value:1.10.1"
 
-    // AutoValue
-    compileOnly "com.google.auto.value:auto-value-annotations:1.10.1"
-    annotationProcessor "com.google.auto.value:auto-value:1.10.1"
-    
     // Use JUnit test framework.
     testImplementation "junit:junit:${junitVersion}"
     testImplementation "com.google.truth:truth:${truthVersion}"
     testImplementation "org.mockito:mockito-core:${mockitoVersion}"
     testImplementation "com.google.api:gax:${gaxTestLibVersion}:testlib"
     testImplementation "com.google.testparameterinjector:test-parameter-injector:${parameterInjectorVersion}"
-    
+
     // Test logging dependencies
     testImplementation "ch.qos.logback:logback-classic:${logbackVersion}"
     testImplementation "ch.qos.logback:logback-core:${logbackVersion}"
-    
+
     // Test Lombok
     testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
     testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"

@@ -17,7 +17,10 @@ package com.google.cloud.datalineage.producerclient;
 import static com.google.common.truth.Truth.assertThat;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
+@RunWith(JUnit4.class)
 public class ApiEnablementCacheFactoryTest {
 
   @Test
@@ -29,14 +32,14 @@ public class ApiEnablementCacheFactoryTest {
   }
 
   @Test
-  public void get_disabled_returnsNoOpInstance() {
+  public void getDisabled_returnsNoOpInstance() {
     CacheSettings settings = CacheSettings.getDisabledInstance();
     ApiEnablementCache cache = ApiEnablementCacheFactory.get(settings);
     assertThat(cache).isInstanceOf(NoOpApiEnablementCache.class);
   }
 
   @Test
-  public void get_standAlone_returnsNewInstance() {
+  public void getStandAlone_returnsNewInstance() {
     CacheSettings settings = CacheSettings.getStandAloneInstance();
     ApiEnablementCache firstInstance = ApiEnablementCacheFactory.get(settings);
     ApiEnablementCache secondInstance = ApiEnablementCacheFactory.get(settings);

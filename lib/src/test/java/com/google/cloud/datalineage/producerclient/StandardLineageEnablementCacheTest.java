@@ -26,7 +26,7 @@ public class StandardLineageEnablementCacheTest {
   private static final String PROJECT_ID = "project-id";
 
   @Test
-  public void isServiceMarkedAsDisabled_afterMarking_returnsTrue() {
+  public void isLineageMarkedAsDisabled_afterMarking_returnsTrue() {
     StandardLineageEnablementCache cache =
         new StandardLineageEnablementCache(CacheOptions.newBuilder().build());
     cache.markLineageAsDisabled(PROJECT_ID);
@@ -34,14 +34,14 @@ public class StandardLineageEnablementCacheTest {
   }
 
   @Test
-  public void isServiceMarkedAsDisabled_withoutMarking_returnsFalse() {
+  public void isLineageMarkedAsDisabled_withoutMarking_returnsFalse() {
     StandardLineageEnablementCache cache =
         new StandardLineageEnablementCache(CacheOptions.newBuilder().build());
     assertThat(cache.isLineageMarkedAsDisabled(PROJECT_ID)).isFalse();
   }
 
   @Test
-  public void isServiceMarkedAsDisabled_afterDurationPasses_returnsFalse() {
+  public void isLineageMarkedAsDisabled_afterDurationPasses_returnsFalse() {
     Clock clock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
     Duration duration = Duration.ofMinutes(5);
     CacheOptions options =

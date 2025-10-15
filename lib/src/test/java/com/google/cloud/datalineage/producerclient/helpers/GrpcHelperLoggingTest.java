@@ -21,6 +21,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import com.google.cloud.datalineage.producerclient.test.TestLogAppender;
+import com.google.common.collect.ImmutableSet;
 import com.google.protobuf.Any;
 import com.google.rpc.ErrorInfo;
 import com.google.rpc.Status;
@@ -67,107 +68,66 @@ public class GrpcHelperLoggingTest {
   }
 
   @Test
-  public void testGetReason_ValidErrorInfo_LogsSuccess() {
+  public void testGetReasons_validErrorInfo_logsSuccess() {
     testAppender.clear(); // Clear any existing logs
 
     // Create an ErrorInfo with a reason
-    ErrorInfo errorInfo =
-        ErrorInfo.newBuilder().setReason("API_DISABLED").setDomain("googleapis.com").build();
+    ErrorInfo errorInfo = ErrorInfo.newBuilder().setReason("API_DISABLED")
+        .setDomain("googleapis.com").build();
 
     // Create a Status with the ErrorInfo
-    Status status =
-        Status.newBuilder()
-            .setCode(com.google.rpc.Code.FAILED_PRECONDITION_VALUE)
-            .setMessage("API is disabled")
-            .addDetails(Any.pack(errorInfo))
-            .build();
+    Status status = Status.newBuilder().setCode(com.google.rpc.Code.FAILED_PRECONDITION_VALUE)
+        .setMessage("API is disabled").addDetails(Any.pack(errorInfo)).build();
 
     // Create a gRPC exception from the status
     StatusRuntimeException exception = StatusProto.toStatusRuntimeException(status);
 
     // Call the method
-    String reason = GrpcHelper.getReason(exception);
+    ImmutableSet<String> reason = GrpcHelper.getErrorReasons(exception);
 
     // Verify the result
-    assertThat(reason).isEqualTo("API_DISABLED");
+    assertThat(reason).containsExactly("API_DISABLED");
 
     // Verify debug logging
-    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG))
-        .contains("Successfully extracted reason from ErrorInfo: API_DISABLED");
+    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG)).contains(
+        "Successfully extracted reason from ErrorInfo: API_DISABLED");
   }
 
   @Test
-  public void testGetReason_InvalidProtocolBuffer_LogsWarnAndReturnsNull() {
+  public void testGetReasons_invalidProtocolBuffer_logsWarnAndReturnsNull() {
     testAppender.clear(); // Clear any existing logs
 
     // Create a malformed Any that can't be unpacked
-    Any invalidAny =
-        Any.newBuilder()
-            .setTypeUrl("type.googleapis.com/google.rpc.ErrorInfo")
-            .setValue(com.google.protobuf.ByteString.copyFromUtf8("invalid-data"))
-            .build();
+    Any invalidAny = Any.newBuilder().setTypeUrl("type.googleapis.com/google.rpc.ErrorInfo")
+        .setValue(com.google.protobuf.ByteString.copyFromUtf8("invalid-data")).build();
 
-    Status status =
-        Status.newBuilder()
-            .setCode(com.google.rpc.Code.FAILED_PRECONDITION_VALUE)
-            .setMessage("API is disabled")
-            .addDetails(invalidAny)
-            .build();
+    Status status = Status.newBuilder().setCode(com.google.rpc.Code.FAILED_PRECONDITION_VALUE)
+        .setMessage("API is disabled").addDetails(invalidAny).build();
 
     StatusRuntimeException exception = StatusProto.toStatusRuntimeException(status);
 
-    // Call the method
-    String reason = GrpcHelper.getReason(exception);
+    IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class,
+        () -> GrpcHelper.getErrorReasons(exception));
 
-    // Verify the result is null
-    assertThat(reason).isNull();
-
-    // Verify warning logging
-    assertThat(testAppender.getMessagesAtLevel(Level.WARN))
-        .contains("Invalid protocol buffer message while extracting ErrorInfo");
+    assertThat(thrown).hasMessageThat()
+        .contains("Invalid protocol buffer message");
+    assertThat(testAppender.getMessagesAtLevel(Level.ERROR)).contains(
+        "Invalid protocol buffer message while extracting ErrorInfo");
   }
 
   @Test
-  public void testGetReason_NoErrorInfo_LogsDebugAndReturnsNull() {
-    testAppender.clear(); // Clear any existing logs
-
-    // Create a Status without ErrorInfo
-    Status status =
-        Status.newBuilder()
-            .setCode(com.google.rpc.Code.FAILED_PRECONDITION_VALUE)
-            .setMessage("API is disabled")
-            .build();
-
-    StatusRuntimeException exception = StatusProto.toStatusRuntimeException(status);
-
-    // Call the method
-    String reason = GrpcHelper.getReason(exception);
-
-    // Verify the result is null
-    assertThat(reason).isNull();
-
-    // Verify debug logging
-    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG))
-        .contains(
-            "Message does not contain ErrorInfo for exception:"
-                + " FAILED_PRECONDITION: API is disabled");
-  }
-
-  @Test
-  public void testGetReason_NonGrpcException_ReturnsNull() {
+  public void testGetReasons_nonGrpcException_returnsNull() {
     testAppender.clear(); // Clear any existing logs
 
     // Create a non-gRPC exception
     RuntimeException nonGrpcException = new RuntimeException("Not a gRPC exception");
 
     // Call the method
-    String reason = GrpcHelper.getReason(nonGrpcException);
-
-    // Verify the result is null
-    assertThat(reason).isNull();
+    assertThrows(IllegalArgumentException.class,
+        () -> GrpcHelper.getErrorReasons(nonGrpcException));
 
     // Verify debug logging
-    assertThat(testAppender.getMessagesAtLevel(Level.DEBUG))
-        .contains("Provided throwable is not a gRPC exception: java.lang.RuntimeException");
+    assertThat(testAppender.getMessagesAtLevel(Level.ERROR)).contains(
+        "Provided throwable is not a gRPC exception: java.lang.RuntimeException");
   }
 }

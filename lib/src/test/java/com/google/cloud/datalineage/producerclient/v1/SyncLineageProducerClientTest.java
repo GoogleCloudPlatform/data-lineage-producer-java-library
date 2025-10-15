@@ -33,13 +33,17 @@ import com.google.protobuf.Struct;
 import com.google.rpc.Code;
 import com.google.rpc.ErrorInfo;
 import com.google.rpc.Status;
+import io.grpc.StatusException;
 import io.grpc.protobuf.StatusProto;
 import java.io.IOException;
+import java.util.Arrays;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-/** Tests for SyncLineageProducerClient. */
+/**
+ * Tests for SyncLineageProducerClient.
+ */
 public class SyncLineageProducerClientTest {
 
   private static final String PROJECT_NAME_AND_LOCATION = "projects/test/locations/test";
@@ -60,10 +64,10 @@ public class SyncLineageProducerClientTest {
   @Test
   public void processOpenLineageRunEvent_supported() {
     ProcessOpenLineageRunEventRequest request = createProcessOpenLineageRunEventRequest();
-    ProcessOpenLineageRunEventResponse response =
-        ProcessOpenLineageRunEventResponse.newBuilder().build();
-    when(basicLineageClient.processOpenLineageRunEventCallable())
-        .thenReturn(new UnaryCallableFake<>(r -> response));
+    ProcessOpenLineageRunEventResponse response = ProcessOpenLineageRunEventResponse.newBuilder()
+        .build();
+    when(basicLineageClient.processOpenLineageRunEventCallable()).thenReturn(
+        new UnaryCallableFake<>(r -> response));
 
     ProcessOpenLineageRunEventResponse gotResponse = client.processOpenLineageRunEvent(request);
 
@@ -74,8 +78,8 @@ public class SyncLineageProducerClientTest {
   public void propagatesException() {
     ProcessOpenLineageRunEventRequest request = createProcessOpenLineageRunEventRequest();
 
-    when(basicLineageClient.processOpenLineageRunEventCallable())
-        .thenThrow(InvalidArgumentException.class);
+    when(basicLineageClient.processOpenLineageRunEventCallable()).thenThrow(
+        InvalidArgumentException.class);
 
     assertThrows(InvalidArgumentException.class, () -> client.processOpenLineageRunEvent(request));
   }
@@ -83,33 +87,31 @@ public class SyncLineageProducerClientTest {
   @Test
   public void apiDisabled_doesNotRetry() {
     returnServiceDisabledFromMocker();
-    ProcessOpenLineageRunEventRequest request =
-        createProcessOpenLineageRunEventRequest("projects/test-api-disabled-sync/locations/test");
+    ProcessOpenLineageRunEventRequest request = createProcessOpenLineageRunEventRequest(
+        "projects/test-api-disabled-sync/locations/test");
 
     // For the first call, throw a SERVICE_DISABLED exception
-    assertThrows(
-        UncheckedExecutionException.class, () -> client.processOpenLineageRunEvent(request));
+    assertThrows(UncheckedExecutionException.class,
+        () -> client.processOpenLineageRunEvent(request));
     // Not attempt the second call
-    assertThat(
-        assertThrows(ApiException.class, () -> client.processOpenLineageRunEvent(request))
-            .getMessage()
-            .contains("Data Lineage API is disabled in project"));
+    assertThat(assertThrows(ApiException.class,
+        () -> client.processOpenLineageRunEvent(request)).getMessage()
+        .contains("Data Lineage API is disabled in project"));
   }
 
   @Test
   public void lineageDisabled_doesNotRetry() {
     returnLineageDisabledFromMocker();
-    ProcessOpenLineageRunEventRequest request =
-        createProcessOpenLineageRunEventRequest("projects/test-lineage-disabled-sync/locations/test");
+    ProcessOpenLineageRunEventRequest request = createProcessOpenLineageRunEventRequest(
+        "projects/test-lineage-disabled-sync/locations/test");
 
     // For the first call, throw a PERMISSION_DENIED exception
-    assertThrows(
-        UncheckedExecutionException.class, () -> client.processOpenLineageRunEvent(request));
+    assertThrows(UncheckedExecutionException.class,
+        () -> client.processOpenLineageRunEvent(request));
     // Not attempt the second call
-    assertThat(
-        assertThrows(ApiException.class, () -> client.processOpenLineageRunEvent(request))
-            .getMessage()
-            .contains("Lineage is not enabled in Lineage Configurations for project"));
+    assertThat(assertThrows(ApiException.class,
+        () -> client.processOpenLineageRunEvent(request)).getMessage()
+        .contains("Lineage is not enabled in Lineage Configurations for project"));
   }
 
   private static Struct someOpenLineage() {
@@ -122,34 +124,25 @@ public class SyncLineageProducerClientTest {
 
   private static ProcessOpenLineageRunEventRequest createProcessOpenLineageRunEventRequest(
       String parent) {
-    return ProcessOpenLineageRunEventRequest.newBuilder()
-        .setParent(parent)
-        .setOpenLineage(someOpenLineage())
-        .build();
+    return ProcessOpenLineageRunEventRequest.newBuilder().setParent(parent)
+        .setOpenLineage(someOpenLineage()).build();
   }
+
 
   /**
    * Configure the BasicLineageClient mocker to return an exception indicating Lineage API
    * disablement.
    */
   private void returnServiceDisabledFromMocker() {
-    when(basicLineageClient.processOpenLineageRunEventCallable())
-        .thenReturn(
-            new UnaryCallable<>() {
-              @Override
-              public ApiFuture<ProcessOpenLineageRunEventResponse> futureCall(
-                  ProcessOpenLineageRunEventRequest request, ApiCallContext context) {
-                Status.Builder statusBuilder = com.google.rpc.Status.newBuilder();
-                statusBuilder.setCode(Code.PERMISSION_DENIED.getNumber());
-                ErrorInfo.Builder errorInfoBuilder =
-                    ErrorInfo.newBuilder().setReason("SERVICE_DISABLED");
+    when(basicLineageClient.processOpenLineageRunEventCallable()).thenReturn(new UnaryCallable<>() {
+      @Override
+      public ApiFuture<ProcessOpenLineageRunEventResponse> futureCall(
+          ProcessOpenLineageRunEventRequest request, ApiCallContext context) {
 
-                statusBuilder.addDetails(Any.pack(errorInfoBuilder.build()));
-
-                return ApiFutures.immediateFailedFuture(
-                    StatusProto.toStatusException(statusBuilder.build()));
-              }
-            });
+        return ApiFutures.immediateFailedFuture(
+            createStatusExceptionWithReasons("SERVICE_DISABLED", "SOME_OTHER_REASON"));
+      }
+    });
   }
 
   /**
@@ -157,19 +150,23 @@ public class SyncLineageProducerClientTest {
    * enabled.
    */
   private void returnLineageDisabledFromMocker() {
-    when(basicLineageClient.processOpenLineageRunEventCallable())
-        .thenReturn(
-            new UnaryCallable<>() {
-              @Override
-              public ApiFuture<ProcessOpenLineageRunEventResponse> futureCall(
-                  ProcessOpenLineageRunEventRequest request, ApiCallContext context) {
-                Status.Builder statusBuilder = com.google.rpc.Status.newBuilder();
-                statusBuilder.setCode(Code.PERMISSION_DENIED.getNumber());
-                statusBuilder.setMessage("Lineage is not enabled in Lineage Configurations");
+    when(basicLineageClient.processOpenLineageRunEventCallable()).thenReturn(new UnaryCallable<>() {
+      @Override
+      public ApiFuture<ProcessOpenLineageRunEventResponse> futureCall(
+          ProcessOpenLineageRunEventRequest request, ApiCallContext context) {
 
-                return ApiFutures.immediateFailedFuture(
-                    StatusProto.toStatusException(statusBuilder.build()));
-              }
-            });
+        return ApiFutures.immediateFailedFuture(
+            createStatusExceptionWithReasons("LINEAGE_INGESTION_DISABLED", "SOME_OTHER_REASON"));
+      }
+    });
+  }
+
+  private StatusException createStatusExceptionWithReasons(String... reasons) {
+    Status.Builder statusBuilder = com.google.rpc.Status.newBuilder();
+    statusBuilder.setCode(Code.PERMISSION_DENIED.getNumber());
+    statusBuilder.addAllDetails(
+        Arrays.stream(reasons).map(r -> Any.pack(ErrorInfo.newBuilder().setReason(r).build()))
+            .toList());
+    return StatusProto.toStatusException(statusBuilder.build());
   }
 }

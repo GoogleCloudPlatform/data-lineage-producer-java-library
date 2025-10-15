@@ -17,7 +17,10 @@ package com.google.cloud.datalineage.producerclient;
 import static com.google.common.truth.Truth.assertThat;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
+@RunWith(JUnit4.class)
 public class LineageEnablementCacheFactoryTest {
 
   @Test
@@ -26,5 +29,20 @@ public class LineageEnablementCacheFactoryTest {
     LineageEnablementCache firstInstance = LineageEnablementCacheFactory.get(settings);
     LineageEnablementCache secondInstance = LineageEnablementCacheFactory.get(settings);
     assertThat(firstInstance).isSameInstanceAs(secondInstance);
+  }
+
+  @Test
+  public void getDisabled_returnsNoOpInstance() {
+    CacheSettings settings = CacheSettings.getDisabledInstance();
+    LineageEnablementCache cache = LineageEnablementCacheFactory.get(settings);
+    assertThat(cache).isInstanceOf(NoOpLineageEnablementCache.class);
+  }
+
+  @Test
+  public void getStandAlone_returnsNewInstance() {
+    CacheSettings settings = CacheSettings.getStandAloneInstance();
+    LineageEnablementCache firstInstance = LineageEnablementCacheFactory.get(settings);
+    LineageEnablementCache secondInstance = LineageEnablementCacheFactory.get(settings);
+    assertThat(firstInstance).isNotSameInstanceAs(secondInstance);
   }
 }

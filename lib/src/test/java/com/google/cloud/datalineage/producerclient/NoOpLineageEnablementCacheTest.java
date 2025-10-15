@@ -14,17 +14,35 @@
 
 package com.google.cloud.datalineage.producerclient;
 
-import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertFalse;
 
+import java.time.Duration;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
+@RunWith(JUnit4.class)
 public class NoOpLineageEnablementCacheTest {
+
   private static final String PROJECT_ID = "project-id";
 
   @Test
   public void isServiceMarkedAsDisabled_returnsFalse() {
     NoOpLineageEnablementCache cache = new NoOpLineageEnablementCache();
     cache.markLineageAsDisabled(PROJECT_ID);
-    assertThat(cache.isLineageMarkedAsDisabled(PROJECT_ID)).isFalse();
+    assertFalse(cache.isLineageMarkedAsDisabled(PROJECT_ID));
+  }
+
+  @Test
+  public void markServiceAsDisabledWithOffset_serviceIsEnabled() {
+    NoOpLineageEnablementCache cache = new NoOpLineageEnablementCache();
+    cache.markLineageAsDisabled("testProject", Duration.ofMinutes(5));
+    assertFalse(cache.isLineageMarkedAsDisabled("testProject"));
+  }
+
+  @Test
+  public void isServiceMarkedAsDisabled_returnsDefaultFalse() {
+    NoOpLineageEnablementCache cache = new NoOpLineageEnablementCache();
+    assertFalse(cache.isLineageMarkedAsDisabled("testProject"));
   }
 }

@@ -16,7 +16,7 @@ package com.google.cloud.datalineage.producerclient;
 
 import java.time.Duration;
 
-/** No-op implementation of the ApiEnablementCache that does nothing. */
+/** No-op implementation of the LineageEnablementCache that does nothing. */
 public class NoOpLineageEnablementCache implements LineageEnablementCache {
 
   @Override

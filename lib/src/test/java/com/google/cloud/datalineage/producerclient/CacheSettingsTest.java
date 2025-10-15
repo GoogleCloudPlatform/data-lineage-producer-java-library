@@ -15,6 +15,7 @@
 package com.google.cloud.datalineage.producerclient;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertThrows;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,14 +27,37 @@ public class CacheSettingsTest {
   @Test
   public void getDisabledInstance_returnsDisabledSettings() {
     CacheSettings settings = CacheSettings.getDisabledInstance();
+
     assertThat(settings.getEnabled()).isFalse();
+    assertThat(settings.getUseCommonInstance()).isFalse();
+    assertThat(settings.getOptions()).isEqualTo(CacheOptions.getDefaultInstance());
   }
 
   @Test
   public void getCommonInstance_returnsEnabledAndCommon() {
     CacheSettings settings = CacheSettings.getCommonInstance();
+
     assertThat(settings.getEnabled()).isTrue();
     assertThat(settings.getUseCommonInstance()).isTrue();
+    assertThat(settings.getOptions()).isEqualTo(CacheOptions.getDefaultInstance());
+  }
+
+  @Test
+  public void getCommonInstanceWithFallback_returnsCorrectSettings() {
+    CacheOptions fallbackOptions =
+        CacheOptions.newBuilder().setCacheSize(50).build();
+    CacheSettings settings =
+        CacheSettings.getCommonInstance(fallbackOptions);
+
+    assertThat(settings.getEnabled()).isTrue();
+    assertThat(settings.getUseCommonInstance()).isTrue();
+    assertThat(settings.getOptions()).isEqualTo(fallbackOptions);
+  }
+
+  @Test
+  public void getCommonInstanceWithFallback_withNullFallback_throwsException() {
+    assertThrows(
+        IllegalArgumentException.class, () -> CacheSettings.getCommonInstance(null));
   }
 
   @Test
@@ -41,5 +65,22 @@ public class CacheSettingsTest {
     CacheSettings settings = CacheSettings.getStandAloneInstance();
     assertThat(settings.getEnabled()).isTrue();
     assertThat(settings.getUseCommonInstance()).isFalse();
+    assertThat(settings.getOptions()).isEqualTo(CacheOptions.getDefaultInstance());
+  }
+
+  @Test
+  public void getStandAloneInstanceWithFallback_returnsEnabledAndNotCommon() {
+    CacheOptions fallbackOptions =
+        CacheOptions.newBuilder().setCacheSize(50).build();
+    CacheSettings settings = CacheSettings.getStandAloneInstance(fallbackOptions);
+    assertThat(settings.getEnabled()).isTrue();
+    assertThat(settings.getUseCommonInstance()).isFalse();
+    assertThat(settings.getOptions()).isEqualTo(fallbackOptions);
+  }
+
+  @Test
+  public void getStandAloneInstanceWithFallback_withNullFallback_throwsException() {
+    assertThrows(
+        IllegalArgumentException.class, () -> CacheSettings.getStandAloneInstance(null));
   }
 }

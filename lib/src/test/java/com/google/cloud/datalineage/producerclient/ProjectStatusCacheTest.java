@@ -15,66 +15,128 @@
 package com.google.cloud.datalineage.producerclient;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertEquals;
 
+import com.google.common.collect.ImmutableList;
 import java.time.Clock;
 import java.time.Duration;
-import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.mockito.Mockito;
 
 @RunWith(JUnit4.class)
 public class ProjectStatusCacheTest {
-  private static final String PROJECT_ID = "test-project";
+
   private static final String CACHE_NAME = "Test Cache";
+
+  private static final LocalDateTime BASE_DATE = LocalDateTime.of(1989, 1, 13, 0, 0);
+
+  private ProjectStatusCache cache;
+  private Clock clock;
+
+  @Before
+  public void init() {
+    clock = Mockito.mock(Clock.class);
+    cache = new ProjectStatusCache(CacheOptions.newBuilder().setClock(clock).build(), CACHE_NAME);
+    setupTime(BASE_DATE);
+  }
 
   @Test
   public void isProjectDisabled_withoutMarking_returnsFalse() {
-    ProjectStatusCache cache = new ProjectStatusCache(CacheOptions.newBuilder().build(), CACHE_NAME);
-    assertThat(cache.isProjectDisabled(PROJECT_ID)).isFalse();
+    assertThat(cache.isProjectDisabled("random-project")).isFalse();
   }
 
   @Test
-  public void isProjectDisabled_afterMarking_returnsTrue() {
-    ProjectStatusCache cache = new ProjectStatusCache(CacheOptions.newBuilder().build(), CACHE_NAME);
-    cache.markProjectAsDisabled(PROJECT_ID);
-    assertThat(cache.isProjectDisabled(PROJECT_ID)).isTrue();
+  public void isProjectDisabled_markDisabled_withoutMarking_returnsFalse() {
+    cache.markProjectAsDisabled("random-project", Duration.ZERO);
+    setupTime(BASE_DATE.plus(Duration.ofMillis(1)));
+    assertThat(cache.isProjectDisabled("random-project")).isFalse();
   }
 
   @Test
-  public void isProjectDisabled_afterMarkingWithDuration_returnsTrue() {
-    ProjectStatusCache cache = new ProjectStatusCache(CacheOptions.newBuilder().build(), CACHE_NAME);
-    cache.markProjectAsDisabled(PROJECT_ID, Duration.ofMinutes(5));
-    assertThat(cache.isProjectDisabled(PROJECT_ID)).isTrue();
+  public void isProjectDisabled_respectsDuration() {
+    String projectId = "test-project";
+    Duration expireDuration = Duration.ofMillis(10);
+
+    cache.markProjectAsDisabled(projectId, expireDuration);
+
+    assertNoStateChangeAtTime(projectId, BASE_DATE);
+    assertStateChangedAtTime(projectId, BASE_DATE.plus(expireDuration));
   }
 
   @Test
-  public void isProjectDisabled_afterDurationPasses_returnsFalse() {
-    // Use a fixed clock to control time
-    Clock fixedClock = Clock.fixed(Instant.EPOCH, ZoneId.systemDefault());
-    Duration duration = Duration.ofMinutes(5);
+  public void isProjectDisabled_respectsDefaultDuration() {
 
-    CacheOptions options =
-        CacheOptions.newBuilder()
-            .setDefaultCacheDisabledStatusTime(duration)
-            .setClock(fixedClock)
-            .build();
+    String projectId = "test-project";
 
-    ProjectStatusCache cache = new ProjectStatusCache(options, CACHE_NAME);
+    cache.markProjectAsDisabled(projectId);
 
-    // Mark the project as disabled. The expiry will be EPOCH + 5 minutes.
-    cache.markProjectAsDisabled(PROJECT_ID);
-    assertThat(cache.isProjectDisabled(PROJECT_ID)).isTrue();
+    assertNoStateChangeAtTime(projectId, BASE_DATE);
+    assertStateChangedAtTime(projectId, BASE_DATE.plus(Duration.ofMinutes(5)));
+  }
 
-    // To test expiry, we must simulate time passing. Since the clock is immutable,
-    // we create a *new* cache instance with a clock that is advanced past the expiry time.
-    // This is a valid test because the cache state is not shared between instances.
-    Clock advancedClock = Clock.offset(fixedClock, duration.plus(Duration.ofSeconds(1)));
-    CacheOptions advancedOptions = options.toBuilder().setClock(advancedClock).build();
-    ProjectStatusCache cacheAfterExpiry = new ProjectStatusCache(advancedOptions, CACHE_NAME);
+  @Test
+  public void isProjectDisabled_onlyLastEntryInCacheIsRespected() {
+    String projectId = "test-project";
+    Duration oldDuration = Duration.ofMillis(10);
 
-    // The new cache instance should not have the project marked as disabled
-    assertThat(cacheAfterExpiry.isProjectDisabled(PROJECT_ID)).isFalse();
+    cache.markProjectAsDisabled(projectId, oldDuration);
+    Duration newDuration = Duration.ofMillis(5);
+    cache.markProjectAsDisabled(projectId, newDuration);
+
+    assertNoStateChangeAtTime(projectId, BASE_DATE);
+    assertStateChangedAtTime(projectId, BASE_DATE.plus(newDuration));
+    assertNoStateChangeAtTime(projectId, BASE_DATE.plus(oldDuration));
+  }
+
+  @Test
+  public void markProjectAsDisabled_respectsSize() {
+    ImmutableList<String> projects = ImmutableList.of("project1", "project2", "project3");
+    int cacheSize = projects.size() - 1;
+    cache = new ProjectStatusCache(
+        CacheOptions.newBuilder().setCacheSize(cacheSize).build(),
+        CACHE_NAME);
+
+    projects.forEach(p -> cache.markProjectAsDisabled(p));
+
+    long projectsInCache = projects.stream().filter(p -> cache.isProjectDisabled(p)).count();
+    assertThat(projectsInCache).isEqualTo(cacheSize);
+  }
+
+  /**
+   * Asserts that there was no change in state for a project before and after a given point in
+   * time.
+   */
+  private void assertNoStateChangeAtTime(String projectId, LocalDateTime time) {
+    setupTime(time);
+    boolean before = cache.isProjectDisabled(projectId);
+
+    setupTime(time.plus(Duration.ofMillis(1)));
+    boolean after = cache.isProjectDisabled(projectId);
+    assertEquals(before, after);
+  }
+
+  /**
+   * Asserts that the state was flipped for a project at a given point in time.
+   */
+  private void assertStateChangedAtTime(String projectId, LocalDateTime time) {
+    setupTime(time);
+    boolean before = cache.isProjectDisabled(projectId);
+
+    setupTime(time.plus(Duration.ofMillis(1)));
+    boolean after = cache.isProjectDisabled(projectId);
+    assertEquals(before, !after);
+  }
+
+  private void setupTime(LocalDateTime time) {
+    Clock fixedClock = Clock.fixed(time.toInstant(OffsetDateTime.now().getOffset()),
+        ZoneId.systemDefault());
+    Mockito.doReturn(fixedClock.instant()).when(clock).instant();
+    Mockito.doReturn(fixedClock.getZone()).when(clock).getZone();
   }
 }

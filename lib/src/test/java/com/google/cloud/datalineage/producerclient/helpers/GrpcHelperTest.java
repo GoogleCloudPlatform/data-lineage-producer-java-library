@@ -25,33 +25,47 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-/** * Test suite for GrpcHelper */
+/**
+ * Test suite for GrpcHelper
+ */
 @RunWith(JUnit4.class)
 public class GrpcHelperTest {
 
   @Test
-  public void getReason_withNonGrpcException_returnsNull() {
+  public void getReasons_withNonGrpcException_throws() {
     Throwable nonGrpcException = new IllegalArgumentException("This is not a gRPC exception");
 
-    assertThat(GrpcHelper.getReason(nonGrpcException)).isNull();
+    IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class,
+        () -> GrpcHelper.getErrorReasons(nonGrpcException));
+    assertThat(thrown).hasMessageThat()
+        .contains("Provided throwable is not a gRPC exception");
   }
 
   @Test
-  public void getReason_withGrpcExceptionWithoutErrorInfo_returnsNull() {
+  public void getReasons_withGrpcExceptionWithoutErrorInfo_returnsEmptySet() {
     Throwable grpcException = StatusProto.toStatusRuntimeException(Status.newBuilder().build());
-    assertThat(GrpcHelper.getReason(grpcException)).isNull();
+
+    assertThat(GrpcHelper.getErrorReasons(grpcException)).isEmpty();
   }
 
   @Test
-  public void getReason_withGrpcExceptionWithErrorInfo_returnsReason() {
+  public void getReasons_withGrpcExceptionWithErrorInfo_returnsReason() {
     String expectedReason = "test-reason";
     ErrorInfo errorInfo = ErrorInfo.newBuilder().setReason(expectedReason).build();
-    Throwable grpcException =
-        StatusProto.toStatusRuntimeException(
-            Status.newBuilder().addDetails(Any.pack(errorInfo)).build());
+    Throwable grpcException = StatusProto.toStatusRuntimeException(
+        Status.newBuilder().addDetails(Any.pack(errorInfo)).build());
 
-    String reason = GrpcHelper.getReason(grpcException);
+    assertThat(GrpcHelper.getErrorReasons(grpcException)).containsExactly(expectedReason);
+  }
 
-    assertThat(reason).isEqualTo(expectedReason);
+  @Test
+  public void getReasons_withGrpcExceptionWithMultipleErrorInfo_returnsReasons() {
+    ErrorInfo errorInfoOne = ErrorInfo.newBuilder().setReason("reason1").build();
+    ErrorInfo errorInfoTwo = ErrorInfo.newBuilder().setReason("reason2").build();
+    Throwable grpcException = StatusProto.toStatusRuntimeException(
+        Status.newBuilder().addDetails(Any.pack(errorInfoOne)).addDetails(Any.pack(errorInfoTwo))
+            .build());
+
+    assertThat(GrpcHelper.getErrorReasons(grpcException)).containsExactly("reason1", "reason2");
   }
 }

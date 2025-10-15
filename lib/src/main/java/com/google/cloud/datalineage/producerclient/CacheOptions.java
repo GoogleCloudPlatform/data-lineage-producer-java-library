@@ -2,7 +2,7 @@
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
-// You may not obtain a copy of the License at
+// You may obtain a copy of the License at
 //
 // https://www.apache.org/licenses/LICENSE-2.0
 //
@@ -18,13 +18,14 @@ import java.time.Clock;
 import java.time.Duration;
 
 /**
- * Provides an immutable object for Cache initialization. CacheOptions object
- * can be created via Builder.
+ * Provides an immutable object for Cache initialization. CacheOptions object can be created via
+ * Builder.
  */
 public class CacheOptions {
-  protected static final Duration DEFAULT_DISABLED_TIME = Duration.ofMinutes(10);
+
+  protected static final Duration DEFAULT_DISABLED_TIME = Duration.ofMinutes(5);
   protected static final int DEFAULT_SIZE = 1000;
-  protected static final Clock DEFAULT_CLOCK = Clock.systemUTC();
+  protected static final Clock DEFAULT_CLOCK = Clock.systemDefaultZone();
 
   private final Duration defaultCacheDisabledStatusTime;
   private final int cacheSize;
@@ -60,6 +61,15 @@ public class CacheOptions {
     return new CacheOptions.Builder(this);
   }
 
+
+  @Override
+  public boolean equals(Object options) {
+    return options instanceof CacheOptions that
+        && that.getDefaultCacheDisabledStatusTime() == this.defaultCacheDisabledStatusTime &&
+        that.getCacheSize() == this.cacheSize &&
+        that.clock == this.clock;
+  }
+
   /**
    * * Builder for CacheSettings.
    *
@@ -67,6 +77,7 @@ public class CacheOptions {
    * CacheOptions.newBuilder method. To create settings object, use build method.
    */
   public static class Builder {
+
     protected Duration defaultCacheDisabledStatusTime;
     protected int cacheSize;
     protected Clock clock;

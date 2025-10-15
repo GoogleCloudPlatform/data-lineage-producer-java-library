@@ -19,6 +19,7 @@ import static org.junit.Assert.assertThrows;
 
 import java.time.Clock;
 import java.time.Duration;
+import java.time.ZoneId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -62,7 +63,24 @@ public class CacheOptionsTest {
     IllegalArgumentException exception =
         assertThrows(
             IllegalArgumentException.class,
-            () -> CacheOptions.newBuilder().setDefaultCacheDisabledStatusTime(Duration.ofMinutes(-1)));
+            () -> CacheOptions.newBuilder()
+                .setDefaultCacheDisabledStatusTime(Duration.ofMinutes(-1)));
     assertThat(exception).hasMessageThat().contains("Duration cannot be negative");
+  }
+
+  @Test
+  public void toBuilder_preserveOptions() {
+    Duration disabledTime = Duration.ofSeconds(30);
+    int size = 500;
+    Clock clock = Clock.fixed(Clock.systemDefaultZone().instant(), ZoneId.of("UTC"));
+
+    CacheOptions options = CacheOptions.newBuilder().setDefaultCacheDisabledStatusTime(disabledTime)
+        .setCacheSize(size).setClock(clock).build();
+
+    CacheOptions newOptions = options.toBuilder().setCacheSize(1000).build();
+
+    assertThat(newOptions.getCacheSize()).isEqualTo(1000);
+    assertThat(newOptions.getClock()).isEqualTo(clock);
+    assertThat(newOptions.getDefaultCacheDisabledStatusTime()).isEqualTo(disabledTime);
   }
 }

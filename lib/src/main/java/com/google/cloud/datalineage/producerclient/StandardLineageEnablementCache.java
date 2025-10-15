@@ -17,11 +17,12 @@ package com.google.cloud.datalineage.producerclient;
 import java.time.Duration;
 
 /**
- * Cache used to indicate whether Lineage is disabled for a given project.
+ * Cache used to indicate whether Lineage Ingestion is disabled for a given project.
  *
  * <p>This class is a wrapper around a generic ProjectStatusCache.
  */
 public class StandardLineageEnablementCache implements LineageEnablementCache {
+
   private final ProjectStatusCache delegate;
 
   StandardLineageEnablementCache(CacheOptions options) {
