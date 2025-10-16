@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+/** Test suite for LineageEnablementCacheFactory. */
 @RunWith(JUnit4.class)
 public class LineageEnablementCacheFactoryTest {
 

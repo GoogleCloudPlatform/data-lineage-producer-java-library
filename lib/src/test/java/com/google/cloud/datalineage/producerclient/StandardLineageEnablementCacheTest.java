@@ -22,6 +22,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import org.junit.Test;
 
+/** Test suite for StandardLineageEnablementCache. */
 public class StandardLineageEnablementCacheTest {
   private static final String PROJECT_ID = "project-id";
 

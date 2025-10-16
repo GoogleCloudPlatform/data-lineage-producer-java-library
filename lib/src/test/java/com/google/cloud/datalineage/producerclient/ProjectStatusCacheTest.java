@@ -29,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.Mockito;
 
+/** Test suite for ProjectStatusCache. */
 @RunWith(JUnit4.class)
 public class ProjectStatusCacheTest {
 
