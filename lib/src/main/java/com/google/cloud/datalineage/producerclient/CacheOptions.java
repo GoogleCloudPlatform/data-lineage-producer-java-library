@@ -62,8 +62,7 @@ public class CacheOptions {
   }
 
   /**
-   * Returns true if the other object is also a CacheOptions and has the same values for all
-   * fields.
+   * Returns true if the other object is also a CacheOptions and has the same values for all fields.
    */
   @Override
   public boolean equals(Object obj) {
