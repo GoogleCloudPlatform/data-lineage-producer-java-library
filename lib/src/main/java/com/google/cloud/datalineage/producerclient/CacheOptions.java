@@ -61,6 +61,10 @@ public class CacheOptions {
     return new CacheOptions.Builder(this);
   }
 
+  /**
+   * Returns true if the other object is also a CacheOptions and has the same values for all
+   * fields.
+   */
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
