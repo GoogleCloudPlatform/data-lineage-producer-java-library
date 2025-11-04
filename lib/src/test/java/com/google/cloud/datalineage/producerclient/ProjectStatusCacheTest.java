@@ -34,6 +34,7 @@ import org.mockito.Mockito;
 public class ProjectStatusCacheTest {
 
   private static final String CACHE_NAME = "Test Cache";
+  private static final String PROJECT_NAME = "test-project";
 
   private static final LocalDateTime BASE_DATE = LocalDateTime.of(1989, 1, 13, 0, 0);
 
@@ -49,14 +50,14 @@ public class ProjectStatusCacheTest {
 
   @Test
   public void isProjectDisabled_withoutMarking_returnsFalse() {
-    assertThat(cache.isProjectDisabled("random-project")).isFalse();
+    assertThat(cache.isProjectDisabled(PROJECT_NAME)).isFalse();
   }
 
   @Test
   public void isProjectDisabled_markDisabled_withoutMarking_returnsFalse() {
-    cache.markProjectAsDisabled("random-project", Duration.ZERO);
+    cache.markProjectAsDisabled(PROJECT_NAME, Duration.ZERO);
     setupTime(BASE_DATE.plus(Duration.ofMillis(1)));
-    assertThat(cache.isProjectDisabled("random-project")).isFalse();
+    assertThat(cache.isProjectDisabled(PROJECT_NAME)).isFalse();
   }
 
   @Test

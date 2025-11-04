@@ -85,6 +85,13 @@ public final class SyncLineageProducerClientSettings extends LineageBaseSettings
     }
 
     @Override
+    public AsyncLineageProducerClientSettings.Builder setLineageEnablementCacheSettings(
+        CacheSettings settings) {
+      return (AsyncLineageProducerClientSettings.Builder)
+          super.setLineageEnablementCacheSettings(settings);
+    }
+
+    @Override
     public Builder setEndpoint(String endpoint) {
       return (Builder) super.setEndpoint(endpoint);
     }

@@ -181,7 +181,7 @@ final class InternalClient implements AsyncLineageClient {
       throw ApiExceptionFactory.createException(
           "Data Lineage API is disabled in project "
               + projectName
-              + ". Please enable the API and try again after a few minutes.",
+              + ". Please enable the API and try again later.",
           null,
           GrpcHelper.getStatusCodeFromCode(Code.PERMISSION_DENIED),
           false);
@@ -191,8 +191,7 @@ final class InternalClient implements AsyncLineageClient {
       throw ApiExceptionFactory.createException(
           "Lineage is not enabled in Lineage Configurations for project "
               + projectName
-              + ". Please enable Lineage in Lineage Configurations and try again after a few"
-              + " minutes.",
+              + ". Please enable Lineage in Lineage Configurations and try again later",
           null,
           GrpcHelper.getStatusCodeFromCode(Code.PERMISSION_DENIED),
           false);

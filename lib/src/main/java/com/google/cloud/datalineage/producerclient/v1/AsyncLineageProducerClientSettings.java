@@ -94,6 +94,11 @@ public final class AsyncLineageProducerClientSettings extends LineageBaseSetting
       return (Builder) super.setApiEnablementCacheSettings(settings);
     }
 
+    @Override
+    public Builder setLineageEnablementCacheSettings(CacheSettings settings) {
+      return (Builder) super.setLineageEnablementCacheSettings(settings);
+    }
+
     public Builder setGracefulShutdownDuration(Duration gracefulShutdownDuration) {
       this.gracefulShutdownDuration = gracefulShutdownDuration;
       return this;
