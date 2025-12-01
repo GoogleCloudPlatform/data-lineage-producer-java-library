@@ -16,7 +16,7 @@ package com.google.cloud.datalineage.producerclient.helpers;
 
 import com.google.api.gax.rpc.StatusCode;
 import com.google.api.gax.rpc.StatusCode.Code;
-import com.google.protobuf.Any;
+import com.google.common.collect.ImmutableSet;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.rpc.ErrorInfo;
 import com.google.rpc.Status;
@@ -31,18 +31,18 @@ public class GrpcHelper {
   private GrpcHelper() {}
 
   /**
-   * Lets getting reason field from grpc response.
+   * Returns a set of error reasons from <code>com.google.rpc.Status</code> of a gRPC Exception.
    *
    * @param grpcException - error returned form grpc call
-   * @return string with value from reason field
+   * @return a set of strings with reasons extracted from Status if any
    */
-  public static String getReason(Throwable grpcException) {
-    log.debug("Extracting reason from gRPC exception: {}", grpcException.getMessage());
+  public static ImmutableSet<String> getErrorReasons(Throwable grpcException) {
+    log.debug("Extracting reasons from gRPC exception: {}", grpcException.getMessage());
     Status statusProto = StatusProto.fromThrowable(grpcException);
     if (statusProto == null) {
       log.error(
           "Provided throwable is not a gRPC exception: {}", grpcException.getClass().getName());
-      throw new IllegalArgumentException("Provided throwable is not a Grpc exception");
+      throw new IllegalArgumentException("Provided throwable is not a gRPC exception");
     }
     /* Status is a standard way to represent API error.
      * This model consists of code, message and details.
@@ -52,20 +52,20 @@ public class GrpcHelper {
      * - user can introduce new ones.
      * That's why in order to get ErrorInfo, we need to iterate over details and check all of them.
      */
-    for (Any any : statusProto.getDetailsList()) {
-      if (any.is(ErrorInfo.class)) {
-        try {
-          String reason = any.unpack(ErrorInfo.class).getReason();
-          log.debug("Successfully extracted reason from ErrorInfo: {}", reason);
-          return reason;
-        } catch (InvalidProtocolBufferException exception) {
-          log.error("Invalid protocol buffer message while extracting ErrorInfo", exception);
-          throw new IllegalArgumentException("Invalid protocol buffer message", exception);
-        }
-      }
-    }
-    log.warn("Message does not contain ErrorInfo for exception: {}", grpcException.getMessage());
-    throw new IllegalArgumentException("Message does not contain ErrorInfo", grpcException);
+    return statusProto.getDetailsList().stream()
+        .filter((detail) -> detail.is(ErrorInfo.class))
+        .map(
+            (errorInfo) -> {
+              try {
+                String reason = errorInfo.unpack(ErrorInfo.class).getReason();
+                log.debug("Successfully extracted reason from ErrorInfo: {}", reason);
+                return reason;
+              } catch (InvalidProtocolBufferException e) {
+                log.error("Invalid protocol buffer message while extracting ErrorInfo", e);
+                throw new IllegalArgumentException("Invalid protocol buffer message", e);
+              }
+            })
+        .collect(ImmutableSet.toImmutableSet());
   }
 
   /**

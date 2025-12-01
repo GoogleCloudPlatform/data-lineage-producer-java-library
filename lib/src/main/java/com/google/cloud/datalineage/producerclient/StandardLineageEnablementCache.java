@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,29 +17,30 @@ package com.google.cloud.datalineage.producerclient;
 import java.time.Duration;
 
 /**
- * Cache used to indicate whether the Data Lineage API is disabled for a given project.
+ * Cache used to indicate whether Lineage Ingestion is disabled for a given project.
  *
  * <p>This class is a wrapper around a generic ProjectStatusCache.
  */
-public class StandardApiEnablementCache implements ApiEnablementCache {
+public class StandardLineageEnablementCache implements LineageEnablementCache {
+
   private final ProjectStatusCache delegate;
 
-  StandardApiEnablementCache(CacheOptions options) {
-    this.delegate = new ProjectStatusCache(options, "API Enablement");
+  StandardLineageEnablementCache(CacheOptions options) {
+    this.delegate = new ProjectStatusCache(options, "Lineage Enablement");
   }
 
   @Override
-  public void markServiceAsDisabled(String project) {
+  public void markLineageAsDisabled(String project) {
     delegate.markProjectAsDisabled(project);
   }
 
   @Override
-  public void markServiceAsDisabled(String projectName, Duration duration) {
+  public void markLineageAsDisabled(String projectName, Duration duration) {
     delegate.markProjectAsDisabled(projectName, duration);
   }
 
   @Override
-  public boolean isServiceMarkedAsDisabled(String projectName) {
+  public boolean isLineageMarkedAsDisabled(String projectName) {
     return delegate.isProjectDisabled(projectName);
   }
 }

@@ -37,10 +37,13 @@ import com.google.protobuf.Struct;
 import com.google.rpc.Code;
 import com.google.rpc.ErrorInfo;
 import com.google.rpc.Status;
+import io.grpc.StatusException;
 import io.grpc.protobuf.StatusProto;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -106,6 +109,22 @@ public class AsyncLineageProducerClientTest {
   }
 
   @Test
+  public void lineageDisabled_doesNotRetry() {
+    returnLineageDisabledFromMocker();
+    ProcessOpenLineageRunEventRequest request =
+        createProcessOpenLineageRunEventRequest(
+            "projects/test-lineage-disabled-async/locations/test");
+
+    // For the first call, throw a PERMISSION_DENIED exception
+    assertThrows(ExecutionException.class, () -> client.processOpenLineageRunEvent(request).get());
+    // Not attempt the second call
+    ApiException exception =
+        assertThrows(ApiException.class, () -> client.processOpenLineageRunEvent(request));
+    assertThat(exception.getMessage())
+        .contains("Lineage is not enabled in Lineage Configurations for project");
+  }
+
+  @Test
   public void gracefulShutdown_awaitsTerminationByDefault() throws Exception {
     // objects passed to lambda must be final or effectively final, so we use arrays to store the
     // values
@@ -155,16 +174,39 @@ public class AsyncLineageProducerClientTest {
               @Override
               public ApiFuture<ProcessOpenLineageRunEventResponse> futureCall(
                   ProcessOpenLineageRunEventRequest request, ApiCallContext context) {
-                Status.Builder statusBuilder = com.google.rpc.Status.newBuilder();
-                statusBuilder.setCode(Code.PERMISSION_DENIED.getNumber());
-                ErrorInfo.Builder errorInfoBuilder =
-                    ErrorInfo.newBuilder().setReason("SERVICE_DISABLED");
-
-                statusBuilder.addDetails(Any.pack(errorInfoBuilder.build()));
 
                 return ApiFutures.immediateFailedFuture(
-                    StatusProto.toStatusException(statusBuilder.build()));
+                    createStatusExceptionWithReasons("SERVICE_DISABLED", "SOME_OTHER_REASON"));
               }
             });
+  }
+
+  /**
+   * Configure the BasicLineageClient mocker to return an exception indicating Lineage is not
+   * enabled.
+   */
+  private void returnLineageDisabledFromMocker() {
+    when(basicLineageClient.processOpenLineageRunEventCallable())
+        .thenReturn(
+            new UnaryCallable<>() {
+              @Override
+              public ApiFuture<ProcessOpenLineageRunEventResponse> futureCall(
+                  ProcessOpenLineageRunEventRequest request, ApiCallContext context) {
+
+                return ApiFutures.immediateFailedFuture(
+                    createStatusExceptionWithReasons(
+                        "LINEAGE_INGESTION_DISABLED", "SOME_OTHER_REASON"));
+              }
+            });
+  }
+
+  private StatusException createStatusExceptionWithReasons(String... reasons) {
+    Status.Builder statusBuilder = com.google.rpc.Status.newBuilder();
+    statusBuilder.setCode(Code.PERMISSION_DENIED.getNumber());
+    statusBuilder.addAllDetails(
+        Arrays.stream(reasons)
+            .map(r -> Any.pack(ErrorInfo.newBuilder().setReason(r).build()))
+            .collect(Collectors.toList()));
+    return StatusProto.toStatusException(statusBuilder.build());
   }
 }

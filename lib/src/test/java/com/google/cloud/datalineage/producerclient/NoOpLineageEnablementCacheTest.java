@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,27 +21,29 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-/** Test suite for NoOpApiEnablementCache. */
+/** Test suite for NoOpLineageEnablementCache. */
 @RunWith(JUnit4.class)
-public class NoOpApiEnablementCacheTest {
+public class NoOpLineageEnablementCacheTest {
+
+  private static final String PROJECT_ID = "project-id";
 
   @Test
-  public void markServiceAsDisabled_serviceIsEnabled() {
-    NoOpApiEnablementCache cache = new NoOpApiEnablementCache();
-    cache.markServiceAsDisabled("testProject");
-    assertFalse(cache.isServiceMarkedAsDisabled("testProject"));
+  public void isServiceMarkedAsDisabled_returnsFalse() {
+    NoOpLineageEnablementCache cache = new NoOpLineageEnablementCache();
+    cache.markLineageAsDisabled(PROJECT_ID);
+    assertFalse(cache.isLineageMarkedAsDisabled(PROJECT_ID));
   }
 
   @Test
   public void markServiceAsDisabledWithOffset_serviceIsEnabled() {
-    NoOpApiEnablementCache cache = new NoOpApiEnablementCache();
-    cache.markServiceAsDisabled("testProject", Duration.ofMinutes(5));
-    assertFalse(cache.isServiceMarkedAsDisabled("testProject"));
+    NoOpLineageEnablementCache cache = new NoOpLineageEnablementCache();
+    cache.markLineageAsDisabled("testProject", Duration.ofMinutes(5));
+    assertFalse(cache.isLineageMarkedAsDisabled("testProject"));
   }
 
   @Test
   public void isServiceMarkedAsDisabled_returnsDefaultFalse() {
-    NoOpApiEnablementCache cache = new NoOpApiEnablementCache();
-    assertFalse(cache.isServiceMarkedAsDisabled("testProject"));
+    NoOpLineageEnablementCache cache = new NoOpLineageEnablementCache();
+    assertFalse(cache.isLineageMarkedAsDisabled("testProject"));
   }
 }

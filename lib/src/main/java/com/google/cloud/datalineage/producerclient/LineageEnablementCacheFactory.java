@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,29 +14,29 @@
 
 package com.google.cloud.datalineage.producerclient;
 
-/** A factory that returns ConnectionCache based on ApiEnablementCacheSettings. */
-public class ApiEnablementCacheFactory {
-  private static volatile ApiEnablementCache commonInstance;
+/** A factory that returns ConnectionCache based on LineageEnablementCacheSettings. */
+public class LineageEnablementCacheFactory {
+  private static volatile LineageEnablementCache commonInstance;
 
   /** Make the factory class non-instantiable */
-  private ApiEnablementCacheFactory() {}
+  private LineageEnablementCacheFactory() {}
 
-  public static ApiEnablementCache get(CacheSettings settings) {
+  public static LineageEnablementCache get(CacheSettings settings) {
     if (!settings.getEnabled()) {
-      return new NoOpApiEnablementCache();
+      return new NoOpLineageEnablementCache();
     }
 
     if (!settings.getUseCommonInstance()) {
-      return new StandardApiEnablementCache(settings.getOptions());
+      return new StandardLineageEnablementCache(settings.getOptions());
     }
 
     if (commonInstance != null) {
       return commonInstance;
     }
 
-    synchronized (ApiEnablementCacheFactory.class) {
+    synchronized (LineageEnablementCacheFactory.class) {
       if (commonInstance == null) {
-        commonInstance = new StandardApiEnablementCache(settings.getOptions());
+        commonInstance = new StandardLineageEnablementCache(settings.getOptions());
       }
     }
 

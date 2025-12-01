@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,10 +18,11 @@ import java.time.Clock;
 import java.time.Duration;
 
 /**
- * Provides an immutable object for ConnectionCache initialization. ApiEnablementCacheOptions object
- * can be created via Builder.
+ * Provides an immutable object for Cache initialization. CacheOptions object can be created via
+ * Builder.
  */
-public class ApiEnablementCacheOptions {
+public class CacheOptions {
+
   protected static final Duration DEFAULT_DISABLED_TIME = Duration.ofMinutes(5);
   protected static final int DEFAULT_SIZE = 1000;
   protected static final Clock DEFAULT_CLOCK = Clock.systemDefaultZone();
@@ -30,18 +31,18 @@ public class ApiEnablementCacheOptions {
   private final int cacheSize;
   private final Clock clock;
 
-  protected ApiEnablementCacheOptions(ApiEnablementCacheOptions.Builder settingsBuilder) {
+  protected CacheOptions(CacheOptions.Builder settingsBuilder) {
     defaultCacheDisabledStatusTime = settingsBuilder.defaultCacheDisabledStatusTime;
     cacheSize = settingsBuilder.cacheSize;
     clock = settingsBuilder.clock;
   }
 
-  public static ApiEnablementCacheOptions.Builder newBuilder() {
-    return ApiEnablementCacheOptions.Builder.createDefault();
+  public static CacheOptions.Builder newBuilder() {
+    return CacheOptions.Builder.createDefault();
   }
 
-  public static ApiEnablementCacheOptions getDefaultInstance() {
-    return ApiEnablementCacheOptions.Builder.createDefault().build();
+  public static CacheOptions getDefaultInstance() {
+    return CacheOptions.Builder.createDefault().build();
   }
 
   public Duration getDefaultCacheDisabledStatusTime() {
@@ -56,22 +57,40 @@ public class ApiEnablementCacheOptions {
     return clock;
   }
 
-  public ApiEnablementCacheOptions.Builder toBuilder() {
-    return new ApiEnablementCacheOptions.Builder(this);
+  public CacheOptions.Builder toBuilder() {
+    return new CacheOptions.Builder(this);
   }
 
   /**
-   * * Builder for ApiEnablementCacheSettings.
+   * Returns true if the other object is also a CacheOptions and has the same values for all fields.
+   */
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (!(obj instanceof CacheOptions)) {
+      return false;
+    }
+    CacheOptions that = (CacheOptions) obj;
+    return this.cacheSize == that.cacheSize
+        && this.defaultCacheDisabledStatusTime.equals(that.defaultCacheDisabledStatusTime)
+        && this.clock.equals(that.clock);
+  }
+
+  /**
+   * * Builder for CacheSettings.
    *
    * <p>Lets setting `markServiceAsDisabledTime`, `cacheSize`, and `clock`. Can be created by
-   * ApiEnablementCacheOptions.newBuilder method. To create settings object, use build method.
+   * CacheOptions.newBuilder method. To create settings object, use build method.
    */
   public static class Builder {
+
     protected Duration defaultCacheDisabledStatusTime;
     protected int cacheSize;
     protected Clock clock;
 
-    protected Builder(ApiEnablementCacheOptions settings) {
+    protected Builder(CacheOptions settings) {
       defaultCacheDisabledStatusTime = settings.defaultCacheDisabledStatusTime;
       cacheSize = settings.cacheSize;
       clock = settings.clock;
@@ -83,12 +102,11 @@ public class ApiEnablementCacheOptions {
       this.clock = clock;
     }
 
-    private static ApiEnablementCacheOptions.Builder createDefault() {
-      return new ApiEnablementCacheOptions.Builder(
-          DEFAULT_DISABLED_TIME, DEFAULT_SIZE, DEFAULT_CLOCK);
+    private static CacheOptions.Builder createDefault() {
+      return new CacheOptions.Builder(DEFAULT_DISABLED_TIME, DEFAULT_SIZE, DEFAULT_CLOCK);
     }
 
-    public ApiEnablementCacheOptions.Builder setDefaultCacheDisabledStatusTime(
+    public CacheOptions.Builder setDefaultCacheDisabledStatusTime(
         Duration defaultCacheDisabledStatusTime) {
       if (defaultCacheDisabledStatusTime.isNegative()) {
         throw new IllegalArgumentException("Duration cannot be negative");
@@ -97,7 +115,7 @@ public class ApiEnablementCacheOptions {
       return this;
     }
 
-    public ApiEnablementCacheOptions.Builder setCacheSize(int cacheSize) {
+    public CacheOptions.Builder setCacheSize(int cacheSize) {
       if (cacheSize < 0) {
         throw new IllegalArgumentException("Limit cannot be negative");
       }
@@ -105,13 +123,13 @@ public class ApiEnablementCacheOptions {
       return this;
     }
 
-    public ApiEnablementCacheOptions.Builder setClock(Clock clock) {
+    public CacheOptions.Builder setClock(Clock clock) {
       this.clock = clock;
       return this;
     }
 
-    public ApiEnablementCacheOptions build() {
-      return new ApiEnablementCacheOptions(this);
+    public CacheOptions build() {
+      return new CacheOptions(this);
     }
   }
 }

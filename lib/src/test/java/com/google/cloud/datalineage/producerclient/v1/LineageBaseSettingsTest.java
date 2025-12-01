@@ -16,7 +16,7 @@ package com.google.cloud.datalineage.producerclient.v1;
 
 import static org.junit.Assert.assertEquals;
 
-import com.google.cloud.datalineage.producerclient.ApiEnablementCacheSettings;
+import com.google.cloud.datalineage.producerclient.CacheSettings;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -36,38 +36,50 @@ public class LineageBaseSettingsTest {
 
   @Test
   public void builder_initializesDefaultSettings() throws Exception {
-    LineageBaseSettings.Builder builder = new LineageBaseSettings.Builder();
+    LineageBaseSettings.Builder builder = LineageBaseSettings.newBuilder();
 
     assertSettingsAreEqual(LineageBaseSettings.defaultInstance(), builder.build());
   }
 
   @Test
-  public void setConnectionCacheSettings_updatesSettings() throws Exception {
+  public void setApiEnablementCacheSettings_updatesSettings() throws Exception {
     LineageBaseSettings.Builder builder = LineageBaseSettings.newBuilder();
-    ApiEnablementCacheSettings newCacheSettings = ApiEnablementCacheSettings.getDisabledInstance();
+    CacheSettings newCacheSettings = CacheSettings.getDisabledInstance();
 
     LineageBaseSettings.Builder returnedBuilder =
-        builder.setConnectionCacheSettings(newCacheSettings);
+        builder.setApiEnablementCacheSettings(newCacheSettings);
     LineageBaseSettings settings = returnedBuilder.build();
 
-    assertEquals(newCacheSettings, settings.getConnectionCacheSettings());
+    assertEquals(newCacheSettings, settings.getApiEnablementCacheSettings());
+  }
+
+  @Test
+  public void setLineageEnablementCacheSettings_updatesSettings() throws Exception {
+    LineageBaseSettings.Builder builder = LineageBaseSettings.newBuilder();
+    CacheSettings newCacheSettings = CacheSettings.getDisabledInstance();
+
+    LineageBaseSettings.Builder returnedBuilder =
+        builder.setLineageEnablementCacheSettings(newCacheSettings);
+    LineageBaseSettings settings = returnedBuilder.build();
+
+    assertEquals(newCacheSettings, settings.getLineageEnablementCacheSettings());
   }
 
   private void assertSettingsAreEqual(LineageBaseSettings expected, LineageBaseSettings actual) {
     assertEquals(
-        expected.getConnectionCacheSettings().getEnabled(),
-        actual.getConnectionCacheSettings().getEnabled());
+        expected.getApiEnablementCacheSettings().getEnabled(),
+        actual.getApiEnablementCacheSettings().getEnabled());
     assertEquals(
-        expected.getConnectionCacheSettings().getUseCommonInstance(),
-        actual.getConnectionCacheSettings().getUseCommonInstance());
+        expected.getApiEnablementCacheSettings().getUseCommonInstance(),
+        actual.getApiEnablementCacheSettings().getUseCommonInstance());
     assertEquals(
-        expected.getConnectionCacheSettings().getOptions().getDefaultCacheDisabledStatusTime(),
-        actual.getConnectionCacheSettings().getOptions().getDefaultCacheDisabledStatusTime());
+        expected.getApiEnablementCacheSettings().getOptions().getDefaultCacheDisabledStatusTime(),
+        actual.getApiEnablementCacheSettings().getOptions().getDefaultCacheDisabledStatusTime());
     assertEquals(
-        expected.getConnectionCacheSettings().getOptions().getClock(),
-        actual.getConnectionCacheSettings().getOptions().getClock());
+        expected.getApiEnablementCacheSettings().getOptions().getClock(),
+        actual.getApiEnablementCacheSettings().getOptions().getClock());
     assertEquals(
-        expected.getConnectionCacheSettings().getOptions().getCacheSize(),
-        actual.getConnectionCacheSettings().getOptions().getCacheSize());
+        expected.getApiEnablementCacheSettings().getOptions().getCacheSize(),
+        actual.getApiEnablementCacheSettings().getOptions().getCacheSize());
   }
 }

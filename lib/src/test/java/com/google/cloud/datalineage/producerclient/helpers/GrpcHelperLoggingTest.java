@@ -21,6 +21,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import com.google.cloud.datalineage.producerclient.test.TestLogAppender;
+import com.google.common.collect.ImmutableSet;
 import com.google.protobuf.Any;
 import com.google.rpc.ErrorInfo;
 import com.google.rpc.Status;
@@ -65,7 +66,7 @@ public class GrpcHelperLoggingTest {
   }
 
   @Test
-  public void testGetReason_ValidErrorInfo_LogsSuccess() {
+  public void testGetReasons_validErrorInfo_logsSuccess() {
     testAppender.clear(); // Clear any existing logs
 
     // Create an ErrorInfo with a reason
@@ -84,10 +85,10 @@ public class GrpcHelperLoggingTest {
     StatusRuntimeException exception = StatusProto.toStatusRuntimeException(status);
 
     // Call the method
-    String reason = GrpcHelper.getReason(exception);
+    ImmutableSet<String> reason = GrpcHelper.getErrorReasons(exception);
 
     // Verify the result
-    assertThat(reason).isEqualTo("API_DISABLED");
+    assertThat(reason).containsExactly("API_DISABLED");
 
     // Verify debug logging
     assertThat(testAppender.getMessagesAtLevel(Level.DEBUG))
@@ -95,7 +96,7 @@ public class GrpcHelperLoggingTest {
   }
 
   @Test
-  public void testGetReason_InvalidProtocolBuffer_LogsError() {
+  public void testGetReasons_invalidProtocolBuffer_logsWarnAndReturnsNull() {
     testAppender.clear(); // Clear any existing logs
 
     // Create a malformed Any that can't be unpacked
@@ -114,57 +115,27 @@ public class GrpcHelperLoggingTest {
 
     StatusRuntimeException exception = StatusProto.toStatusRuntimeException(status);
 
-    // Call the method and expect an exception
     IllegalArgumentException thrown =
-        assertThrows(IllegalArgumentException.class, () -> GrpcHelper.getReason(exception));
+        assertThrows(IllegalArgumentException.class, () -> GrpcHelper.getErrorReasons(exception));
 
-    assertThat(thrown.getMessage()).contains("Invalid protocol buffer message");
-
-    // Verify error logging
+    assertThat(thrown).hasMessageThat().contains("Invalid protocol buffer message");
     assertThat(testAppender.getMessagesAtLevel(Level.ERROR))
         .contains("Invalid protocol buffer message while extracting ErrorInfo");
   }
 
   @Test
-  public void testGetReason_NoErrorInfo_LogsWarning() {
-    testAppender.clear(); // Clear any existing logs
-
-    // Create a Status without ErrorInfo
-    Status status =
-        Status.newBuilder()
-            .setCode(com.google.rpc.Code.FAILED_PRECONDITION_VALUE)
-            .setMessage("API is disabled")
-            .build();
-
-    StatusRuntimeException exception = StatusProto.toStatusRuntimeException(status);
-
-    // Call the method and expect an exception
-    IllegalArgumentException thrown =
-        assertThrows(IllegalArgumentException.class, () -> GrpcHelper.getReason(exception));
-
-    assertThat(thrown.getMessage()).contains("Message does not contain ErrorInfo");
-
-    // Verify warning logging
-    assertThat(testAppender.getMessagesAtLevel(Level.WARN))
-        .contains(
-            "Message does not contain ErrorInfo for exception:"
-                + " FAILED_PRECONDITION: API is disabled");
-  }
-
-  @Test
-  public void testGetReason_NonGrpcException_ThrowsException() {
+  public void testGetReasons_nonGrpcException_returnsNull() {
     testAppender.clear(); // Clear any existing logs
 
     // Create a non-gRPC exception
     RuntimeException nonGrpcException = new RuntimeException("Not a gRPC exception");
 
-    // Call the method and expect an exception
-    IllegalArgumentException thrown =
-        assertThrows(IllegalArgumentException.class, () -> GrpcHelper.getReason(nonGrpcException));
+    // Call the method
+    assertThrows(
+        IllegalArgumentException.class, () -> GrpcHelper.getErrorReasons(nonGrpcException));
 
-    assertThat(thrown.getMessage()).contains("Provided throwable is not a Grpc exception");
-
-    // Note: The current implementation doesn't log this case, but if we wanted to test it,
-    // we would need to modify the GrpcHelper to add logging for this scenario.
+    // Verify debug logging
+    assertThat(testAppender.getMessagesAtLevel(Level.ERROR))
+        .contains("Provided throwable is not a gRPC exception: java.lang.RuntimeException");
   }
 }

@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,32 +21,28 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
-/** Test suite for StandardApiEnablementCache */
-@RunWith(JUnit4.class)
-public class StandardApiEnablementCacheTest {
-
-  private static final String PROJECT_ID = "test-project";
+/** Test suite for StandardLineageEnablementCache. */
+public class StandardLineageEnablementCacheTest {
+  private static final String PROJECT_ID = "project-id";
 
   @Test
-  public void isServiceMarkedAsDisabled_afterMarking_returnsTrue() {
-    StandardApiEnablementCache cache =
-        new StandardApiEnablementCache(CacheOptions.newBuilder().build());
-    cache.markServiceAsDisabled(PROJECT_ID);
-    assertThat(cache.isServiceMarkedAsDisabled(PROJECT_ID)).isTrue();
+  public void isLineageMarkedAsDisabled_afterMarking_returnsTrue() {
+    StandardLineageEnablementCache cache =
+        new StandardLineageEnablementCache(CacheOptions.newBuilder().build());
+    cache.markLineageAsDisabled(PROJECT_ID);
+    assertThat(cache.isLineageMarkedAsDisabled(PROJECT_ID)).isTrue();
   }
 
   @Test
-  public void isServiceMarkedAsDisabled_withoutMarking_returnsFalse() {
-    StandardApiEnablementCache cache =
-        new StandardApiEnablementCache(CacheOptions.newBuilder().build());
-    assertThat(cache.isServiceMarkedAsDisabled(PROJECT_ID)).isFalse();
+  public void isLineageMarkedAsDisabled_withoutMarking_returnsFalse() {
+    StandardLineageEnablementCache cache =
+        new StandardLineageEnablementCache(CacheOptions.newBuilder().build());
+    assertThat(cache.isLineageMarkedAsDisabled(PROJECT_ID)).isFalse();
   }
 
   @Test
-  public void isServiceMarkedAsDisabled_afterDurationPasses_returnsFalse() {
+  public void isLineageMarkedAsDisabled_afterDurationPasses_returnsFalse() {
     Clock clock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
     Duration duration = Duration.ofMinutes(5);
     CacheOptions options =
@@ -54,14 +50,14 @@ public class StandardApiEnablementCacheTest {
             .setDefaultCacheDisabledStatusTime(duration)
             .setClock(clock)
             .build();
-    StandardApiEnablementCache cache = new StandardApiEnablementCache(options);
+    StandardLineageEnablementCache cache = new StandardLineageEnablementCache(options);
 
-    cache.markServiceAsDisabled(PROJECT_ID);
+    cache.markLineageAsDisabled(PROJECT_ID);
 
     // Advance the clock
     options = options.toBuilder().setClock(Clock.offset(clock, duration)).build();
-    cache = new StandardApiEnablementCache(options);
+    cache = new StandardLineageEnablementCache(options);
 
-    assertThat(cache.isServiceMarkedAsDisabled(PROJECT_ID)).isFalse();
+    assertThat(cache.isLineageMarkedAsDisabled(PROJECT_ID)).isFalse();
   }
 }

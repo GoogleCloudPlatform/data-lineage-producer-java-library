@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,17 +14,16 @@
 
 package com.google.cloud.datalineage.producerclient;
 
-/** Provides an immutable object for storing connection cache settings. */
-public final class ApiEnablementCacheSettings {
+/** Provides an immutable object for storing cache settings. */
+public final class CacheSettings {
 
   /**
-   * Disables connection cache feature.
+   * Disables cache feature.
    *
    * @return The requested cache settings.
    */
-  public static ApiEnablementCacheSettings getDisabledInstance() {
-    return new ApiEnablementCacheSettings(
-        false, false, ApiEnablementCacheOptions.getDefaultInstance());
+  public static CacheSettings getDisabledInstance() {
+    return new CacheSettings(false, false, CacheOptions.getDefaultInstance());
   }
 
   /**
@@ -32,9 +31,8 @@ public final class ApiEnablementCacheSettings {
    *
    * @return The requested cache settings.
    */
-  public static ApiEnablementCacheSettings getCommonInstance() {
-    return new ApiEnablementCacheSettings(
-        true, true, ApiEnablementCacheOptions.getDefaultInstance());
+  public static CacheSettings getCommonInstance() {
+    return new CacheSettings(true, true, CacheOptions.getDefaultInstance());
   }
 
   /**
@@ -44,12 +42,11 @@ public final class ApiEnablementCacheSettings {
    * @param fallbackOptions The fallback cache options.
    * @return The requested cache settings.
    */
-  public static ApiEnablementCacheSettings getCommonInstance(
-      ApiEnablementCacheOptions fallbackOptions) {
+  public static CacheSettings getCommonInstance(CacheOptions fallbackOptions) {
     if (fallbackOptions == null) {
       throw new IllegalArgumentException("defaultSettings cannot be null");
     }
-    return new ApiEnablementCacheSettings(true, true, fallbackOptions);
+    return new CacheSettings(true, true, fallbackOptions);
   }
 
   /**
@@ -57,9 +54,8 @@ public final class ApiEnablementCacheSettings {
    *
    * @return The requested cache settings.
    */
-  public static ApiEnablementCacheSettings getStandAloneInstance() {
-    return new ApiEnablementCacheSettings(
-        true, false, ApiEnablementCacheOptions.getDefaultInstance());
+  public static CacheSettings getStandAloneInstance() {
+    return new CacheSettings(true, false, CacheOptions.getDefaultInstance());
   }
 
   /**
@@ -68,20 +64,18 @@ public final class ApiEnablementCacheSettings {
    * @param options The cache options
    * @return The requested cache settings.
    */
-  public static ApiEnablementCacheSettings getStandAloneInstance(
-      ApiEnablementCacheOptions options) {
+  public static CacheSettings getStandAloneInstance(CacheOptions options) {
     if (options == null) {
       throw new IllegalArgumentException("settings cannot be null");
     }
-    return new ApiEnablementCacheSettings(true, false, options);
+    return new CacheSettings(true, false, options);
   }
 
   private final boolean enabled;
   private final boolean useCommonInstance;
-  private final ApiEnablementCacheOptions options;
+  private final CacheOptions options;
 
-  private ApiEnablementCacheSettings(
-      boolean enabled, boolean useCommonInstance, ApiEnablementCacheOptions options) {
+  private CacheSettings(boolean enabled, boolean useCommonInstance, CacheOptions options) {
     this.enabled = enabled;
     this.useCommonInstance = useCommonInstance;
     this.options = options;
@@ -95,7 +89,7 @@ public final class ApiEnablementCacheSettings {
     return useCommonInstance;
   }
 
-  public ApiEnablementCacheOptions getOptions() {
+  public CacheOptions getOptions() {
     return options;
   }
 }
