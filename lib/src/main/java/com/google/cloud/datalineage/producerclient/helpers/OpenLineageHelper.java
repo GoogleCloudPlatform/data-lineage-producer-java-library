@@ -22,7 +22,7 @@ import com.google.protobuf.util.JsonFormat;
 public class OpenLineageHelper {
 
   /**
-   * Converts a JSON string to a protobuf Struct.
+   * Converts a JSON string to a protobuf Struct ignoring unknown fields.
    *
    * @param json The JSON string to be converted
    * @return A Struct object representing the input JSON
