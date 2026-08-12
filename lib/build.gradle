@@ -23,7 +23,7 @@ plugins {
 
 // v"2.2.5" is recommended, but it uses Java21 which is incompatible with other
 // plugins (e.g. "com.github.johnrengelman.shadow"), therefore, using latest compatible version
-    id("com.google.cloud.artifactregistry.gradle-plugin") version "2.1.5"
+   id("com.google.cloud.artifactregistry.gradle-plugin") version "2.1.5"
 }
 
 googleJavaFormat {
@@ -48,8 +48,18 @@ ext {
 }
 
 repositories {
-    // Use Maven Central for resolving dependencies.
-    mavenCentral()
+    if (project.hasProperty('dependencyRepositories')) {
+        project.property('dependencyRepositories').split(',').each { repo ->
+            def trimmedRepo = repo.trim()
+            if (!trimmedRepo.isEmpty()) {
+                maven {
+                    url trimmedRepo
+                }
+            }
+        }
+    } else {
+        mavenCentral()
+    }
 }
 
 dependencies {
@@ -69,10 +79,6 @@ dependencies {
     // Lombok for @Slf4j annotation
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-
-    // AutoValue
-    compileOnly "com.google.auto.value:auto-value-annotations:1.10.1"
-    annotationProcessor "com.google.auto.value:auto-value:1.10.1"
 
     // Use JUnit test framework.
     testImplementation "junit:junit:${junitVersion}"
@@ -95,7 +101,6 @@ test {
 }
 
 shadowJar {
-    archiveBaseName.set('data-lineage-producer-java-library')
     archiveClassifier.set('')
 
     def excludedPrefixes = [
@@ -153,9 +158,12 @@ java {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            version = '1.1.0'
+            if (project.version == 'unspecified') {
+                project.version = '1.1.1'
+            }
+            version = project.version
             group = 'com.google.cloud.datalineage'
-            artifactId = 'producerclient'
+            artifactId = project.name
 
             artifact shadowJar
             artifact javadocJar
@@ -207,11 +215,30 @@ publishing {
             }
         }
     }
-    repositories {
-        maven {
-            url "artifactregistry://us-central1-maven.pkg.dev/dataplex-gob-louhi-releaser/cloud-dataplex-maven-releases"
+    if (project.hasProperty('publishingRepositoryUrl') && !project.property('publishingRepositoryUrl').toString().trim().isEmpty()) {
+        repositories {
+            maven {
+                url project.property('publishingRepositoryUrl').toString().trim()
+            }
         }
     }
+}
+
+
+// Force task output into the package hierarchy
+['jar', 'shadowJar', 'javadocJar', 'sourcesJar'].each { taskName ->
+    tasks.named(taskName) {
+        destinationDirectory = layout.buildDirectory.dir("libs/com/google/cloud/datalineage/${project.name}/${project.version}")
+    }
+}
+
+signing {
+    def keyId = System.getenv("SIGNING_KEY_ID")
+    def key = System.getenv("SIGNING_KEY")
+    def password = System.getenv("SIGNING_PASSWORD")
+
+    useInMemoryPgpKeys(keyId, key, password)
+    sign publishing.publications.mavenJava
 }
 
 javadoc {
