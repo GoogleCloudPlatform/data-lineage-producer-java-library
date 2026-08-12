@@ -182,19 +182,9 @@ publishing {
                 }
                 developers {
                     developer {
-                        id = 'midamkina'
-                        name = 'Mary Idamkina'
-                        email = 'midamkina@google.com'
-                    }
-                    developer {
                         id = 'gabrysiaolsz'
                         name = 'Gabriela Olszewska'
                         email = 'gabrysiaolsz@google.com'
-                    }
-                    developer {
-                        id = 'ngorchakova'
-                        name = 'Natalia Gorchakova'
-                        email = 'ngorchakova@google.com'
                     }
                     developer {
                         id = 'mikhalevich'
