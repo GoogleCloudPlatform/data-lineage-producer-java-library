@@ -14,60 +14,131 @@
 
 plugins {
     id 'java-library'
+//    TODO upgrade this to https://plugins.gradle.org/plugin/com.gradleup.shadow    id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'com.github.sherter.google-java-format' version '0.9'
     id 'checkstyle'
     id 'maven-publish'
     id 'signing'
+
+    // v"2.2.5" is recommended, but it uses Java21 which is incompatible with other
+    // plugins (e.g. "com.github.johnrengelman.shadow"), therefore, using latest compatible version
+    id("com.google.cloud.artifactregistry.gradle-plugin") version "2.1.5"
 }
 
 googleJavaFormat {
     toolVersion = '1.7'
 }
-
-repositories {
-    // Use Maven Central for resolving dependencies.
-    mavenCentral()
-}
-
 java {
     sourceCompatibility = "1.8"
     targetCompatibility = "1.8"
 }
 
-dependencies {
-    implementation platform('com.google.cloud:libraries-bom:26.36.0')
-    implementation "com.google.cloud:google-cloud-datalineage"
-
-    implementation "com.google.protobuf:protobuf-java-util:3.23.0"
-    implementation 'com.google.api:gax:2.29.0'
-    implementation 'com.google.api:gax-grpc:2.29.0'
-    implementation 'com.google.api:gax-httpjson:0.103.7'
-    implementation 'io.grpc:grpc-protobuf:1.54.1'
-    implementation 'com.google.guava:guava:31.1-jre'
-    // Use JUnit test framework.
-    testImplementation 'junit:junit:4.13.2'
-    testImplementation 'com.google.truth:truth:1.1.3'
-    testImplementation 'org.mockito:mockito-core:3.+'
-    testImplementation 'com.google.api:gax:2.12.2:testlib'
-    testImplementation 'com.google.testparameterinjector:test-parameter-injector:1.8'
+tasks.withType(JavaCompile).configureEach {
+    options.release = 8
 }
 
+ext {
+    cloudBomVersion = '26.37.0'
+    protobufVersion = '3.23.0'
+    grpcProtobufVersion = '1.54.1'
+    gaxVersion = '2.29.0'
+    gaxHttpJsonVersion = '0.103.7'
+    gaxTestLibVersion = '2.12.2'
+    guavaVersion = '33.2.1-jre'
+    junitVersion = '4.13.2'
+    truthVersion = '1.1.3'
+    mockitoVersion = '3.+'
+    parameterInjectorVersion = '1.8'
+    slf4jVersion = '2.0.9'
+    logbackVersion = '1.4.14'
+    lombokVersion = '1.18.30'
+}
+repositories {
+    if (project.hasProperty('dependencyRepositories')) {
+        project.property('dependencyRepositories').split(',').each { repo ->
+            def trimmedRepo = repo.trim()
+            if (!trimmedRepo.isEmpty()) {
+                maven {
+                    url trimmedRepo
+                }
+            }
+        }
+    } else {
+        mavenCentral()
+    }
+}
+dependencies {
+    implementation platform("com.google.cloud:libraries-bom:${cloudBomVersion}")
+    implementation "com.google.cloud:google-cloud-datalineage:0.60.0"
+    implementation "com.google.protobuf:protobuf-java-util:${protobufVersion}"
+    implementation "com.google.api:gax:${gaxVersion}"
+    implementation "com.google.api:gax-grpc:${gaxVersion}"
+    implementation "com.google.api:gax-httpjson:${gaxHttpJsonVersion}"
+    implementation "io.grpc:grpc-protobuf:${grpcProtobufVersion}"
+    implementation "com.google.guava:guava:${guavaVersion}"
+    // SLF4J logging
+    implementation "org.slf4j:slf4j-api:${slf4jVersion}"
+    // Lombok for @Slf4j annotation
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    // Use JUnit test framework.
+    testImplementation "junit:junit:${junitVersion}"
+    testImplementation "com.google.truth:truth:${truthVersion}"
+    testImplementation "org.mockito:mockito-core:${mockitoVersion}"
+    testImplementation "com.google.api:gax:${gaxTestLibVersion}:testlib"
+    testImplementation "com.google.testparameterinjector:test-parameter-injector:${parameterInjectorVersion}"
+    // Test logging dependencies
+    testImplementation "ch.qos.logback:logback-classic:${logbackVersion}"
+    testImplementation "ch.qos.logback:logback-core:${logbackVersion}"
+    // Test Lombok
+    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+}
 test {
     include '**/*Test.class'
 }
-
 shadowJar {
-    archiveBaseName.set('data-lineage-producer-java-library')
-    relocate 'com.google.protobuf', 'datalineage.shaded.com.google.protobuf'
-    relocate 'com.google.guava', 'datalineage.shaded.com.google.guava'
-    relocate 'com.google.api', 'datalineage.shaded.com.google.api'
-    relocate 'com.google.auth', 'datalineage.shaded.com.google.auth'
-    relocate 'io.grpc', 'datalineage.shaded.io.grpc'
-    relocate 'com.google.common', 'datalineage.shaded.com.google.common'
-    relocate 'com.google.gson', 'datalineage.shaded.com.google.gson'
-    relocate 'META-INF/native/libio_grpc_netty_shaded_netty', 'META-INF/native/libdatalineage_shaded_io_grpc_netty_shaded_netty'
-    relocate 'META-INF/native/io_grpc_netty_shaded_netty', 'META-INF/native/datalineage_shaded_io_grpc_netty_shaded_netty'
+    archiveClassifier.set('')
+    def excludedPrefixes = [
+            'android/', 'javax/', 'io/opentelemetry', 'com/google/', 'opencensus/', 'grpc/', 'google/', 'org/'
+    ]
+    def includedPrefixes = [
+            'com/google/api', 'com/google/auth', 'com/google/common',
+            'com/google/gson', 'com/google/protobuf', 'com/google/longrunning',
+            'com/google/rpc', 'com/google/cloud/datalineage',
+            'com/google/cloud/datacatalog', 'org/threeten'
+    ]
+    def includedExactPaths = [
+            'com/google/cloud', 'org'
+    ]
+    // exclude from shaded jar all packages starting with excludedPrefixes
+    // but keep those starting with includedPrefixes or containing exact paths from includedExactPaths
+    exclude { FileTreeElement fte ->
+        def isExcluded = excludedPrefixes.any { fte.path.startsWith(it) }
+        def isIncluded = includedPrefixes.any { fte.path.startsWith(it) }
+                || includedExactPaths.contains(fte.path)
+        return isExcluded && !isIncluded
+    }
+    [
+            'com.google.guava',
+            'com.google.longrunning',
+            'com.google.rpc',
+            'io.grpc',
+            'io.opencensus',
+            'io.perfmark',
+            'com.google.common',
+            'com.google.gson',
+            'org.threeten.bp'
+    ].each { packageName ->
+        relocate packageName, "datalineage.shaded.${packageName}"
+    }
+    [
+            'META-INF/native/libio_grpc_netty_shaded_netty',
+            'META-INF/native/io_grpc_netty_shaded_netty'
+    ].each { path ->
+        relocate path, path.replaceFirst(/[^\/]+$/, { "datalineage_shaded_$it" })
+    }
     mergeServiceFiles()
 }
 
@@ -79,21 +150,18 @@ java {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            version = '1.0.0'
-            group = 'com.google.cloud.datalineage'
-            artifactId = 'producerclient-java8'
-            from components.java
-            versionMapping {
-                usage('java-api') {
-                    fromResolutionOf('runtimeClasspath')
-                }
-                usage('java-runtime') {
-                    fromResolutionResult()
-                }
+            if (project.version == 'unspecified') {
+                project.version = '1.0.0'
             }
+            version = project.version
+            group = 'com.google.cloud.datalineage'
+            artifactId = project.name
+            artifact shadowJar
+            artifact javadocJar
+            artifact sourcesJar
             pom {
                 name = 'Java producer library for Data Lineage.'
-                description = 'The library provides Synchronous and Asynchronous clients for interacting with Data Lineage API.'
+                description = 'Library that provides synchronous and asynchronous clients for interacting with the Google Cloud Data Lineage API.'
                 url = 'https://github.com/GoogleCloudPlatform/data-lineage-producer-java-library'
                 properties = [:]
                 licenses {
@@ -104,19 +172,19 @@ publishing {
                 }
                 developers {
                     developer {
-                        id = 'midamkina'
-                        name = 'Mary Idamkina'
-                        email = 'midamkina@google.com'
-                    }
-                    developer {
                         id = 'gabrysiaolsz'
                         name = 'Gabriela Olszewska'
                         email = 'gabrysiaolsz@google.com'
                     }
                     developer {
-                        id = 'ngorchakova'
-                        name = 'Natalia Gorchakova'
-                        email = 'ngorchakova@google.com'
+                        id = 'mikhalevich'
+                        name = 'Konstantin Mikhalevich'
+                        email = 'mikhalevich@google.com'
+                    }
+                    developer {
+                        id = 'wojtekl'
+                        name = 'Wojciech Łowiec'
+                        email = 'wojtekl@google.com'
                     }
                 }
                 scm {
@@ -127,20 +195,29 @@ publishing {
             }
         }
     }
-    repositories {
-        maven {
-            def releasesRepoUrl = 'https://google.oss.sonatype.org/service/local/staging/deploy/maven2/'
-            def snapshotsRepoUrl = 'https://google.oss.sonatype.org/content/repositories/snapshots/'
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-            credentials {
-                // TODO: set those with your https://google.oss.sonatype.org OSSRH server user token.
-                username = 'secret'
-                password = 'secret'
+    if (project.hasProperty('publishingRepositoryUrl') && !project.property('publishingRepositoryUrl').toString().trim().isEmpty()) {
+        repositories {
+            maven {
+                url project.property('publishingRepositoryUrl').toString().trim()
             }
         }
     }
 }
-
+// Force task output into the package hierarchy
+['jar', 'shadowJar', 'javadocJar', 'sourcesJar'].each { taskName ->
+    tasks.named(taskName) {
+        destinationDirectory = layout.buildDirectory.dir("libs/com/google/cloud/datalineage/${project.name}/${project.version}")
+    }
+}
 signing {
+    def keyId = System.getenv("SIGNING_KEY_ID")
+    def key = System.getenv("SIGNING_KEY")
+    def password = System.getenv("SIGNING_PASSWORD")
+    useInMemoryPgpKeys(keyId, key, password)
     sign publishing.publications.mavenJava
+}
+javadoc {
+    if (JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
 }
