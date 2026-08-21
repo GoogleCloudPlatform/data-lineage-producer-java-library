@@ -30,14 +30,12 @@ googleJavaFormat {
     toolVersion = '1.7'
 }
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(8)
-    }
+    sourceCompatibility = "1.8"
+    targetCompatibility = "1.8"
 }
 
 tasks.withType(JavaCompile).configureEach {
-    sourceCompatibility = "1.8"
-    targetCompatibility = "1.8"
+    options.release = 8
 }
 
 ext {
