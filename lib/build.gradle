@@ -30,9 +30,8 @@ googleJavaFormat {
     toolVersion = '1.7'
 }
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(8)
-    }
+    sourceCompatibility = "1.8"
+    targetCompatibility = "1.8"
 }
 
 ext {
