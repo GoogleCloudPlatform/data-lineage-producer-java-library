@@ -30,9 +30,11 @@ googleJavaFormat {
     toolVersion = '1.7'
 }
 java {
-    sourceCompatibility = "1.8"
-    targetCompatibility = "1.8"
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
 }
+
 ext {
     cloudBomVersion = '26.37.0'
     protobufVersion = '3.23.0'
