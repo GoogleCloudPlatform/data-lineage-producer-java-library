@@ -16,7 +16,7 @@ name: PR Checks
 
 on:
   pull_request:
-    branches: [main, java-8]
+    branches: [java-8]
 
 jobs:
   pr-checks:
