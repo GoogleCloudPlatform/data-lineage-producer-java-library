@@ -34,10 +34,6 @@ java {
     targetCompatibility = "1.8"
 }
 
-tasks.withType(JavaCompile).configureEach {
-    options.release = 8
-}
-
 ext {
     cloudBomVersion = '26.37.0'
     protobufVersion = '3.23.0'
