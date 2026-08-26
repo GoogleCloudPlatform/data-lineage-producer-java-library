@@ -131,7 +131,6 @@ shadowJar {
             'com.google.guava',
             'com.google.longrunning',
             'com.google.rpc',
-            'io.grpc',
             'io.opencensus',
             'io.perfmark',
             'com.google.common',
@@ -139,12 +138,6 @@ shadowJar {
             'org.threeten.bp'
     ].each { packageName ->
         relocate packageName, "datalineage.shaded.${packageName}"
-    }
-    [
-            'META-INF/native/libio_grpc_netty_shaded_netty',
-            'META-INF/native/io_grpc_netty_shaded_netty'
-    ].each { path ->
-        relocate path, path.replaceFirst(/[^\/]+$/, { "datalineage_shaded_$it" })
     }
 
     mergeServiceFiles()
